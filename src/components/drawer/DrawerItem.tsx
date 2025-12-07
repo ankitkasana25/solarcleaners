@@ -1,11 +1,12 @@
 import React from 'react';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { ImageIcon } from '../ImageIcon';
+import { IconName } from '../../theme/icons';
 import { colors } from '../../theme/colors';
 
 interface DrawerItemProps {
     label: string;
-    iconName?: string;
+    iconName?: IconName; // Update type to IconName
     isActive?: boolean;
     hasDot?: boolean;
     onPress?: () => void;
@@ -16,7 +17,7 @@ export const DrawerItem = ({ label, iconName, isActive = false, hasDot = false, 
         <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
             <View style={styles.itemLeft}>
                 {iconName ? (
-                    <Icon
+                    <ImageIcon
                         name={iconName}
                         size={22}
                         color={colors.text}

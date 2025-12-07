@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme/colors';
+import { ImageIcon } from './ImageIcon';
 
 export const HomeHeader = () => {
   const navigation = useNavigation();
@@ -19,35 +19,34 @@ export const HomeHeader = () => {
         {/* Left: Hamburger and Location */}
         <View style={styles.leftSection}>
           <TouchableOpacity onPress={openDrawer} style={styles.menuButton}>
-            <Icon name="menu-outline" size={28} color="#1C1C1E" />
+            <ImageIcon name="menu" size={28} color="#1C1C1E" />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.locationContainer}>
-            <Icon
-              name="location-sharp"
+            <ImageIcon
+              name="location" // Using fallback
               size={16}
               color={colors.primary}
               style={styles.locationIcon}
             />
             <Text style={styles.locationText}>Denver, CO</Text>
-            <Icon name="chevron-down" size={16} color="#1C1C1E" />
+            <ImageIcon name="dropdown" size={16} color="#1C1C1E" />
           </TouchableOpacity>
         </View>
 
         {/* Right: Actions */}
         <View style={styles.rightSection}>
           <TouchableOpacity style={styles.iconButton}>
-            <Icon name="search-outline" size={24} color="#1C1C1E" />
+            <ImageIcon name="search" size={24} color="#1C1C1E" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton}>
-            <Icon name="notifications-outline" size={24} color="#1C1C1E" />
+            <ImageIcon name="bell" size={24} color="#1C1C1E" />
             <View style={styles.notificationBadge} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.profileButton}>
-            {/* Placeholder for Profile Image - using a colored View or Icon if image not available */}
+            {/* Placeholder for Profile Image */}
             <View style={styles.profilePlaceholder}>
-              <Icon name="person" size={20} color="#FFF" />
-              {/* <View style={styles.onlineBadge} /> */}
+              <ImageIcon name="profile" size={20} color="#FFF" />
             </View>
           </TouchableOpacity>
         </View>
@@ -83,7 +82,6 @@ const styles = StyleSheet.create({
   },
   locationIcon: {
     marginRight: 4,
-    color: colors.primary, // Using theme color
   },
   locationText: {
     fontSize: 16,
