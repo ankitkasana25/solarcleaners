@@ -12,4 +12,5 @@ export const colors = {
     border: '#E5E5EA',
     google: '#DB4437',
     apple: '#000000',
+    gold: '#FFD700',
 };
