@@ -2,10 +2,13 @@ export const iconAssets = {
     menu: require('../assets/icons/menu.png'),
     search: require('../assets/icons/search.png'),
     bell: require('../assets/icons/bell.png'),
-    // Add placeholders or allow undefined for missing icons
-    home: require('../assets/icons/menu.png'), // Fallback for now
-    requests: require('../assets/icons/menu.png'), // Fallback
-    profile: require('../assets/icons/menu.png'), // Fallback
+    profile: require('../assets/icons/profile.png'),
+    // Tab icons
+    home: require('../assets/icons/Home.png'),
+    services: require('../assets/icons/cleaningService.png'),
+    bookings: require('../assets/icons/booking.png'),
+    cart: require('../assets/icons/cart.png'),
+    // Fallbacks
     location: require('../assets/icons/menu.png'), // Fallback
     dropdown: require('../assets/icons/menu.png'), // Fallback
 };

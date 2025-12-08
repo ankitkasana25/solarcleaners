@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors } from '../theme/colors';
+
 import { ImageIcon } from './ImageIcon';
 
 export const HomeHeader = () => {
@@ -19,18 +19,7 @@ export const HomeHeader = () => {
         {/* Left: Hamburger and Location */}
         <View style={styles.leftSection}>
           <TouchableOpacity onPress={openDrawer} style={styles.menuButton}>
-            <ImageIcon name="menu" size={28} color="#1C1C1E" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.locationContainer}>
-            <ImageIcon
-              name="location" // Using fallback
-              size={16}
-              color={colors.primary}
-              style={styles.locationIcon}
-            />
-            <Text style={styles.locationText}>Denver, CO</Text>
-            <ImageIcon name="dropdown" size={16} color="#1C1C1E" />
+            <ImageIcon name="menu" size={28} color="#000000ff" />
           </TouchableOpacity>
         </View>
 
@@ -46,7 +35,7 @@ export const HomeHeader = () => {
           <TouchableOpacity style={styles.profileButton}>
             {/* Placeholder for Profile Image */}
             <View style={styles.profilePlaceholder}>
-              <ImageIcon name="profile" size={20} color="#FFF" />
+              <ImageIcon name="profile" size={20} />
             </View>
           </TouchableOpacity>
         </View>
@@ -74,6 +63,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   menuButton: {
+    marginRight: 16,
+  },
+  appLogo: {
+    width: 100,
+    height: 32,
     marginRight: 16,
   },
   locationContainer: {

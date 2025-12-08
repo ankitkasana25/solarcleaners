@@ -21,9 +21,12 @@ export const SplashScreen = () => {
     return (
         <ScreenContainer style={styles.container}>
             <View style={styles.content}>
-                <View style={styles.logoPlaceholder}>
-                    {/* Placeholder for Lottie Animation or GIF */}
-                    <Text style={styles.logoText}>SolarCleaner</Text>
+                <View style={styles.logoContainer}>
+                    <Image
+                        source={require('../../assets/icons/AppLogo.png')}
+                        style={styles.logo}
+                        resizeMode="contain"
+                    />
                 </View>
                 <Text style={styles.tagline}>Powering up your solar efficiency</Text>
             </View>
@@ -40,23 +43,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    logoPlaceholder: {
-        width: width * 0.6,
-        height: width * 0.6,
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        borderRadius: width * 0.3,
+    logoContainer: {
+        width: width * 0.7,
+        height: 200,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 40,
     },
-    logoText: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: colors.white,
+    logo: {
+        width: '100%',
+        height: '100%',
     },
     tagline: {
         fontSize: 18,
         color: colors.white,
         opacity: 0.9,
+        textAlign: 'center',
+        paddingHorizontal: 20,
     },
 });
