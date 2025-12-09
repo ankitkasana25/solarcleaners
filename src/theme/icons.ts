@@ -3,6 +3,7 @@ export const iconAssets = {
     search: require('../assets/icons/search.png'),
     bell: require('../assets/icons/bell.png'),
     profile: require('../assets/icons/profile.png'),
+    mic: require('../assets/icons/mic.png'),
     // Tab icons
     home: require('../assets/icons/Home.png'),
     services: require('../assets/icons/cleaningService.png'),

@@ -26,9 +26,6 @@ export const HomeHeader = () => {
         {/* Right: Actions */}
         <View style={styles.rightSection}>
           <TouchableOpacity style={styles.iconButton}>
-            <ImageIcon name="search" size={24} color="#1C1C1E" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
             <ImageIcon name="bell" size={24} color="#1C1C1E" />
             <View style={styles.notificationBadge} />
           </TouchableOpacity>
