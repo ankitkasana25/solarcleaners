@@ -479,7 +479,7 @@ export const ServicesScreen = () => {
 
   return (
     <View style={styles.container}>
-      <ScreenHeader title="Services" />
+
       <SearchBar
         placeholder="Search a Service"
         value={searchQuery}

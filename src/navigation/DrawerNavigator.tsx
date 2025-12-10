@@ -1,8 +1,10 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { TabNavigator } from './TabNavigator';
+import { MainStackNavigator } from './MainStackNavigator';
 import { colors } from '../theme/colors';
 import { CustomDrawerContent } from './CustomDrawerContent';
+
+import { UserProfileScreen } from '../screens/Profile/UserProfileScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -19,7 +21,8 @@ export const DrawerNavigator = () => {
                 },
             }}
         >
-            <Drawer.Screen name="MainTabs" component={TabNavigator} />
+            <Drawer.Screen name="MainStack" component={MainStackNavigator} />
+            <Drawer.Screen name="UserProfile" component={UserProfileScreen} />
         </Drawer.Navigator>
     );
 };

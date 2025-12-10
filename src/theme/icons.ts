@@ -12,6 +12,8 @@ export const iconAssets = {
     // Fallbacks
     location: require('../assets/icons/menu.png'), // Fallback
     dropdown: require('../assets/icons/menu.png'), // Fallback
+    'arrow-left': require('../assets/icons/menu.png'), // Placeholder
+    share: require('../assets/icons/menu.png'), // Placeholder
 };
 
 export type IconName = keyof typeof iconAssets;

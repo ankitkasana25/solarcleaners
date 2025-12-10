@@ -1,23 +1,15 @@
 import AuthStore from './AuthStore';
-import { createContext, useContext } from 'react';
+import { CartStore } from './CartStore';
 
 export class RootStore {
     authStore: AuthStore;
+    cartStore: CartStore;
 
     constructor() {
         this.authStore = new AuthStore();
+        this.cartStore = new CartStore();
     }
 }
 
 const rootStore = new RootStore();
-const RootStoreContext = createContext(rootStore);
-
-export const useRootStore = () => {
-    const context = useContext(RootStoreContext);
-    if (context === undefined) {
-        throw new Error('useRootStore must be used within a RootStoreProvider');
-    }
-    return context;
-};
-
-export default rootStore;
+export const useRootStore = () => rootStore;

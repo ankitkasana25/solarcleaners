@@ -7,26 +7,28 @@ import { BookingsScreen } from '../screens/Main/BookingsScreen';
 import { CartScreen } from '../screens/Main/CartScreen';
 import { colors } from '../theme/colors';
 import { ImageIcon } from '../components/ImageIcon';
+import { CustomHeader } from '../components/CustomHeader';
 
 const Tab = createBottomTabNavigator();
 
 export const TabNavigator = () => {
     return (
         <Tab.Navigator
-            screenOptions={{
-                headerShown: false,
+            screenOptions={({ route }) => ({
+                headerShown: true,
+                header: () => <CustomHeader title={route.name} />,
                 tabBarActiveTintColor: colors.primary,
                 tabBarInactiveTintColor: colors.textSecondary,
                 tabBarStyle: styles.tabBar,
                 tabBarLabelStyle: styles.tabBarLabel,
-            }}
+            })}
         >
             <Tab.Screen
                 name="Home"
                 component={HomeScreen}
                 options={{
-                    tabBarIcon: ({ color, size }) => (
-                        <ImageIcon name="home" size={size || 24} color={color} />
+                    tabBarIcon: ({ color }) => (
+                        <ImageIcon name="home" size={28} color={color} />
                     ),
                 }}
             />
@@ -34,8 +36,8 @@ export const TabNavigator = () => {
                 name="Services"
                 component={ServicesScreen}
                 options={{
-                    tabBarIcon: ({ color, size }) => (
-                        <ImageIcon name="services" size={size || 24} color={color} />
+                    tabBarIcon: ({ color }) => (
+                        <ImageIcon name="services" size={28} color={color} />
                     ),
                 }}
             />
@@ -43,8 +45,8 @@ export const TabNavigator = () => {
                 name="Bookings"
                 component={BookingsScreen}
                 options={{
-                    tabBarIcon: ({ color, size }) => (
-                        <ImageIcon name="bookings" size={size || 24} color={color} />
+                    tabBarIcon: ({ color }) => (
+                        <ImageIcon name="bookings" size={28} color={color} />
                     ),
                 }}
             />
@@ -52,8 +54,8 @@ export const TabNavigator = () => {
                 name="Cart"
                 component={CartScreen}
                 options={{
-                    tabBarIcon: ({ color, size }) => (
-                        <ImageIcon name="cart" size={size || 24} color={color} />
+                    tabBarIcon: ({ color }) => (
+                        <ImageIcon name="cart" size={28} color={color} />
                     ),
                 }}
             />
@@ -63,12 +65,21 @@ export const TabNavigator = () => {
 
 const styles = StyleSheet.create({
     tabBar: {
-        height: 60,
-        paddingBottom: 8,
-        paddingTop: 8,
+        height: 70, // Increased height for premium feel
+        paddingBottom: 12, // More padding for bottom
+        paddingTop: 12,
+        backgroundColor: '#FFFFFF',
+        borderTopWidth: 1,
+        borderTopColor: '#F0F0F0',
+        elevation: 10, // Shadow for Android
+        shadowColor: '#000', // Shadow for iOS
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
     },
     tabBarLabel: {
-        fontSize: 13,
+        fontSize: 12, // Balanced premium size
         fontWeight: '600',
+        marginTop: 4,
     },
 });
