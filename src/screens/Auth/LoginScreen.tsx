@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import { ScreenContainer } from '../../components/ScreenContainer';
 import { Input } from '../../components/Input';
@@ -52,7 +53,10 @@ export const LoginScreen = observer(() => {
             secureTextEntry
           />
 
-          <TouchableOpacity style={styles.forgotPassword}>
+          <TouchableOpacity
+            style={styles.forgotPassword}
+            onPress={() => navigation.navigate('ForgotPassword')}
+          >
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
 
@@ -70,15 +74,19 @@ export const LoginScreen = observer(() => {
           </View>
 
           <View style={styles.socialButtons}>
-            <TouchableOpacity
-              style={[styles.socialButton, { backgroundColor: colors.google }]}
-            >
-              <Text style={styles.socialButtonText}>Google</Text>
+            <TouchableOpacity style={styles.socialButton}>
+              <Image
+                source={require('../../assets/icons/google.png')}
+                style={styles.socialIcon}
+                resizeMode="contain"
+              />
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.socialButton, { backgroundColor: colors.apple }]}
-            >
-              <Text style={styles.socialButtonText}>Apple</Text>
+            <TouchableOpacity style={styles.socialButton}>
+              <Image
+                source={require('../../assets/icons/apple.png')}
+                style={styles.socialIcon}
+                resizeMode="contain"
+              />
             </TouchableOpacity>
           </View>
 
@@ -142,18 +150,26 @@ const styles = StyleSheet.create({
   },
   socialButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     marginBottom: 32,
+    gap: 16,
   },
   socialButton: {
-    flex: 0.48,
-    paddingVertical: 12,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     alignItems: 'center',
-    borderRadius: 8,
+    justifyContent: 'center',
+    backgroundColor: '#F5F5F5',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  socialButtonText: {
-    color: colors.white,
-    fontWeight: '600',
+  socialIcon: {
+    width: 32,
+    height: 32,
   },
   footer: {
     flexDirection: 'row',
