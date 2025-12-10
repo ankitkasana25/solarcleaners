@@ -6,7 +6,6 @@ import {
   Image,
   Text,
   TouchableOpacity,
-  Dimensions,
 } from 'react-native';
 import {
   DrawerContentComponentProps,
@@ -22,11 +21,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useRootStore } from '../stores/RootStore';
 import { observer } from 'mobx-react-lite';
-import { colors } from '../theme/colors';
 import { ImageIcon } from '../components/ImageIcon'; // Use ImageIcon for consistency
 import { IconName } from '../theme/icons';
-
-const { width } = Dimensions.get('window');
 
 const AnimatedTouchableOpacity =
   Animated.createAnimatedComponent(TouchableOpacity);

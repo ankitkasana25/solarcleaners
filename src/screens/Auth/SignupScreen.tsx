@@ -19,7 +19,7 @@ import { observer } from 'mobx-react-lite';
 
 export const SignupScreen = observer(() => {
   const navigation = useNavigation<any>();
-  const { authStore } = useRootStore();
+  const {} = useRootStore();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -64,7 +64,7 @@ export const SignupScreen = observer(() => {
 
     try {
       // Simulate signup process
-      await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+      await new Promise<void>(resolve => setTimeout(resolve, 2000));
 
       showToast(
         'Account created successfully! OTP sent to your email.',
