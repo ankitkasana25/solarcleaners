@@ -91,13 +91,13 @@ const shortsData = [
 ];
 
 export const SolCareShorts = () => {
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <SectionTitle
-                    title="SolarCleaners Shorts"
+                    title="Solar Cleaning Expert Shorts"
                     tagline="Discover amazing solar content"
                     badgeText="Trending"
                 />

@@ -41,7 +41,7 @@ const servicesData = {
       discount: '2% OFF',
       price: 725,
       duration: '2-3 hours',
-      image: 'https://via.placeholder.com/300x180',
+      image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&q=80',
       featured: true,
       category: 'cleaning',
     },
@@ -51,7 +51,7 @@ const servicesData = {
       description: 'Standard cleaning service',
       price: 525,
       duration: '1-2 hours',
-      image: 'https://via.placeholder.com/300x180',
+      image: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=600&q=80',
       category: 'cleaning',
     },
   ],
@@ -62,7 +62,7 @@ const servicesData = {
       description: 'Year-round maintenance coverage',
       price: 1200,
       duration: 'Annual',
-      image: 'https://via.placeholder.com/300x180',
+      image: 'https://images.unsplash.com/photo-1625301840055-7c1b7198cfc0?w=600&q=80',
       popular: true,
       category: 'maintenance',
     },
@@ -72,7 +72,7 @@ const servicesData = {
       description: 'Complete system maintenance',
       price: 850,
       duration: '3-4 hours',
-      image: 'https://via.placeholder.com/300x180',
+      image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600&q=80',
       category: 'maintenance',
     },
   ],
@@ -83,7 +83,7 @@ const servicesData = {
       description: 'Professional inverter diagnostics & repair',
       price: 650,
       duration: '2-3 hours',
-      image: 'https://via.placeholder.com/300x180',
+      image: 'https://images.unsplash.com/photo-1497440001374-f26997328c1b?w=600&q=80',
       category: 'repairing',
     },
     {
@@ -92,7 +92,7 @@ const servicesData = {
       description: 'Damaged panel replacement service',
       price: 950,
       duration: '3-4 hours',
-      image: 'https://via.placeholder.com/300x180',
+      image: 'https://images.unsplash.com/photo-1594818379496-da1e345b0ded?w=600&q=80',
       urgent: true,
       category: 'repairing',
     },
@@ -104,7 +104,7 @@ const servicesData = {
       description: 'Complete new system installation',
       price: 2500,
       duration: '1-2 days',
-      image: 'https://via.placeholder.com/300x180',
+      image: 'https://images.unsplash.com/photo-1559302504-64aae6ca6b6f?w=600&q=80',
       featured: true,
       category: 'installation',
     },
@@ -114,7 +114,7 @@ const servicesData = {
       description: 'Upgrade existing solar system',
       price: 1800,
       duration: '1 day',
-      image: 'https://via.placeholder.com/300x180',
+      image: 'https://images.unsplash.com/photo-1548613053-220e89574c8a?w=600&q=80',
       category: 'installation',
     },
   ],
@@ -228,17 +228,15 @@ const ServiceCard = ({
           gridView ? styles.gridImageContainer : styles.horizontalImageContainer
         }
       >
-        <View
+        <Image
+          source={{ uri: image }}
           style={
             gridView
               ? styles.gridPlaceholderImage
               : styles.horizontalPlaceholderImage
           }
-        >
-          <View style={styles.imageOverlay}>
-            {/* Removed icon circle from here */}
-          </View>
-        </View>
+          resizeMode="cover"
+        />
 
         {/* Badges */}
         <View style={styles.badgeContainer}>
@@ -298,15 +296,6 @@ const ServiceCard = ({
               </View>
             )}
           </View>
-
-          <TouchableOpacity
-            style={
-              gridView ? styles.gridActionButton : styles.horizontalActionButton
-            }
-            activeOpacity={0.8}
-          >
-            <Text style={styles.actionButtonText}>View</Text>
-          </TouchableOpacity>
         </View>
       </View>
     </>
@@ -478,7 +467,7 @@ export const ServicesScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScreenContainer style={styles.container}>
 
       <SearchBar
         placeholder="Search a Service"
@@ -500,13 +489,8 @@ export const ServicesScreen = () => {
         {renderContent()}
       </ScrollView>
 
-      {/* Floating Cart Button */}
-      <TouchableOpacity style={styles.floatingCartButton} activeOpacity={0.9}>
-        <View style={styles.cartIconContainer}>
-          <Text style={styles.cartIcon}>🛒</Text>
-        </View>
-      </TouchableOpacity>
-    </View>
+
+    </ScreenContainer>
   );
 };
 

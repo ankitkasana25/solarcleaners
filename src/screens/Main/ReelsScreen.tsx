@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
-import { View, StyleSheet, Dimensions, Image, Text, TouchableOpacity, FlatList, StatusBar, SafeAreaView } from 'react-native';
+import { View, StyleSheet, Dimensions, Image, Text, TouchableOpacity, FlatList, StatusBar } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { ImageIcon } from '../../components/ImageIcon'; // Assuming usage for icons
 
@@ -18,6 +19,7 @@ interface ReelItem {
 export const ReelsScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
+    const insets = useSafeAreaInsets();
     const { initialIndex = 0, videos = [] } = (route.params as any) || {};
 
     // Simulate playing state
@@ -77,12 +79,12 @@ export const ReelsScreen = () => {
             <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
 
             {/* Header / Back Button */}
-            <SafeAreaView style={styles.header}>
+            <View style={[styles.header, { top: insets.top > 0 ? insets.top + 10 : 40 }]}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Text style={styles.backButtonText}>← </Text>
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Shorts</Text>
-            </SafeAreaView>
+            </View>
 
             <FlatList
                 data={videos}
@@ -118,7 +120,7 @@ const styles = StyleSheet.create({
     },
     header: {
         position: 'absolute',
-        top: 40,
+        // top: 40, // Handled dynamically
         left: 0,
         right: 0,
         zIndex: 10,

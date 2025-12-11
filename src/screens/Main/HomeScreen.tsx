@@ -71,13 +71,15 @@ import { SeasonalOffers } from '../../components/SeasonalOffers';
 import { SubscriptionPlans } from '../../components/SubscriptionPlans';
 import { FreeConsultation } from '../../components/FreeConsultation';
 
+import { ScreenContainer } from '../../components/ScreenContainer';
+
 export const HomeScreen = observer(() => {
     const navigation = useNavigation();
     // const { authStore } = useRootStore(); // user data available if needed
     const [searchQuery, setSearchQuery] = useState('');
 
     return (
-        <View style={styles.container}>
+        <ScreenContainer>
             <SearchBar
                 placeholder="Search for services..."
                 value={searchQuery}
@@ -140,7 +142,7 @@ export const HomeScreen = observer(() => {
                 <View style={{ height: 50 }} />
                 {/* Bottom spacer */}
             </ScrollView>
-        </View>
+        </ScreenContainer>
     );
 });
 

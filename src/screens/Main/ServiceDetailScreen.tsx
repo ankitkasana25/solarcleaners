@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Dimensions
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import { useRootStore } from '../../stores/RootStore';
+import { ScreenContainer } from '../../components/ScreenContainer';
 import { ImageIcon } from '../../components/ImageIcon';
 import { colors } from '../../theme/colors';
 import { Toast } from '../../components/Toast';
@@ -90,7 +91,7 @@ export const ServiceDetailScreen = observer(() => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScreenContainer style={styles.container}>
       {/* Custom Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconButton}>
@@ -210,7 +211,7 @@ export const ServiceDetailScreen = observer(() => {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </ScreenContainer>
   );
 });
 
@@ -295,7 +296,7 @@ const styles = StyleSheet.create({
   titleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'start',
+    alignItems: 'flex-start',
     marginBottom: 16,
   },
   title: {
