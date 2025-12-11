@@ -5,4 +5,9 @@ module.exports = {
 
     'react-native-worklets/plugin', // 👈 must be LAST
   ],
+  env: {
+    production: {
+      plugins: ['transform-remove-console'],
+    },
+  },
 };

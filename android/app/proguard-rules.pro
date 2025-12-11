@@ -8,3 +8,15 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+# Keep RN classes & annotations commonly needed
+-keep class com.facebook.react.** { *; }
+-dontwarn com.facebook.react.**
+
+# Keep React Native bridge classes used by reflection
+-keepclassmembers class * {
+    @com.facebook.react.bridge.ReactMethod <methods>;
+}
+
+# Add rules for other native libs you use (Firebase, Flipper, etc.)
+# Example for Retrofit/Gson, etc., add library-specific rules
