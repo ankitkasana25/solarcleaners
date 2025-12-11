@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Dimensions, Alert } from 'react-native';
 import { SectionTitle } from './SectionTitle';
 import { colors } from '../theme/colors';
+import { useRootStore } from '../stores/RootStore';
+import { useNavigation } from '@react-navigation/native';
+import { observer } from 'mobx-react-lite';
 
 const { width } = Dimensions.get('window');
 const PLAN_WIDTH = width * 0.85;
@@ -90,15 +93,44 @@ const plans = [
     },
 ];
 
-export const SubscriptionPlans = () => {
+export const SubscriptionPlans = observer(() => {
+    const { cartStore } = useRootStore();
+    const navigation = useNavigation<any>();
+
+    const handleChoosePlan = (plan: any) => {
+        if (plan.id === 'commercial') {
+            Alert.alert(
+                'Contact Admin',
+                'Please contact us at +91-9876543210 for a custom commercial quote.',
+                [{ text: 'OK' }]
+            );
+            return;
+        }
+
+        let priceValue = 0;
+        if (typeof plan.price === 'string') {
+            priceValue = parseInt(plan.price.replace(/[^0-9]/g, ''), 10);
+        }
+
+        cartStore.addToCart({
+            id: `sub-${plan.id}`,
+            title: `${plan.name} Plan`,
+            price: priceValue,
+            basePrice: priceValue,
+            systemSize: 'N/A',
+            image: null,
+            details: `${plan.period} Subscription`,
+        });
+
+        navigation.navigate('MainTabs', { screen: 'Cart' });
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <SectionTitle title="Subscription Plans" badgeText="Annual Plans" />
                 <TouchableOpacity><Text style={styles.viewAll}>View All</Text></TouchableOpacity>
             </View>
-
-            {/* Filter Row removed */}
 
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent} pagingEnabled snapToInterval={PLAN_WIDTH + 16}>
                 {plans.map((plan) => (
@@ -108,17 +140,12 @@ export const SubscriptionPlans = () => {
                                 <Text style={styles.recommendedText}>Recommended</Text>
                             </View>
                         )}
-
                         <Text style={styles.planName}>{plan.name}</Text>
-
-                        {/* Use flex row for pricing if needed, keeping simple text for now */}
                         <Text style={styles.priceContainer}>
                             <Text style={styles.price}>{plan.price}</Text>
                             <Text style={styles.period}>{plan.period}</Text>
                         </Text>
-
                         <Text style={styles.description}>{plan.desc}</Text>
-
                         <View style={styles.featureList}>
                             <Text style={styles.featureTitle}>What's Included:</Text>
                             {plan.features.map((feature, index) => (
@@ -130,16 +157,19 @@ export const SubscriptionPlans = () => {
                                 </View>
                             ))}
                         </View>
-
-                        <TouchableOpacity style={[styles.button, { backgroundColor: plan.darkColor }]} activeOpacity={0.9}>
-                            <Text style={styles.buttonText}>Choose Plan</Text>
+                        <TouchableOpacity
+                            style={[styles.button, { backgroundColor: plan.darkColor }]}
+                            activeOpacity={0.9}
+                            onPress={() => handleChoosePlan(plan)}
+                        >
+                            <Text style={styles.buttonText}>{plan.id === 'commercial' ? 'Contact Us' : 'Choose Plan'}</Text>
                         </TouchableOpacity>
                     </View>
                 ))}
             </ScrollView>
         </View>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {

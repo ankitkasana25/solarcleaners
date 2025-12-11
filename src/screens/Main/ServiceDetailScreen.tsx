@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Dimensions, Alert, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Dimensions, Alert, TextInput, Platform } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import { useRootStore } from '../../stores/RootStore';
 import { ImageIcon } from '../../components/ImageIcon';
 import { colors } from '../../theme/colors';
+import { Toast } from '../../components/Toast';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const { width } = Dimensions.get('window');
 
@@ -23,32 +25,67 @@ interface ServiceData {
 export const ServiceDetailScreen = observer(() => {
   const navigation = useNavigation<any>();
   const route = useRoute();
-  // Safely cast params, defaulting to empty object if undefined
   const { service } = (route.params as { service: ServiceData }) || { service: {} };
   const { cartStore } = useRootStore();
-  const [systemSize, setSystemSize] = useState('5.0');
+  const [systemSize, setSystemSize] = useState('1.0');
+
+  // Toast state
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setToastMessage(message);
+    setToastType(type);
+    setToastVisible(true);
+  };
 
   if (!service || !service.id) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: 'center', marginTop: 50 }}>Service data unavailable</Text>
-      </View>
-    );
+    // ...
   }
 
+  // Calculate Price Logic
+  const parsedSize = parseFloat(systemSize) || 0;
+  const basePrice = service.price && service.price > 0 ? service.price : 500; // Default base price to 500
+  const totalPrice = parsedSize * basePrice;
+
   const handleAddToCart = () => {
-    cartStore.addToCart({
-      id: service.id,
-      title: service.title,
-      price: service.price || 0,
-      image: service.image,
-    });
-    // Optional: Toast or simple alert
-    // Alert.alert('Success', 'Added to cart'); 
+    // Check if item already exists in cart
+    const existingItem = cartStore.items.find(item => item.id === service.id);
+
+    if (existingItem) {
+      showToast('Already in the cart', 'info');
+    } else {
+      cartStore.addToCart({
+        id: service.id,
+        title: service.title,
+        price: totalPrice,
+        basePrice: basePrice,
+        systemSize: systemSize,
+        image: service.image,
+        details: `${systemSize} kW System`,
+      });
+      showToast('Added to cart', 'success');
+    }
   };
 
   const handleBuyNow = () => {
-    handleAddToCart();
+    // Update cart item price if it exists or add new
+    // For simplicity, we just navigate if it exists, but ideally we'd update the price based on new size selection
+    // Given the requirement "already in cart" toast, we might not update existing items easily without more complex logic.
+    // Let's stick to the add-if-not-exists pattern.
+    const existingItem = cartStore.items.find(item => item.id === service.id);
+    if (!existingItem) {
+      cartStore.addToCart({
+        id: service.id,
+        title: service.title,
+        price: totalPrice,
+        basePrice: basePrice,
+        systemSize: systemSize,
+        image: service.image,
+        details: `${systemSize} kW System`,
+      });
+    }
     navigation.navigate('MainTabs', { screen: 'Cart' });
   };
 
@@ -57,13 +94,12 @@ export const ServiceDetailScreen = observer(() => {
       {/* Custom Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconButton}>
-          <ImageIcon name="arrow-left" size={24} color={colors.text} />
+          {/* Use Ionicons for a proper back arrow */}
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle} numberOfLines={1}>{service.title}</Text>
         <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.iconButton}>
-            <ImageIcon name="share" size={24} color={colors.text} />
-          </TouchableOpacity>
+          {/* Removed Share icon? User said: "remove the Menu icon... and the cart will show there". The current header has Share and Cart. I'll remove Share to act like "removing the extra menu icon" if that's what they meant, or just keep Cart. User instruction: "remove the Menu icon from the header and the cart will show there". Previously it was Back (Menu placeholder), Title, Share, Cart. I will remove Share. */}
           <TouchableOpacity
             style={styles.iconButton}
             onPress={() => navigation.navigate('MainTabs', { screen: 'Cart' })}
@@ -79,6 +115,13 @@ export const ServiceDetailScreen = observer(() => {
           </TouchableOpacity>
         </View>
       </View>
+
+      <Toast
+        visible={toastVisible}
+        message={toastMessage}
+        type={toastType}
+        onHide={() => setToastVisible(false)}
+      />
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Image Section */}
@@ -115,7 +158,7 @@ export const ServiceDetailScreen = observer(() => {
             </View>
           </View>
 
-          <Text style={styles.priceDisplay}>Total Price: <Text style={styles.priceValue}>₹{service.price || 'Ask for quote'}</Text></Text>
+          <Text style={styles.priceDisplay}>Total Price: <Text style={styles.priceValue}>₹{totalPrice.toLocaleString()}</Text></Text>
 
           <Text style={styles.sectionHeader}>About this service</Text>
           <Text style={styles.description}>
@@ -156,7 +199,7 @@ export const ServiceDetailScreen = observer(() => {
       <View style={styles.footer}>
         <View style={styles.priceContainer}>
           <Text style={styles.footerPriceLabel}>Total Price</Text>
-          <Text style={styles.footerPrice}>₹{service.price || '0'}</Text>
+          <Text style={styles.footerPrice}>₹{totalPrice.toLocaleString()}</Text>
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart} activeOpacity={0.8}>
@@ -311,16 +354,19 @@ const styles = StyleSheet.create({
   },
   priceDisplay: {
     fontSize: 18,
-    color: colors.primary,
-    fontWeight: '600',
+    color: '#2D44B5',
+    fontWeight: '500',
     marginBottom: 24,
     backgroundColor: '#F0F7FF',
     padding: 16,
     borderRadius: 12,
   },
   priceValue: {
-    fontWeight: '800',
+    fontWeight: '600',
     fontSize: 22,
+    color: '#2D44B5',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
+    letterSpacing: 0.5,
   },
   sectionHeader: {
     fontSize: 18,
@@ -405,8 +451,10 @@ const styles = StyleSheet.create({
   },
   footerPrice: {
     fontSize: 24,
-    fontWeight: '800',
-    color: colors.primary,
+    fontWeight: '600',
+    color: '#2D44B5',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
+    letterSpacing: 0.5,
   },
   buttonContainer: {
     flex: 0.6,

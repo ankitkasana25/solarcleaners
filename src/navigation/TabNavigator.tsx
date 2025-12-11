@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { observer } from 'mobx-react-lite';
+import { useRootStore } from '../stores/RootStore';
 import { HomeScreen } from '../screens/Main/HomeScreen';
 import { ServicesScreen } from '../screens/Main/ServicesScreen';
 import { BookingsScreen } from '../screens/Main/BookingsScreen';
@@ -11,7 +13,9 @@ import { CustomHeader } from '../components/CustomHeader';
 
 const Tab = createBottomTabNavigator();
 
-export const TabNavigator = () => {
+export const TabNavigator = observer(() => {
+    const { cartStore } = useRootStore();
+
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -57,11 +61,12 @@ export const TabNavigator = () => {
                     tabBarIcon: ({ color }) => (
                         <ImageIcon name="cart" size={28} color={color} />
                     ),
+                    tabBarBadge: cartStore.totalCount > 0 ? cartStore.totalCount : undefined,
                 }}
             />
         </Tab.Navigator>
     );
-};
+});
 
 const styles = StyleSheet.create({
     tabBar: {

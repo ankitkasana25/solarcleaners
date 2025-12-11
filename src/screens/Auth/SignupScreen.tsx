@@ -6,6 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { ScreenContainer } from '../../components/ScreenContainer';
 import { Input } from '../../components/Input';
@@ -19,7 +21,7 @@ import { observer } from 'mobx-react-lite';
 
 export const SignupScreen = observer(() => {
   const navigation = useNavigation<any>();
-  const {} = useRootStore();
+  const { } = useRootStore();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -89,80 +91,90 @@ export const SignupScreen = observer(() => {
   return (
     <>
       <ScreenContainer>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join us for cleaner energy</Text>
-          </View>
-
-          <View style={styles.form}>
-            <Input
-              label="Full Name"
-              placeholder="Enter your name"
-              value={name}
-              onChangeText={setName}
-            />
-            <Input
-              label="Email"
-              placeholder="Enter your email"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-            />
-            <Input
-              label="Password"
-              placeholder="Create password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-            <Input
-              label="Confirm Password"
-              placeholder="Confirm password"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-            />
-
-            <Button
-              title="Sign Up"
-              onPress={handleSignup}
-              loading={isLoading}
-              style={styles.signupButton}
-            />
-
-            <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>or continue with</Text>
-              <View style={styles.dividerLine} />
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            decelerationRate="fast"
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.header}>
+              <Text style={styles.title}>Create Account</Text>
+              <Text style={styles.subtitle}>Join us for cleaner energy</Text>
             </View>
 
-            <View style={styles.socialButtons}>
-              <TouchableOpacity style={styles.socialButton}>
-                <Image
-                  source={require('../../assets/icons/google.png')}
-                  style={styles.socialIcon}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
-                <Image
-                  source={require('../../assets/icons/apple.png')}
-                  style={styles.socialIcon}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-            </View>
+            <View style={styles.form}>
+              <Input
+                label="Full Name"
+                placeholder="Enter your name"
+                value={name}
+                onChangeText={setName}
+              />
+              <Input
+                label="Email"
+                placeholder="Enter your email"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
+              <Input
+                label="Password"
+                placeholder="Create password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+              <Input
+                label="Confirm Password"
+                placeholder="Confirm password"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+              />
 
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>Already have an account? </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.footerLink}>Log In</Text>
-              </TouchableOpacity>
+              <Button
+                title="Sign Up"
+                onPress={handleSignup}
+                loading={isLoading}
+                style={styles.signupButton}
+              />
+
+              <View style={styles.divider}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>or continue with</Text>
+                <View style={styles.dividerLine} />
+              </View>
+
+              <View style={styles.socialButtons}>
+                <TouchableOpacity style={styles.socialButton}>
+                  <Image
+                    source={require('../../assets/icons/google.png')}
+                    style={styles.socialIcon}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.socialButton}>
+                  <Image
+                    source={require('../../assets/icons/apple.png')}
+                    style={styles.socialIcon}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.footer}>
+                <Text style={styles.footerText}>Already have an account? </Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                  <Text style={styles.footerLink}>Log In</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </ScreenContainer>
 
       <Toast

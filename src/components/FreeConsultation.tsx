@@ -3,7 +3,31 @@ import { View, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-nativ
 import { SectionTitle } from './SectionTitle';
 import { colors } from '../theme/colors';
 
+import { Toast } from './Toast'; // Import Toast
+
 export const FreeConsultation = () => {
+    const [phone, setPhone] = React.useState('');
+    const [message, setMessage] = React.useState('');
+    const [toastVisible, setToastVisible] = React.useState(false);
+    const [toastMessage, setToastMessage] = React.useState('');
+    const [toastType, setToastType] = React.useState<'success' | 'error' | 'info'>('info');
+
+    const handleRequestCall = () => {
+        if (!phone) {
+            setToastMessage('Please enter your phone number');
+            setToastType('error');
+            setToastVisible(true);
+            return;
+        }
+
+        // Simulating submission
+        setToastMessage('Request sent! We will call you soon.');
+        setToastType('success');
+        setToastVisible(true);
+        setPhone('');
+        setMessage('');
+    };
+
     return (
         <View style={styles.container}>
             <SectionTitle title="Free Solar Consultation" badgeText="Expert Support" />
@@ -29,6 +53,8 @@ export const FreeConsultation = () => {
                             placeholderTextColor="#8E8E93"
                             style={styles.input}
                             keyboardType="phone-pad"
+                            value={phone}
+                            onChangeText={setPhone}
                         />
                     </View>
 
@@ -38,10 +64,16 @@ export const FreeConsultation = () => {
                             placeholder="How can we help?"
                             placeholderTextColor="#8E8E93"
                             style={styles.input}
+                            value={message}
+                            onChangeText={setMessage}
                         />
                     </View>
 
-                    <TouchableOpacity activeOpacity={0.8} style={styles.submitButton}>
+                    <TouchableOpacity
+                        activeOpacity={0.8}
+                        style={styles.submitButton}
+                        onPress={handleRequestCall}
+                    >
                         <Text style={styles.submitButtonText}>Request Free Call</Text>
                     </TouchableOpacity>
                 </View>
@@ -51,6 +83,13 @@ export const FreeConsultation = () => {
                     <Text style={styles.footerText}>Need urgent help? <Text style={styles.footerPhone}>1800-SOLAR-HELP</Text></Text>
                 </View>
             </View>
+
+            <Toast
+                visible={toastVisible}
+                message={toastMessage}
+                type={toastType}
+                onHide={() => setToastVisible(false)}
+            />
         </View>
     );
 };

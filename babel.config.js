@@ -3,7 +3,8 @@ module.exports = {
   plugins: [
     // other plugins (if any) go here...
 
-    'react-native-worklets/plugin', // 👈 must be LAST
+    'react-native-worklets/plugin',
+    'react-native-reanimated/plugin', // 👈 must be LAST
   ],
   env: {
     production: {

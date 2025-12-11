@@ -84,7 +84,7 @@ export const HomeScreen = observer(() => {
                 onChangeText={setSearchQuery}
                 showVoiceSearch
             />
-            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+            <ScrollView style={styles.content} showsVerticalScrollIndicator={false} decelerationRate="fast">
                 <SectionTitle
                     title="Our Premium Services"
                     tagline="Comprehensive Solar solutions tailored to your needs"
@@ -95,6 +95,8 @@ export const HomeScreen = observer(() => {
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.horizontalScroll}
+                    decelerationRate="fast"
+                    snapToAlignment="center" // enhances 'smooth' feel for horizontal lists
                 >
                     {premiumServices.map((service) => (
                         <PremiumServiceCard
@@ -115,6 +117,8 @@ export const HomeScreen = observer(() => {
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.horizontalScroll}
+                    decelerationRate="fast"
+                    snapToAlignment="center"
                 >
                     {trendingServices.map((service) => (
                         <TrendingServiceCard

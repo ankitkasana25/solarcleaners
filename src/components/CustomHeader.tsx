@@ -10,7 +10,7 @@ interface CustomHeaderProps {
 }
 
 export const CustomHeader = ({ title }: CustomHeaderProps) => {
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
 
     const openDrawer = () => {
         navigation.dispatch(DrawerActions.openDrawer());
@@ -27,7 +27,7 @@ export const CustomHeader = ({ title }: CustomHeaderProps) => {
             </View>
 
             <View style={styles.rightContainer}>
-                <TouchableOpacity style={styles.iconButton}>
+                <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('MainStack', { screen: 'Notifications' })}>
                     <View style={styles.notificationWrapper}>
                         <ImageIcon name="bell" size={24} color={colors.text} />
                         <View style={styles.badge} />

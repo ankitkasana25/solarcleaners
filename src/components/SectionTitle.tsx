@@ -12,6 +12,7 @@ export const SectionTitle = ({ title, tagline, badgeText }: SectionTitleProps) =
     return (
         <View style={styles.container}>
             <View style={styles.headerRow}>
+                <View style={styles.accentBar} />
                 <Text style={styles.title}>{title}</Text>
                 {badgeText && (
                     <View style={styles.badge}>
@@ -35,10 +36,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 4,
     },
+    accentBar: {
+        width: 4,
+        height: 16, // Interpreting "16 px thick" as height/length of the accent mark relative to text
+        backgroundColor: '#2D44B5',
+        marginRight: 8,
+        borderRadius: 2,
+    },
     title: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#1C1C1E',
+        color: '#2D44B5', // Updated color
         marginRight: 8,
     },
     badge: {
@@ -57,5 +65,6 @@ const styles = StyleSheet.create({
         fontSize: 13,
         color: colors.textSecondary,
         lineHeight: 18,
+        marginLeft: 12, // Indent tagline to align with text (4px bar + 8px margin)
     },
 });
