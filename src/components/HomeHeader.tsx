@@ -29,7 +29,7 @@ export const HomeHeader = () => {
             <ImageIcon name="bell" size={24} color="#1C1C1E" />
             <View style={styles.notificationBadge} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.profileButton}>
+          <TouchableOpacity style={styles.profileButton} onPress={() => navigation.navigate('UserProfile' as never)}>
             {/* Placeholder for Profile Image */}
             <View style={styles.profilePlaceholder}>
               <ImageIcon name="profile" size={20} />

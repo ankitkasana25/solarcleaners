@@ -12,7 +12,7 @@ import {
   useDrawerProgress,
 } from '@react-navigation/drawer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import LinearGradient from 'react-native-linear-gradient';
+
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -75,7 +75,7 @@ const MenuItem = ({
           <ImageIcon
             name={icon}
             size={22}
-            color={logout ? '#FF3B30' : isActive ? '#FFD700' : '#FFFFFF'}
+            color={logout ? '#FF3B30' : isActive ? '#F5A623' : '#333333'}
           />
         )}
       </View>
@@ -137,11 +137,8 @@ export const CustomDrawerContent = observer(
     });
 
     return (
-      <LinearGradient
-        colors={['#1a2a6c', '#b21f1f', '#fdbb2d']} // Premium deep gradient
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={[styles.container, { paddingTop: insets.top }]}
+      <View
+        style={[styles.container, { paddingTop: insets.top, backgroundColor: '#FFFFFF' }]} // White Background
       >
         <Animated.View style={[styles.header, headerAnimatedStyle]}>
           <View style={styles.profileRow}>
@@ -150,8 +147,8 @@ export const CustomDrawerContent = observer(
                 user.avatar
                   ? { uri: user.avatar }
                   : user.gender === 'male'
-                  ? require('../assets/icons/profile.png')
-                  : require('../assets/icons/profile.png')
+                    ? require('../assets/icons/profile.png')
+                    : require('../assets/icons/profile.png')
               }
               style={styles.avatar}
             />
@@ -225,7 +222,7 @@ export const CustomDrawerContent = observer(
               label="Help & Support"
               icon="mic"
               index={5}
-              onPress={() => {}}
+              onPress={() => { }}
             />
           </View>
 
@@ -239,7 +236,7 @@ export const CustomDrawerContent = observer(
             />
           </View>
         </ScrollView>
-      </LinearGradient>
+      </View>
     );
   },
 );
@@ -261,19 +258,19 @@ const styles = StyleSheet.create({
     height: 64,
     borderRadius: 32,
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.5)',
+    borderColor: '#E5E5EA',
   },
   userInfo: {
     marginLeft: 16,
     flex: 1,
   },
   greeting: {
-    color: 'rgba(255,255,255,0.7)',
+    color: '#666666',
     fontSize: 14,
     marginBottom: 4,
   },
   name: {
-    color: '#FFFFFF',
+    color: '#000000',
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 4,
@@ -282,7 +279,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   editProfileText: {
-    color: '#FFD700', // Gold color for premium feel
+    color: '#007AFF', // Blue color for generic link
     fontSize: 12,
     fontWeight: '600',
   },
@@ -294,7 +291,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   sectionTitle: {
-    color: 'rgba(255,255,255,0.4)',
+    color: '#8E8E93',
     fontSize: 12,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -307,40 +304,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: '#F9F9F9',
     borderRadius: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    borderColor: '#F0F0F0',
   },
   activeMenuItem: {
-    backgroundColor: 'rgba(255,255,255,0.25)',
-    borderColor: 'rgba(255,215,0,0.5)', // Gold border
+    backgroundColor: '#F0F8FF', // Light blue bg
+    borderColor: '#007AFF', // Blue border
   },
   iconContainer: {
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: '#EEEEEE',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
   },
   activeIconContainer: {
-    backgroundColor: 'rgba(255,215,0,0.2)', // light gold bg
+    backgroundColor: '#D1E8FF', // light blue icon bg
   },
   menuLabel: {
     flex: 1,
-    color: '#FFFFFF',
+    color: '#333333',
     fontSize: 16,
     fontWeight: '500',
   },
   activeMenuLabel: {
-    color: '#FFFFFF',
+    color: '#007AFF',
     fontWeight: '700',
   },
   chevron: {
-    color: 'rgba(255,255,255,0.4)',
+    color: '#C7C7CC',
     fontSize: 20,
     fontWeight: '300',
   },
@@ -348,7 +345,7 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#FFD700',
+    backgroundColor: '#007AFF',
   },
   logoutItem: {
     backgroundColor: 'rgba(255,59,48,0.1)',

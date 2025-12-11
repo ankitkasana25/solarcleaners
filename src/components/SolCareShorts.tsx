@@ -13,75 +13,85 @@ const shortsData = [
         image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&q=80',
         title: 'Cleaning Tips',
         likes: '1.2k',
-        comments: '45'
+        comments: '45',
+        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-tree-with-yellow-flowers-1173-large.mp4'
     },
     {
         id: '2',
         image: 'https://images.unsplash.com/photo-1596464875494-1a52c3c99026?w=600&q=80',
         title: 'Before & After',
         likes: '3.4k',
-        comments: '120'
+        comments: '120',
+        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-mother-with-her-little-daughter-eating-a-marshmallow-in-nature-39764-large.mp4'
     },
     {
         id: '3',
         image: 'https://images.unsplash.com/photo-1559302504-64aae6ca6b6f?w=600&q=80',
         title: 'Safety First',
         likes: '890',
-        comments: '30'
+        comments: '30',
+        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-driving-in-a-snowy-forest-3004-large.mp4'
     },
     {
         id: '4',
         image: 'https://images.unsplash.com/photo-1548613053-220e89574c8a?w=600&q=80',
         title: 'Drone Inspection',
         likes: '5.6k',
-        comments: '210'
+        comments: '210',
+        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-view-of-the-city-generated-with-artificial-intelligence-5201-large.mp4'
     },
     {
         id: '5',
         image: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=600&q=80',
         title: 'Efficiency Hack',
         likes: '2.1k',
-        comments: '67'
+        comments: '67',
+        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-1610-large.mp4'
     },
     {
         id: '6',
         image: 'https://images.unsplash.com/photo-1594818379496-da1e345b0ded?w=600&q=80',
         title: 'Bird Proofing',
         likes: '1.8k',
-        comments: '55'
+        comments: '55',
+        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-man-dancing-under-the-rain-1229-large.mp4'
     },
     {
         id: '7',
         image: 'https://images.unsplash.com/photo-1501630132314-e578fa6aa2f1?w=600&q=80',
         title: 'Weather Watch',
         likes: '900',
-        comments: '23'
+        comments: '23',
+        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-white-clouds-on-blue-sky-1175-large.mp4'
     },
     {
         id: '8',
         image: 'https://images.unsplash.com/photo-1625301840055-7c1b7198cfc0?w=600&q=80',
         title: 'Team Work',
         likes: '4.2k',
-        comments: '150'
+        comments: '150',
+        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-friends-playing-with-water-in-the-sea-3003-large.mp4'
     },
     {
         id: '9',
         image: 'https://images.unsplash.com/photo-1497440001374-f26997328c1b?w=600&q=80',
         title: 'Installation Day',
         likes: '1.5k',
-        comments: '40'
+        comments: '40',
+        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-forest-stream-in-the-sunlight-529-large.mp4'
     },
     {
         id: '10',
         image: 'https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=600&q=80',
         title: 'Maintenance',
         likes: '2.9k',
-        comments: '99'
+        comments: '99',
+        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-waves-coming-to-the-beach-5016-large.mp4'
     },
 ];
 
 export const SolCareShorts = () => {
-    // const navigation = useNavigation();
+    const navigation = useNavigation();
 
     return (
         <View style={styles.container}>
@@ -99,7 +109,7 @@ export const SolCareShorts = () => {
                         key={item.id}
                         style={styles.card}
                         activeOpacity={0.9}
-                        onPress={() => Linking.openURL('https://www.instagram.com/reels/')}
+                        onPress={() => navigation.navigate('Reels', { initialIndex: index, videos: shortsData })}
                     >
                         <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
                         <View style={styles.overlay}>

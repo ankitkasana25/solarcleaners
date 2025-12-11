@@ -17,7 +17,7 @@ export const DrawerNavigator = () => {
                 drawerType: 'front', // Standard drawer behavior
                 drawerStyle: {
                     width: '80%', // Adjust width as needed
-                    backgroundColor: '#F2F2F7', // Match the drawer background
+                    // backgroundColor removed to let CustomDrawerContent handle it
                 },
             }}
         >
