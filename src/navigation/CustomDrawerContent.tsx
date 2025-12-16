@@ -26,7 +26,6 @@ import { useRootStore } from '../stores/RootStore';
 import { ImageIcon } from '../components/ImageIcon'; // Use ImageIcon for consistency
 import { IconName } from '../theme/icons';
 
-
 const AnimatedTouchableOpacity =
   Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -106,8 +105,8 @@ const MenuItem = ({
           {icon && (
             <ImageIcon
               name={icon}
-              size={22}
-              color={logout ? '#FF3B30' : isActive ? '#F5A623' : '#333333'}
+              size={18}
+              color={logout ? '#f77069ff' : isActive ? '#F5A623' : '#333333'}
             />
           )}
         </View>
@@ -121,19 +120,20 @@ const MenuItem = ({
         >
           {label}
         </Text>
-        {!logout && !hideChevron &&
+        {!logout &&
+          !hideChevron &&
           (isActive && !isExpandable ? (
             <View style={styles.activeIndicator} />
           ) : isExpandable ? (
-            <Animated.Text style={[styles.chevron, animatedIconStyle]}>›</Animated.Text>
+            <Animated.Text style={[styles.chevron, animatedIconStyle]}>
+              ›
+            </Animated.Text>
           ) : (
             <Text style={styles.chevron}>›</Text>
           ))}
       </AnimatedTouchableOpacity>
       {isExpandable && isExpanded && children && (
-        <View style={styles.subMenuContainer}>
-          {children}
-        </View>
+        <View style={styles.subMenuContainer}>{children}</View>
       )}
     </View>
   );
@@ -175,7 +175,10 @@ export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   };
 
   const navigateToService = (serviceId: string) => {
-    props.navigation.navigate('MainTabs', { screen: 'Services', params: { filter: serviceId } });
+    props.navigation.navigate('MainTabs', {
+      screen: 'Services',
+      params: { filter: serviceId },
+    });
   };
 
   const handleLogout = async () => {
@@ -204,7 +207,10 @@ export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 
   return (
     <View
-      style={[styles.container, { paddingTop: insets.top, backgroundColor: '#F4F9FF' }]}
+      style={[
+        styles.container,
+        { paddingTop: insets.top, backgroundColor: '#F4F9FF' },
+      ]}
     >
       <Animated.View style={[styles.header, headerAnimatedStyle]}>
         <View style={styles.profileRow}>
@@ -213,8 +219,8 @@ export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
               user.avatar
                 ? { uri: user.avatar }
                 : user.gender === 'male'
-                  ? require('../assets/icons/profile.png')
-                  : require('../assets/icons/profile.png')
+                ? require('../assets/icons/profile.png')
+                : require('../assets/icons/profile.png')
             }
             style={styles.avatar}
           />
@@ -225,7 +231,9 @@ export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
               style={styles.editProfileLink}
               onPress={() => props.navigation.navigate('UserProfile')}
             >
-              <Text style={[styles.editProfileText, { color: '#2D44B5' }]}>Edit Profile</Text>
+              <Text style={[styles.editProfileText, { color: '#000000ff' }]}>
+                Edit Profile
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -237,7 +245,6 @@ export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
       >
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
-            <View style={styles.accentBar} />
             <Text style={styles.sectionTitle}>Dashboard</Text>
           </View>
 
@@ -251,16 +258,28 @@ export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
             isExpanded={servicesExpanded}
             labelStyle={styles.primaryMenuLabel}
           >
-            <TouchableOpacity style={styles.subMenuItem} onPress={() => navigateToService('residential')}>
+            <TouchableOpacity
+              style={styles.subMenuItem}
+              onPress={() => navigateToService('residential')}
+            >
               <Text style={styles.subMenuLabel}>Residential Cleaning</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.subMenuItem} onPress={() => navigateToService('commercial')}>
+            <TouchableOpacity
+              style={styles.subMenuItem}
+              onPress={() => navigateToService('commercial')}
+            >
               <Text style={styles.subMenuLabel}>Commercial Cleaning</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.subMenuItem} onPress={() => navigateToService('bird_proofing')}>
+            <TouchableOpacity
+              style={styles.subMenuItem}
+              onPress={() => navigateToService('bird_proofing')}
+            >
               <Text style={styles.subMenuLabel}>Bird Proofing</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.subMenuItem} onPress={() => navigateToService('maintenance')}>
+            <TouchableOpacity
+              style={styles.subMenuItem}
+              onPress={() => navigateToService('maintenance')}
+            >
               <Text style={styles.subMenuLabel}>Maintenance</Text>
             </TouchableOpacity>
           </MenuItem>
@@ -275,13 +294,39 @@ export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
             isExpanded={bookingsExpanded}
             labelStyle={styles.primaryMenuLabel}
           >
-            <TouchableOpacity style={styles.subMenuItem} onPress={() => props.navigation.navigate('MainStack', { screen: 'MainTabs', params: { screen: 'Bookings' } })}>
-              <Text style={styles.subMenuLabel}>Dec 10 - Residential Clean</Text>
+            <TouchableOpacity
+              style={styles.subMenuItem}
+              onPress={() =>
+                props.navigation.navigate('MainStack', {
+                  screen: 'MainTabs',
+                  params: { screen: 'Bookings' },
+                })
+              }
+            >
+              <Text style={styles.subMenuLabel}>
+                Dec 10 - Residential Clean
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.subMenuItem} onPress={() => props.navigation.navigate('MainStack', { screen: 'MainTabs', params: { screen: 'Bookings' } })}>
+            <TouchableOpacity
+              style={styles.subMenuItem}
+              onPress={() =>
+                props.navigation.navigate('MainStack', {
+                  screen: 'MainTabs',
+                  params: { screen: 'Bookings' },
+                })
+              }
+            >
               <Text style={styles.subMenuLabel}>Nov 28 - Maintenance</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.subMenuItem} onPress={() => props.navigation.navigate('MainStack', { screen: 'MainTabs', params: { screen: 'Bookings' } })}>
+            <TouchableOpacity
+              style={styles.subMenuItem}
+              onPress={() =>
+                props.navigation.navigate('MainStack', {
+                  screen: 'MainTabs',
+                  params: { screen: 'Bookings' },
+                })
+              }
+            >
               <Text style={styles.subMenuLabel}>Oct 15 - Bird Proofing</Text>
             </TouchableOpacity>
           </MenuItem>
@@ -297,7 +342,15 @@ export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
             isExpanded={plansExpanded}
             labelStyle={styles.primaryMenuLabel}
           >
-            <TouchableOpacity style={styles.subMenuItem} onPress={() => props.navigation.navigate('MainStack', { screen: 'MainTabs', params: { screen: 'Home' } })}>
+            <TouchableOpacity
+              style={styles.subMenuItem}
+              onPress={() =>
+                props.navigation.navigate('MainStack', {
+                  screen: 'MainTabs',
+                  params: { screen: 'Home' },
+                })
+              }
+            >
               {/* Redirecting to Home as Plans are there currently. Or create specific screen? */}
               <Text style={styles.subMenuLabel}>View All Plans</Text>
             </TouchableOpacity>
@@ -325,12 +378,10 @@ export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
               <Text style={styles.subMenuLabel}>Renewals</Text>
             </TouchableOpacity>
           </MenuItem>
-
         </View>
 
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
-            <View style={styles.accentBar} />
             <Text style={styles.sectionTitle}>Account</Text>
           </View>
 
@@ -339,7 +390,9 @@ export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
             label="Order History"
             icon="history"
             index={4}
-            onPress={() => props.navigation.navigate('MainStack', { screen: 'OrderHistory' })}
+            onPress={() =>
+              props.navigation.navigate('MainStack', { screen: 'OrderHistory' })
+            }
             labelStyle={styles.primaryMenuLabel}
           />
 
@@ -347,14 +400,19 @@ export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
             label="Help & Support"
             icon="support"
             index={5}
-            onPress={() => { }}
+            onPress={() => {}}
             hideChevron
           />
         </View>
       </ScrollView>
 
       {/* Footer fixed at bottom */}
-      <View style={[styles.footer, { paddingBottom: insets.bottom > 0 ? insets.bottom : 20 }]}>
+      <View
+        style={[
+          styles.footer,
+          { paddingBottom: insets.bottom > 0 ? insets.bottom : 20 },
+        ]}
+      >
         <MenuItem
           label="Log Out"
           icon="logout"
@@ -398,8 +456,8 @@ const styles = StyleSheet.create({
   },
   name: {
     color: '#2D44B5', // Use the blue theme color
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 12,
+    fontWeight: '500',
     marginBottom: 2,
   },
   editProfileLink: {
@@ -407,8 +465,7 @@ const styles = StyleSheet.create({
   },
   editProfileText: {
     color: '#666666',
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: 10,
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -430,12 +487,15 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   sectionTitle: {
-    color: '#2D44B5',
-    fontSize: 16,
-    fontWeight: '700',
-    // marginBottom: 12, // Moved to row
-    // marginLeft: 8, // Removed, accent bar handles spacing
+    color: '#2D44B5', // text color (since background is blue)
+    fontSize: 14,
+    fontFamily: 'NotoSans-Medium',
+    fontWeight: 500, // optional if font file already defines weight
+    lineHeight: 18.2, // 130% of 14px → 14 × 1.3
+    letterSpacing: 0,
+    textAlign: 'center',
   },
+
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -460,20 +520,20 @@ const styles = StyleSheet.create({
   menuLabel: {
     flex: 1,
     color: '#444444',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
   },
   primaryMenuLabel: {
     color: '#2D44B5',
-    fontWeight: '600',
+    // fontWeight: '600',
   },
   activeMenuLabel: {
     color: '#2D44B5',
-    fontWeight: '600',
+    // fontWeight: '600',
   },
   chevron: {
     color: '#2D44B5',
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: '600',
     marginBottom: 4, // Adjust alignment
   },
@@ -510,7 +570,7 @@ const styles = StyleSheet.create({
   },
   subMenuLabel: {
     color: '#555555',
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: '400',
   },
 });
