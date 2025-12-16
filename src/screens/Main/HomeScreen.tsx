@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView } from 'react-native'; // Consolidated imp
 import { useNavigation } from '@react-navigation/native';
 
 import { SearchBar } from '../../components/SearchBar';
+import { lightTheme } from '../../theme/theme';
 import { observer } from 'mobx-react-lite';
 import { SectionTitle } from '../../components/SectionTitle';
 import { PremiumServiceCard } from '../../components/PremiumServiceCard';
@@ -174,13 +175,13 @@ export const HomeScreen = observer(() => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7', // Standard background color
+    backgroundColor: lightTheme.colors.coolMist, // Premium background color
   },
   content: {
     flex: 1,
   },
   horizontalScroll: {
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingBottom: 24, // Added more breathing room for shadows
   },
 });

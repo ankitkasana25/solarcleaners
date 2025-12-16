@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput } from 'react-native';
 import { ScreenContainer } from '../../components/ScreenContainer';
-import { colors } from '../../theme/colors';
-import { typography } from '../../theme/typography';
+import { lightTheme } from '../../theme/theme';
 import { useNavigation } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
-import { useRootStore } from '../../stores/RootStore';
-import { ImageIcon } from '../../components/ImageIcon'; // Assuming usage of ImageIcon for consistency
+import { ImageIcon } from '../../components/ImageIcon';
 
 export const UserProfileScreen = observer(() => {
     const navigation = useNavigation();
-    const { authStore } = useRootStore();
 
     // State for form fields
     const [gender, setGender] = useState<string>('Man');
@@ -20,150 +17,142 @@ export const UserProfileScreen = observer(() => {
     const [city, setCity] = useState('');
     const [address, setAddress] = useState('');
 
-    const GenderOption = ({ label }: { label: string }) => (
-        <TouchableOpacity
-            style={[
-                styles.genderChip,
-                gender === label && styles.genderChipSelected
-            ]}
-            onPress={() => setGender(label)}
-        >
-            <Text style={[
-                styles.genderText,
-                gender === label && styles.genderTextSelected
-            ]}>
-                {label}
-            </Text>
-        </TouchableOpacity>
-    );
+    const GenderChip = ({ label }: { label: string }) => {
+        const isSelected = gender === label;
+        return (
+            <TouchableOpacity
+                style={[
+                    styles.genderChip,
+                    isSelected && styles.genderChipSelected
+                ]}
+                onPress={() => setGender(label)}
+            >
+                <Text style={[
+                    styles.genderText,
+                    isSelected && styles.genderTextSelected
+                ]}>
+                    {label}
+                </Text>
+            </TouchableOpacity>
+        );
+    };
 
     return (
-        <ScreenContainer>
+        <ScreenContainer style={styles.container}>
+            {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Text style={styles.backButtonIcon}>←</Text>
+                    <ImageIcon name="arrow-left" size={24} color={lightTheme.colors.headerTitle} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Profile Setup</Text>
-                <View style={{ width: 24 }} />
+                <View style={{ width: 40 }} />
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                <Text style={styles.title}>Let's Get You Set Up!</Text>
+                <Text style={styles.pageTitle}>Let's Get You Set Up!</Text>
 
-                {/* Avatar Selection Area */}
-                <View style={styles.avatarSelectionContainer}>
-                    <TouchableOpacity style={styles.avatarOption}>
+                {/* Avatar Section */}
+                <View style={styles.avatarSection}>
+                    <TouchableOpacity style={styles.avatarContainer}>
                         <View style={styles.avatarPlaceholder}>
-                            <ImageIcon name="profile" size={32} color={colors.textSecondary} />
-                            <View style={styles.cameraBadge}>
-                                <ImageIcon name="home" size={12} color={colors.white} />
-                            </View>
+                            <ImageIcon name="profile" size={32} color={lightTheme.colors.accentGray} />
+                        </View>
+                        <View style={styles.editBadge}>
+                            <Text style={styles.editBadgeIcon}>✏️</Text>
                         </View>
                     </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.avatarOption}>
-                        <Image
-                            source={require('../../assets/icons/profile.png')}
-                            style={styles.avatarImage}
-                        />
-                        <View style={[styles.cameraBadge, { backgroundColor: colors.primary }]}>
-                            <Text style={{ color: 'white', fontSize: 10 }}>✏️</Text>
-                        </View>
-                    </TouchableOpacity>
+                    <Text style={styles.avatarHelperText}>Upload or Choose Avatar</Text>
                 </View>
-                <Text style={styles.avatarHelperText}>Choose Profile Picture Or Set avatar</Text>
 
                 {/* Form Fields */}
-                <View style={styles.formSection}>
-                    <Text style={styles.label}>Bio <Text style={styles.optional}>(Optional)</Text></Text>
-                    <TextInput
-                        style={[styles.input, styles.textArea]}
-                        placeholder="Enter here"
-                        placeholderTextColor="#C7C7CD"
-                        multiline
-                        value={bio}
-                        onChangeText={setBio}
-                    />
-                    <Text style={styles.wordCount}>100 words</Text>
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>Bio <Text style={styles.optional}> (Optional)</Text></Text>
+                    <View style={styles.inputWrapper}>
+                        <TextInput
+                            style={[styles.input, styles.textArea]}
+                            placeholder="Tell us a little about yourself"
+                            placeholderTextColor={lightTheme.colors.gray4}
+                            multiline
+                            value={bio}
+                            onChangeText={setBio}
+                        />
+                        <Text style={styles.wordCount}>0/100</Text>
+                    </View>
                 </View>
 
-                <View style={styles.formSection}>
+                <View style={styles.formGroup}>
                     <Text style={styles.label}>Gender <Text style={styles.required}>*</Text></Text>
-                    <View style={styles.genderContainer}>
-                        <GenderOption label="Man" />
-                        <GenderOption label="Woman" />
-                        <GenderOption label="Non-Binary" />
+                    <View style={styles.genderOptions}>
+                        <GenderChip label="Man" />
+                        <GenderChip label="Woman" />
+                        <GenderChip label="Non-Binary" />
                     </View>
                     <TouchableOpacity
-                        style={[styles.genderChip, gender === 'I prefer not to say' && styles.genderChipSelected, { alignSelf: 'flex-start', marginTop: 10 }]}
-                        onPress={() => setGender('I prefer not to say')}
+                        style={[styles.genderChip, gender === 'Prefer not to say' && styles.genderChipSelected, { marginTop: 12, alignSelf: 'flex-start' }]}
+                        onPress={() => setGender('Prefer not to say')}
                     >
-                        <Text style={[styles.genderText, gender === 'I prefer not to say' && styles.genderTextSelected]}>I prefer not to say</Text>
+                        <Text style={[styles.genderText, gender === 'Prefer not to say' && styles.genderTextSelected]}>Prefer not to say</Text>
                     </TouchableOpacity>
                 </View>
 
-                <View style={styles.formSection}>
-                    <Text style={styles.label}>DOB <Text style={styles.required}>*</Text></Text>
-                    <View style={styles.inputContainer}>
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>Date of Birth <Text style={styles.required}>*</Text></Text>
+                    <View style={styles.inputWrapper}>
                         <TextInput
                             style={styles.input}
-                            placeholder="DD/MM/YYY"
-                            placeholderTextColor="#C7C7CD"
+                            placeholder="DD / MM / YYYY"
+                            placeholderTextColor={lightTheme.colors.gray4}
                             value={dob}
                             onChangeText={setDob}
                         />
-                        <View style={styles.inputIcon}>
-                            <Text>📅</Text>
-                        </View>
                     </View>
                 </View>
 
-                <View style={styles.formSection}>
+                <View style={styles.formGroup}>
                     <Text style={styles.label}>Country <Text style={styles.required}>*</Text></Text>
-                    <View style={styles.inputContainer}>
+                    <View style={styles.inputWrapper}>
                         <TextInput
                             style={styles.input}
-                            placeholder="Select or Type.."
-                            placeholderTextColor="#C7C7CD"
+                            placeholder="Select Country"
+                            placeholderTextColor={lightTheme.colors.gray4}
                             value={country}
                             onChangeText={setCountry}
                         />
-                        <View style={styles.inputIcon}>
-                            <Text>▼</Text>
-                        </View>
                     </View>
                 </View>
 
-                <View style={styles.formSection}>
-                    <Text style={styles.label}>City/ Region <Text style={styles.optional}>(Optional)</Text></Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Enter here"
-                        placeholderTextColor="#C7C7CD"
-                        value={city}
-                        onChangeText={setCity}
-                    />
-                </View>
-
-                <View style={[styles.formSection, { marginBottom: 40 }]}>
-                    <Text style={styles.label}>Home Address <Text style={styles.optional}>(Optional)</Text></Text>
-                    <View style={styles.inputContainer}>
+                <View style={styles.row}>
+                    <View style={[styles.formGroup, { flex: 1, marginRight: 12 }]}>
+                        <Text style={styles.label}>City <Text style={styles.optional}>(Opt)</Text></Text>
                         <TextInput
                             style={styles.input}
-                            placeholder="Select or Type.."
-                            placeholderTextColor="#C7C7CD"
-                            value={address}
-                            onChangeText={setAddress}
+                            placeholder="City"
+                            placeholderTextColor={lightTheme.colors.gray4}
+                            value={city}
+                            onChangeText={setCity}
                         />
-                        <View style={styles.inputIcon}>
-                            <Text>🔍</Text>
+                    </View>
+                    <View style={[styles.formGroup, { flex: 1 }]}>
+                        <Text style={styles.label}>Address <Text style={styles.optional}>(Opt)</Text></Text>
+                        <View style={styles.inputWrapper}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Address"
+                                placeholderTextColor={lightTheme.colors.gray4}
+                                value={address}
+                                onChangeText={setAddress}
+                            />
                         </View>
                     </View>
                 </View>
 
-                <TouchableOpacity style={styles.saveButton}>
+                <View style={{ height: 24 }} />
+
+                <TouchableOpacity style={styles.saveButton} activeOpacity={0.8}>
                     <Text style={styles.saveButtonText}>Save Profile</Text>
                 </TouchableOpacity>
+
+                <View style={{ height: 40 }} />
 
             </ScrollView>
         </ScreenContainer>
@@ -171,164 +160,175 @@ export const UserProfileScreen = observer(() => {
 });
 
 const styles = StyleSheet.create({
+    container: {
+        backgroundColor: lightTheme.colors.background,
+    },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 20,
-        paddingTop: 16,
-        paddingBottom: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: lightTheme.colors.background,
     },
     backButton: {
         padding: 8,
-    },
-    backButtonIcon: {
-        fontSize: 24,
-        color: colors.text,
+        width: 40,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 20,
+        backgroundColor: lightTheme.colors.antiFlashWhite,
     },
     headerTitle: {
         fontSize: 16,
-        fontWeight: '600',
-        color: colors.text,
+        fontFamily: 'NotoSans-Bold',
+        color: lightTheme.colors.headerTitle,
     },
     scrollContent: {
         padding: 24,
     },
-    title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#1C1C1E',
+    pageTitle: {
+        fontSize: 24,
+        fontFamily: 'NotoSans-Bold',
+        color: lightTheme.colors.headerTitle,
         marginBottom: 32,
         textAlign: 'center',
     },
-    avatarSelectionContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: 24,
-        marginBottom: 16,
+    avatarSection: {
+        alignItems: 'center',
+        marginBottom: 32,
     },
-    avatarOption: {
+    avatarContainer: {
         position: 'relative',
+        marginBottom: 12,
     },
     avatarPlaceholder: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        backgroundColor: '#E5E5EA',
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: lightTheme.colors.antiFlashWhite,
         justifyContent: 'center',
         alignItems: 'center',
+        borderWidth: 1, // subtle border
+        borderColor: lightTheme.colors.lightBorder,
     },
-    avatarImage: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        backgroundColor: '#E1F5FE',
-    },
-    cameraBadge: {
+    editBadge: {
         position: 'absolute',
         bottom: 0,
         right: 0,
-        backgroundColor: '#007AFF', // Blue badge
-        width: 24,
-        height: 24,
-        borderRadius: 12,
+        backgroundColor: lightTheme.colors.primaryBlue,
+        width: 32,
+        height: 32,
+        borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 2,
-        borderColor: 'white',
+        borderWidth: 3,
+        borderColor: lightTheme.colors.background,
+    },
+    editBadgeIcon: {
+        fontSize: 14,
+        color: '#fff',
     },
     avatarHelperText: {
-        textAlign: 'center',
-        color: '#007AFF',
         fontSize: 14,
-        fontWeight: '500',
-        marginBottom: 32,
+        fontFamily: 'NotoSans-Medium',
+        color: lightTheme.colors.primaryBlue,
     },
-    formSection: {
+    formGroup: {
         marginBottom: 20,
     },
     label: {
         fontSize: 14,
-        fontWeight: '600',
-        color: '#3A3A3C',
+        fontFamily: 'NotoSans-Bold',
+        color: lightTheme.colors.headerTitle,
         marginBottom: 8,
     },
     required: {
-        color: '#FF3B30',
+        color: lightTheme.colors.redOrange,
     },
     optional: {
-        color: '#8E8E93',
-        fontWeight: '400',
+        color: lightTheme.colors.gray3,
+        fontWeight: 'normal',
+        fontFamily: 'NotoSans-Regular',
+    },
+    inputWrapper: {
+        position: 'relative',
     },
     input: {
-        backgroundColor: '#F2F2F7',
+        backgroundColor: lightTheme.colors.antiFlashWhite,
         borderRadius: 12,
         paddingHorizontal: 16,
         paddingVertical: 14,
-        fontSize: 16,
-        color: colors.text,
+        fontSize: 14,
+        fontFamily: 'NotoSans-Medium',
+        color: lightTheme.colors.gray1000,
         borderWidth: 1,
         borderColor: 'transparent',
-    },
-    inputContainer: {
-        position: 'relative',
-    },
-    inputIcon: {
-        position: 'absolute',
-        right: 16,
-        top: 14,
     },
     textArea: {
         height: 100,
         textAlignVertical: 'top',
+        paddingTop: 14,
     },
     wordCount: {
-        alignSelf: 'flex-end',
-        color: '#8E8E93',
-        fontSize: 12,
-        marginTop: 4,
+        position: 'absolute',
+        bottom: 8,
+        right: 12,
+        fontSize: 10,
+        color: lightTheme.colors.gray3,
     },
-    genderContainer: {
+    iconRight: {
+        position: 'absolute',
+        right: 16,
+        top: 14,
+        opacity: 0.5,
+    },
+    genderOptions: {
         flexDirection: 'row',
-        gap: 12,
         flexWrap: 'wrap',
+        gap: 10,
     },
     genderChip: {
         paddingVertical: 10,
-        paddingHorizontal: 24,
+        paddingHorizontal: 20,
         borderRadius: 24,
         borderWidth: 1,
-        borderColor: '#C7C7CD',
-        backgroundColor: 'white',
+        borderColor: lightTheme.colors.gray4,
+        backgroundColor: lightTheme.colors.background,
     },
     genderChipSelected: {
-        borderColor: colors.primary,
-        backgroundColor: '#F0F8FF', // Light blue bg
+        borderColor: lightTheme.colors.primaryBlue,
+        backgroundColor: lightTheme.colors.aliceBlue,
     },
     genderText: {
         fontSize: 14,
-        color: '#3A3A3C',
-        fontWeight: '500',
+        fontFamily: 'NotoSans-Medium',
+        color: lightTheme.colors.slateGray,
     },
     genderTextSelected: {
-        color: colors.primary,
-        fontWeight: '600',
+        color: lightTheme.colors.primaryBlue,
+        fontFamily: 'NotoSans-Bold',
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     saveButton: {
-        backgroundColor: colors.primary,
-        paddingVertical: 16,
-        borderRadius: 14,
+        backgroundColor: lightTheme.colors.primaryBlue,
+        paddingVertical: 12,
+        borderRadius: 12,
         alignItems: 'center',
-        shadowColor: colors.primary,
+        shadowColor: lightTheme.colors.primaryBlue,
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.2,
         shadowRadius: 8,
-        elevation: 8,
+        elevation: 4,
     },
     saveButtonText: {
-        color: 'white',
         fontSize: 16,
-        fontWeight: 'bold',
+        fontFamily: 'NotoSans-Bold',
+        color: '#fff',
     },
 });
 

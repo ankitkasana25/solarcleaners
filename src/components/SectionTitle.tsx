@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors } from '../theme/colors';
+import { lightTheme } from '../theme/theme';
 
 interface SectionTitleProps {
     title: string;
@@ -8,7 +8,11 @@ interface SectionTitleProps {
     badgeText?: string;
 }
 
-export const SectionTitle = ({ title, tagline, badgeText }: SectionTitleProps) => {
+export const SectionTitle = ({
+    title,
+    tagline,
+    badgeText,
+}: SectionTitleProps) => {
     return (
         <View style={styles.container}>
             <View style={styles.headerRow}>
@@ -27,7 +31,7 @@ export const SectionTitle = ({ title, tagline, badgeText }: SectionTitleProps) =
 
 const styles = StyleSheet.create({
     container: {
-        paddingHorizontal: 20,
+        paddingHorizontal: 16, // Standard app padding
         marginBottom: 16,
         marginTop: 24,
     },
@@ -38,33 +42,38 @@ const styles = StyleSheet.create({
     },
     accentBar: {
         width: 4,
-        height: 16, // Interpreting "16 px thick" as height/length of the accent mark relative to text
-        backgroundColor: '#2D44B5',
-        marginRight: 8,
+        height: 18,
+        backgroundColor: lightTheme.colors.primaryBlue,
+        marginRight: 10,
         borderRadius: 2,
     },
     title: {
-        fontSize: 20,
+        fontSize: 18,
+        fontFamily: 'NotoSans-Bold',
         fontWeight: '700',
-        color: '#2D44B5', // Updated color
+        color: lightTheme.colors.headerTitle,
         marginRight: 8,
+        letterSpacing: 0.5,
     },
     badge: {
-        backgroundColor: 'rgba(76, 217, 100, 0.15)', // Light green bg
+        backgroundColor: lightTheme.colors.miniBlue, // subtle green/blue
         paddingHorizontal: 8,
-        paddingVertical: 2,
+        paddingVertical: 3,
         borderRadius: 6,
     },
     badgeText: {
-        color: '#34C759', // iOS Green
+        color: lightTheme.colors.deepGreen,
         fontSize: 10,
         fontWeight: '700',
         textTransform: 'uppercase',
+        fontFamily: 'NotoSans-Bold',
     },
     tagline: {
         fontSize: 13,
-        color: colors.textSecondary,
+        fontFamily: 'NotoSans-Regular',
+        color: lightTheme.colors.slateGray,
         lineHeight: 18,
-        marginLeft: 12, // Indent tagline to align with text (4px bar + 8px margin)
+        marginLeft: 14, // Aligned with text
+        marginTop: 2,
     },
 });

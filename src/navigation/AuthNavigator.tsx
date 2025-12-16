@@ -7,11 +7,14 @@ import { OTPVerificationScreen } from '../screens/Auth/OTPVerificationScreen';
 import { ResetPasswordScreen } from '../screens/Auth/ResetPasswordScreen';
 import { ForgotPasswordScreen } from '../screens/Auth/ForgotPasswordScreen';
 
+import { OnboardingScreen } from '../screens/Onboarding/OnboardingScreen';
+
 const Stack = createStackNavigator();
 
 export const AuthNavigator = () => {
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Splash">
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Onboarding">
+            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
             <Stack.Screen name="Splash" component={SplashScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Signup" component={SignupScreen} />
