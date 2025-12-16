@@ -8,27 +8,37 @@ interface ScreenHeaderProps {
     title: string;
     showNotification?: boolean;
     showProfile?: boolean;
+    showBack?: boolean;
 }
 
 export const ScreenHeader = ({
     title,
     showNotification = true,
     showProfile = true,
+    showBack = false,
 }: ScreenHeaderProps) => {
     const navigation = useNavigation();
     const insets = useSafeAreaInsets();
 
-    const openDrawer = () => {
-        navigation.dispatch(DrawerActions.openDrawer());
+    const handleLeftPress = () => {
+        if (showBack) {
+            navigation.goBack();
+        } else {
+            navigation.dispatch(DrawerActions.openDrawer());
+        }
     };
 
     return (
         <View style={[styles.container, { paddingTop: insets.top }]}>
             <View style={styles.contentContainer}>
-                {/* Left: Hamburger and Title */}
+                {/* Left: Menu/Back and Title */}
                 <View style={styles.leftSection}>
-                    <TouchableOpacity onPress={openDrawer} style={styles.menuButton}>
-                        <ImageIcon name="menu" size={24} color="#2E3A59" />
+                    <TouchableOpacity onPress={handleLeftPress} style={styles.menuButton}>
+                        <ImageIcon
+                            name={showBack ? "arrow-left" : "menu"}
+                            size={24}
+                            color="#2E3A59"
+                        />
                     </TouchableOpacity>
                     <Text style={styles.title}>{title}</Text>
                 </View>

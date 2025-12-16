@@ -15,7 +15,6 @@ import {
   ServiceCategories,
   Category,
 } from '../../components/ServiceCategories'; // Updated import
-import { ServicePromotions } from '../../components/ServicePromotions'; // Added import
 import { ServiceCard } from '../../components/ServiceCard';
 import { ServiceSection } from '../../components/ServiceSection';
 
@@ -135,6 +134,19 @@ const servicesData = {
 export const ServicesScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
+  const navigation = useNavigation<any>();
+
+  const handleCategoryPress = (id: string) => {
+    if (id === 'all') {
+      setActiveTab('all');
+    } else {
+      const category = CATEGORIES.find(c => c.id === id);
+      navigation.navigate('ServiceCategory', {
+        categoryId: id,
+        categoryTitle: category?.label
+      });
+    }
+  };
 
   const renderContent = () => {
     if (activeTab === 'all') {
@@ -213,12 +225,10 @@ export const ServicesScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <ServicePromotions />
-
         <ServiceCategories
           categories={CATEGORIES}
           activeCategory={activeTab}
-          onCategoryPress={setActiveTab}
+          onCategoryPress={handleCategoryPress}
         />
 
         {renderContent()}
@@ -236,6 +246,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
+    paddingTop: 16,
     paddingBottom: 40,
   },
   // Grid Container

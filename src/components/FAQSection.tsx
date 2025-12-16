@@ -4,12 +4,13 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
   Animated,
   LayoutAnimation,
   Platform,
   UIManager,
 } from 'react-native';
+import { lightTheme } from '../theme/theme';
+import { SectionTitle } from './SectionTitle';
 
 // Enable LayoutAnimation for Android
 if (
@@ -23,6 +24,7 @@ interface FAQItem {
   id: string;
   question: string;
   answer: string;
+  icon?: string;
 }
 
 export const FAQSection: React.FC = () => {
@@ -35,48 +37,28 @@ export const FAQSection: React.FC = () => {
       question: 'How often should I clean my solar panels?',
       answer:
         'For optimal performance, we recommend cleaning your solar panels every 6 months. Regular cleaning can improve efficiency by up to 25% by removing dust, pollen, and bird droppings.',
+      icon: '📅'
     },
     {
       id: '2',
       question: 'What cleaning methods do you use?',
       answer:
-        "We use eco-friendly, deionized water with soft bristle brushes to safely clean without scratching. Our method prevents water spots and doesn't require harsh chemicals that could damage panels.",
+        "We use eco-friendly, deionized water with soft bristle brushes to safely clean without scratching. Our method prevents water spots and doesn't require harsh chemicals.",
+      icon: '🧼'
     },
     {
       id: '3',
       question: 'Will cleaning affect my warranty?',
       answer:
-        "No, our cleaning methods are approved by all major solar panel manufacturers. We follow industry best practices that won't void your warranty. We can even provide cleaning certificates for warranty documentation.",
+        "No, our cleaning methods are approved by all major solar panel manufacturers. We follow industry best practices that won't void your warranty.",
+      icon: '🛡️'
     },
     {
       id: '4',
       question: 'How long does cleaning take?',
       answer:
-        'For a typical residential system (10-20 panels), cleaning takes 1-2 hours. We work efficiently to minimize disruption while ensuring thorough cleaning of every panel.',
-    },
-    {
-      id: '5',
-      question: 'What if it rains after cleaning?',
-      answer:
-        'Our cleaning solution includes a light protective coating that helps repel water and dust. While rain will wash away some of the cleaning, the main benefit of removing built-up grime remains.',
-    },
-    {
-      id: '6',
-      question: 'Do you clean during winter?',
-      answer:
-        'Yes! We provide year-round service. Winter cleaning is especially important as panels work harder during shorter daylight hours. We schedule based on weather conditions for safety.',
-    },
-    {
-      id: '7',
-      question: 'How much does it cost?',
-      answer:
-        'Prices start at $99 for a standard residential system. The exact cost depends on the number of panels, roof accessibility, and your location. Contact us for a free quote!',
-    },
-    {
-      id: '8',
-      question: 'Do I need to be home during cleaning?',
-      answer:
-        "No, we can clean while you're away. We just need access to your property and an external water source. We'll send you before/after photos upon completion.",
+        'For a typical residential system (10-20 panels), cleaning takes 1-2 hours. We work efficiently to minimize disruption.',
+      icon: '⏱️'
     },
   ];
 
@@ -87,143 +69,140 @@ export const FAQSection: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Frequently Asked Questions</Text>
-        <Text style={styles.description}>
-          Get answers about our professional solar cleaning services
-        </Text>
-      </View>
+      <SectionTitle
+        title="FAQ"
+        tagline="Common questions about our services"
+      />
 
-      <ScrollView
-        style={styles.faqsContainer}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.faqsContent}
-      >
+      <View style={styles.faqsContent}>
         {faqs.map(faq => {
           const isExpanded = expandedId === faq.id;
 
           return (
             <TouchableOpacity
               key={faq.id}
-              style={styles.faqItem}
+              style={[styles.faqItem, isExpanded && styles.faqItemExpanded]}
               onPress={() => toggleFAQ(faq.id)}
-              activeOpacity={0.7}
+              activeOpacity={0.9}
             >
               <View style={styles.faqHeader}>
-                <Text style={styles.questionText}>{faq.question}</Text>
-                <View
-                  style={[
-                    styles.iconContainer,
-                    isExpanded && styles.iconExpanded,
-                  ]}
-                >
-                  <View style={[styles.iconLine]} />
-                  <View
-                    style={[styles.iconLine, isExpanded && { opacity: 0 }]}
-                  />
+                <View style={[styles.iconBox, isExpanded && styles.iconBoxExpanded]}>
+                  <Text style={styles.icon}>{faq.icon}</Text>
+                </View>
+                <Text style={[styles.questionText, isExpanded && styles.questionTextExpanded]}>
+                  {faq.question}
+                </Text>
+                <View style={[styles.chevron, isExpanded && styles.chevronExpanded]}>
+                  <Text style={[styles.chevronText, isExpanded && styles.chevronTextExpanded]}>
+                    {isExpanded ? '−' : '+'}
+                  </Text>
                 </View>
               </View>
 
               {isExpanded && (
-                <Animated.View style={styles.answerContainer}>
+                <View style={styles.answerContainer}>
                   <Text style={styles.answerText}>{faq.answer}</Text>
-                </Animated.View>
+                </View>
               )}
             </TouchableOpacity>
           );
         })}
-      </ScrollView>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 16,
-    paddingTop: 24,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#333333',
-    marginBottom: 8,
-  },
-  description: {
-    fontSize: 16,
-    color: '#666666',
-    lineHeight: 24,
-  },
-  faqsContainer: {
-    flex: 1,
+    marginBottom: 32,
+    marginTop: 16,
   },
   faqsContent: {
-    paddingBottom: 30,
+    paddingHorizontal: 16,
+    gap: 12,
   },
   faqItem: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    padding: 20,
-    marginBottom: 12,
-    shadowColor: '#000000',
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#F0F0F0',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  faqItemExpanded: {
+    borderColor: lightTheme.colors.primaryBlue,
+    backgroundColor: '#F8FBFF',
+    shadowOpacity: 0.08,
     shadowRadius: 8,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: '#E5E5EA',
+    elevation: 4,
   },
   faqHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
   },
-  questionText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333333',
-    flex: 1,
-    paddingRight: 16,
-  },
-  answerContainer: {
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E5EA',
-  },
-  answerText: {
-    fontSize: 15,
-    color: '#666666',
-    lineHeight: 24,
-  },
-  iconContainer: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#F5F5F5',
+  iconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#F5F7FA',
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 12,
   },
-  iconExpanded: {
-    backgroundColor: '#007AFF',
+  iconBoxExpanded: {
+    backgroundColor: '#E7F2FF',
   },
-  iconLine: {
-    width: 10,
-    height: 2,
-    backgroundColor: 'black',
-    position: 'absolute',
+  icon: {
+    fontSize: 16,
   },
-  iconLineexp: {
-    width: 10,
-    height: 2,
-    backgroundColor: 'white',
-    position: 'absolute',
+  questionText: {
+    fontSize: 14,
+    fontFamily: 'NotoSans-Medium',
+    color: '#2E3A59',
+    flex: 1,
+    lineHeight: 20,
+  },
+  questionTextExpanded: {
+    color: lightTheme.colors.primaryBlue,
+    fontFamily: 'NotoSans-Bold',
+  },
+  chevron: {
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 8,
+  },
+  chevronExpanded: {
+    // Transform handled via icon change
+  },
+  chevronText: {
+    fontSize: 20,
+    color: '#8F9BB3',
+    fontWeight: '300',
+  },
+  chevronTextExpanded: {
+    color: lightTheme.colors.primaryBlue,
+    fontWeight: 'bold',
+  },
+  answerContainer: {
+    marginTop: 12,
+    paddingTop: 12,
+    paddingLeft: 48, // Align with text
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0,0,0,0.05)',
+  },
+  answerText: {
+    fontSize: 13,
+    fontFamily: 'NotoSans-Regular',
+    color: '#6C727F',
+    lineHeight: 20,
   },
 });

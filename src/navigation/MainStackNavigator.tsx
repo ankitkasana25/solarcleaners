@@ -8,6 +8,7 @@ import { OrderHistoryScreen } from '../screens/Main/OrderHistoryScreen'; // Impo
 import { CheckoutScreen } from '../screens/Main/CheckoutScreen';
 import { OrderSuccessScreen } from '../screens/Main/OrderSuccessScreen';
 import { NotificationScreen } from '../screens/Main/NotificationScreen';
+import { ServiceCategoryScreen } from '../screens/Main/ServiceCategoryScreen';
 
 const Stack = createStackNavigator();
 
@@ -21,6 +22,7 @@ export const MainStackNavigator = () => {
             <Stack.Screen name="Checkout" component={CheckoutScreen} />
             <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
             <Stack.Screen name="Notifications" component={NotificationScreen} />
+            <Stack.Screen name="ServiceCategory" component={ServiceCategoryScreen} />
         </Stack.Navigator>
     );
 };

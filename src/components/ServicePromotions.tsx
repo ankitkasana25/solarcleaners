@@ -35,7 +35,31 @@ const PROMOTIONS = [
     }
 ];
 
-export const ServicePromotions = () => {
+import { observer } from 'mobx-react-lite';
+import { useRootStore } from '../stores/RootStore';
+import { Alert } from 'react-native';
+
+export const ServicePromotions = observer(() => {
+    const { cartStore } = useRootStore();
+
+    const handleClaim = (item: typeof PROMOTIONS[0]) => {
+        const isApplied = cartStore.appliedOffers.some(offer => offer.id === item.id);
+
+        if (isApplied) {
+            Alert.alert('Offer Applied', 'This offer is already applied to your cart.');
+            return;
+        }
+
+        cartStore.applyOffer({
+            id: item.id,
+            title: item.title,
+            discount: item.discount,
+            description: item.description
+        });
+
+        Alert.alert('Success', 'Offer applied to your cart!');
+    };
+
     return (
         <View style={styles.container}>
             <ScrollView
@@ -45,27 +69,39 @@ export const ServicePromotions = () => {
                 decelerationRate="fast"
                 snapToInterval={CARD_WIDTH + 16}
             >
-                {PROMOTIONS.map((item) => (
-                    <View key={item.id} style={[styles.card, { backgroundColor: item.backgroundColor }]}>
-                        <View style={styles.textContainer}>
-                            <Text style={[styles.subTitle, { color: item.accentColor }]}>{item.description}</Text>
-                            <Text style={[styles.discount, { color: item.accentColor }]}>{item.discount}</Text>
-                            <Text style={styles.title}>{item.title}</Text>
-                            <View style={[styles.button, { backgroundColor: item.accentColor }]}>
-                                <Text style={styles.buttonText}>Claim Now</Text>
+                {PROMOTIONS.map((item) => {
+                    const isApplied = cartStore.appliedOffers.some(offer => offer.id === item.id);
+
+                    return (
+                        <View key={item.id} style={[styles.card, { backgroundColor: item.backgroundColor }]}>
+                            <View style={styles.textContainer}>
+                                <Text style={[styles.subTitle, { color: item.accentColor }]}>{item.description}</Text>
+                                <Text style={[styles.discount, { color: item.accentColor }]}>{item.discount}</Text>
+                                <Text style={styles.title}>{item.title}</Text>
+                                <View
+                                    style={[
+                                        styles.button,
+                                        { backgroundColor: isApplied ? '#4CAF50' : item.accentColor } // Green if applied
+                                    ]}
+                                    onTouchEnd={() => handleClaim(item)} // Simple touch handling
+                                >
+                                    <Text style={styles.buttonText}>
+                                        {isApplied ? 'Applied ✓' : 'Claim Now'}
+                                    </Text>
+                                </View>
                             </View>
+                            <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
                         </View>
-                        <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
-                    </View>
-                ))}
+                    );
+                })}
             </ScrollView>
         </View>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 24,
+        paddingVertical: 24,
     },
     contentContainer: {
         paddingHorizontal: 20,

@@ -7,6 +7,7 @@ import { lightTheme } from '../../theme/theme';
 import { observer } from 'mobx-react-lite';
 import { SectionTitle } from '../../components/SectionTitle';
 import { PremiumServiceCard } from '../../components/PremiumServiceCard';
+import { ServicePromotions } from '../../components/ServicePromotions'; // Added import
 // Removed duplicate ScrollView import
 
 const premiumServices = [
@@ -106,6 +107,7 @@ export const HomeScreen = observer(() => {
         showsVerticalScrollIndicator={false}
         decelerationRate="fast"
       >
+        <ServicePromotions />
         <SectionTitle
           title="Our Premium Services"
           tagline="Comprehensive Solar solutions tailored to your needs"

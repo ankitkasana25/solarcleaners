@@ -11,8 +11,16 @@ export interface CartItem {
     details?: string;
 }
 
+export interface Offer {
+    id: string;
+    title: string;
+    discount: string;
+    description: string;
+}
+
 export class CartStore {
     items: CartItem[] = [];
+    appliedOffers: Offer[] = [];
 
     constructor() {
         makeAutoObservable(this);
@@ -21,15 +29,7 @@ export class CartStore {
     addToCart(item: Omit<CartItem, 'quantity'>) {
         const existingItem = this.items.find(i => i.id === item.id);
         if (existingItem) {
-            // If already exists, we could update it, or just increment quantity.
-            // Since we use custom sizes, maybe overwrite with new selection? 
-            // For now, let's just update the existing one with new DETAILS if they match ID
             existingItem.quantity += 1;
-            // Optionally update the size/price to the new one?
-            // existingItem.price = item.price;
-            // existingItem.basePrice = item.basePrice;
-            // existingItem.systemSize = item.systemSize;
-            // existingItem.details = item.details;
         } else {
             this.items.push({ ...item, quantity: 1 });
         }
@@ -39,7 +39,7 @@ export class CartStore {
         const item = this.items.find(i => i.id === id);
         if (item) {
             const size = parseFloat(newSize) || 0;
-            const base = item.basePrice || 500; // Fallback for legacy items
+            const base = item.basePrice || 500;
             item.systemSize = newSize;
             item.price = size * base;
             item.details = `${newSize} kW System`;
@@ -50,12 +50,52 @@ export class CartStore {
         this.items = this.items.filter(i => i.id !== id);
     }
 
+    applyOffer(offer: Offer) {
+        // Simple logic: Prevent duplicate offers
+        if (!this.appliedOffers.find(o => o.id === offer.id)) {
+            this.appliedOffers.push(offer);
+        }
+    }
+
+    removeOffer(id: string) {
+        this.appliedOffers = this.appliedOffers.filter(o => o.id !== id);
+    }
+
     get totalCount() {
         return this.items.reduce((sum, item) => sum + item.quantity, 0);
     }
 
-    get totalPrice() {
-        // Price is already total per item instance (size * base), multiplied by quantity
+    get cartSubTotal() {
         return this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    }
+
+    get discountAmount() {
+        let totalDiscount = 0;
+        const subTotal = this.cartSubTotal;
+
+        this.appliedOffers.forEach(offer => {
+            if (offer.discount.includes('%')) {
+                const percentage = parseFloat(offer.discount);
+                if (!isNaN(percentage)) {
+                    totalDiscount += (subTotal * percentage) / 100;
+                }
+            } else if (offer.discount.toLowerCase().includes('flat') || offer.discount.includes('₹')) {
+                const amount = parseFloat(offer.discount.replace(/[^0-9.]/g, ''));
+                if (!isNaN(amount)) {
+                    totalDiscount += amount;
+                }
+            } else if (offer.discount.toLowerCase().includes('free checkup')) {
+                // For now, let's treat free checkup as 0 monetary discount or fixed value?
+                // Let's assume ₹500 value for free checkup if relevant item exists?
+                // Keeping it simple for now, maybe 0 for non-monetary?
+                // Or add a flat 'value' property to promotions later.
+            }
+        });
+        return totalDiscount;
+    }
+
+    get totalPrice() {
+        const total = this.cartSubTotal - this.discountAmount;
+        return total > 0 ? total : 0;
     }
 }
