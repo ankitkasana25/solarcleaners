@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#FFFFFF',
     borderRadius: 8,
-    height: 36,
+    height: 42,
     paddingHorizontal: 12,
   },
   searchIcon: {
