@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { lightTheme } from '../theme/theme';
 
 interface BookingCardProps {
     id: string;
@@ -7,19 +8,21 @@ interface BookingCardProps {
     totalPrice: number;
     date: string;
     status: string;
-    description?: string; // Optional single line summary
+    description?: string;
 }
 
 export const BookingCard = ({ id, items, totalPrice, date, status, description }: BookingCardProps) => {
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'Completed': return '#4CAF50';
-            case 'Confirmed': return '#2196F3';
-            case 'Pending': return '#FF9800';
-            case 'Cancelled': return '#F44336';
-            default: return '#999';
+            case 'Completed': return lightTheme.colors.deepGreen; // Success
+            case 'Confirmed': return lightTheme.colors.primaryBlue; // Primary
+            case 'Pending': return lightTheme.colors.subscribeGold; // Warning/Info
+            case 'Cancelled': return lightTheme.colors.redOrange; // Error
+            default: return lightTheme.colors.slateGray;
         }
     };
+
+    const statusColor = getStatusColor(status);
 
     // Construct a title from items if not provided
     const displayTitle = items.length > 0
@@ -29,20 +32,28 @@ export const BookingCard = ({ id, items, totalPrice, date, status, description }
     return (
         <View style={styles.card}>
             <View style={styles.header}>
-                <Text style={styles.date}>{date}</Text>
-                <View style={[styles.statusBadge, { backgroundColor: getStatusColor(status) + '20' }]}>
-                    <Text style={[styles.statusText, { color: getStatusColor(status) }]}>{status}</Text>
+                <View style={styles.idContainer}>
+                    <Text style={styles.idLabel}>Order ID</Text>
+                    <Text style={styles.idText}>#{id.slice(-6).toUpperCase()}</Text>
+                </View>
+                <View style={[styles.statusBadge, { backgroundColor: statusColor + '15' }]}>
+                    <Text style={[styles.statusText, { color: statusColor }]}>{status}</Text>
                 </View>
             </View>
 
+            <View style={styles.divider} />
+
             <View style={styles.content}>
                 <Text style={styles.title}>{displayTitle}</Text>
-                <Text style={styles.id}>ID: {id}</Text>
-                {items.map((item, idx) => (
-                    <Text key={idx} style={styles.detailText}>
-                        • {item.title} ({item.details || 'Standard'}) - x{item.quantity}
-                    </Text>
-                ))}
+                <Text style={styles.date}>Date: {date}</Text>
+
+                <View style={styles.itemsContainer}>
+                    {items.map((item, idx) => (
+                        <Text key={idx} style={styles.detailText}>
+                            • {item.title} {item.systemSize ? `(${item.systemSize} kW)` : ''}
+                        </Text>
+                    ))}
+                </View>
             </View>
 
             <View style={styles.footer}>
@@ -55,71 +66,97 @@ export const BookingCard = ({ id, items, totalPrice, date, status, description }
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: '#fff',
-        borderRadius: 16,
-        padding: 16,
-        marginBottom: 16,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
+        padding: 20,
+        marginBottom: 20,
         borderWidth: 1,
-        borderColor: '#E5E5EA',
+        borderColor: '#F2F2F7',
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 2,
+        shadowRadius: 12,
+        elevation: 3,
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 12,
+        marginBottom: 16,
     },
-    date: {
+    idContainer: {
+        flexDirection: 'column',
+    },
+    idLabel: {
+        fontSize: 10,
+        fontFamily: 'NotoSans-Medium',
+        color: lightTheme.colors.slateGray,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    idText: {
         fontSize: 14,
-        color: '#8E8E93',
+        fontFamily: 'NotoSans-Bold',
+        color: '#1C1C1E',
     },
     statusBadge: {
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 12,
     },
     statusText: {
         fontSize: 12,
-        fontWeight: '600',
+        fontFamily: 'NotoSans-Bold',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    divider: {
+        height: 1,
+        backgroundColor: '#F5F5F7',
+        marginBottom: 16,
     },
     content: {
         marginBottom: 16,
     },
     title: {
         fontSize: 16,
-        fontWeight: '700',
+        fontFamily: 'NotoSans-Bold',
         color: '#1C1C1E',
         marginBottom: 4,
     },
-    id: {
-        fontSize: 12,
-        color: '#8E8E93',
-        marginBottom: 8,
+    date: {
+        fontSize: 13,
+        fontFamily: 'NotoSans-Regular',
+        color: lightTheme.colors.slateGray,
+        marginBottom: 12,
+    },
+    itemsContainer: {
+        backgroundColor: '#F9FAFB',
+        padding: 12,
+        borderRadius: 12,
     },
     detailText: {
         fontSize: 13,
-        color: '#666',
-        marginTop: 2,
+        fontFamily: 'NotoSans-Medium',
+        color: '#444',
+        marginBottom: 4,
     },
     footer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         borderTopWidth: 1,
-        borderTopColor: '#F5F5F9',
-        paddingTop: 12,
+        borderTopColor: '#F5F5F7',
+        paddingTop: 16,
     },
     priceLabel: {
-        fontSize: 14,
-        color: '#666',
+        fontSize: 13,
+        fontFamily: 'NotoSans-Medium',
+        color: lightTheme.colors.slateGray,
     },
     price: {
-        fontSize: 16,
-        fontWeight: '700',
-        color: '#2D44B5',
+        fontSize: 18,
+        fontFamily: 'NotoSans-Bold',
+        color: lightTheme.colors.primaryBlue,
     },
 });

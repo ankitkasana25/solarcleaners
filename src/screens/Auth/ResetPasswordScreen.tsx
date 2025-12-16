@@ -6,7 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import { ScreenContainer } from '../../components/ScreenContainer';
+
 import { Input } from '../../components/Input';
 import { Toast } from '../../components/Toast';
 import { Button } from '../../components/Button';
@@ -24,7 +24,7 @@ export const ResetPasswordScreen = observer(() => {
   const route = useRoute();
   const params = (route.params as RouteParams) || {};
   const { email } = params;
-  
+
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -66,13 +66,13 @@ export const ResetPasswordScreen = observer(() => {
     }
 
     setIsLoading(true);
-    
+
     try {
       // Simulate password reset
-      await new Promise(() => setTimeout(() => {}, 2000));
-      
+      await new Promise(() => setTimeout(() => { }, 2000));
+
       showToast('Password reset successfully!', 'success');
-      
+
       // Navigate to login screen
       setTimeout(() => {
         navigation.navigate('Login');
@@ -85,7 +85,7 @@ export const ResetPasswordScreen = observer(() => {
   };
 
   return (
-    <ScreenContainer>
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
           <Text style={styles.title}>Reset Password</Text>
@@ -145,7 +145,7 @@ export const ResetPasswordScreen = observer(() => {
         type={toastType}
         onHide={hideToast}
       />
-    </ScreenContainer>
+    </View>
   );
 });
 

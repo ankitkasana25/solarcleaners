@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { ScreenContainer } from '../../components/ScreenContainer';
+
 import { SearchBar } from '../../components/SearchBar';
 import {
   ServiceCategories,
@@ -143,7 +135,7 @@ export const ServicesScreen = () => {
       const category = CATEGORIES.find(c => c.id === id);
       navigation.navigate('ServiceCategory', {
         categoryId: id,
-        categoryTitle: category?.label
+        categoryTitle: category?.label,
       });
     }
   };

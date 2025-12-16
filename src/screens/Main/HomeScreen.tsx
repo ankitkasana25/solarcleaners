@@ -87,7 +87,7 @@ import { SeasonalOffers } from '../../components/SeasonalOffers';
 import { SubscriptionPlans } from '../../components/SubscriptionPlans';
 import { FreeConsultation } from '../../components/FreeConsultation';
 
-import { ScreenContainer } from '../../components/ScreenContainer';
+
 
 export const HomeScreen = observer(() => {
   const navigation = useNavigation();

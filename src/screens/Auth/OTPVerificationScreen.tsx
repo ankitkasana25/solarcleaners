@@ -7,12 +7,11 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import { ScreenContainer } from '../../components/ScreenContainer';
+
 import { OTPInput } from '../../components/OTPInput';
 import { Toast } from '../../components/Toast';
 import { Button } from '../../components/Button';
 import { colors } from '../../theme/colors';
-import { typography } from '../../theme/typography';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useRootStore } from '../../stores/RootStore';
 import { observer } from 'mobx-react-lite';
@@ -35,17 +34,22 @@ export const OTPVerificationScreen = observer(() => {
   const [isLoading, setIsLoading] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>(
+    'info',
+  );
   const [timer, setTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
 
   useEffect(() => {
     // Show toast notification when screen loads
-    showToast('An OTP has been sent to your email. Please check your inbox and enter the OTP to confirm.', 'info');
+    showToast(
+      'An OTP has been sent to your email. Please check your inbox and enter the OTP to confirm.',
+      'info',
+    );
 
     // Start timer
     const interval = setInterval(() => {
-      setTimer((prev) => {
+      setTimer(prev => {
         if (prev <= 1) {
           setCanResend(true);
           clearInterval(interval);
@@ -58,7 +62,10 @@ export const OTPVerificationScreen = observer(() => {
     return () => clearInterval(interval);
   }, []);
 
-  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+  const showToast = (
+    message: string,
+    type: 'success' | 'error' | 'info' = 'info',
+  ) => {
     setToastMessage(message);
     setToastType(type);
     setToastVisible(true);
@@ -82,7 +89,7 @@ export const OTPVerificationScreen = observer(() => {
 
     try {
       // Simulate OTP verification
-      await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+      await new Promise<void>(resolve => setTimeout(resolve, 2000));
 
       // For demo, accept any 5-digit OTP
       if (otp.length === 5) {
@@ -117,7 +124,7 @@ export const OTPVerificationScreen = observer(() => {
 
     try {
       // Simulate OTP resend
-      await new Promise<void>((resolve) => setTimeout(resolve, 1000));
+      await new Promise<void>(resolve => setTimeout(resolve, 1000));
 
       showToast('OTP has been resent to your email', 'success');
 
@@ -126,7 +133,7 @@ export const OTPVerificationScreen = observer(() => {
       setCanResend(false);
 
       const interval = setInterval(() => {
-        setTimer((prev) => {
+        setTimer(prev => {
           if (prev <= 1) {
             setCanResend(true);
             clearInterval(interval);
@@ -143,11 +150,13 @@ export const OTPVerificationScreen = observer(() => {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, '0')}:${secs
+      .toString()
+      .padStart(2, '0')}`;
   };
 
   return (
-    <ScreenContainer>
+    <>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
           <Text style={styles.title}>OTP Verification</Text>
@@ -214,7 +223,7 @@ export const OTPVerificationScreen = observer(() => {
         type={toastType}
         onHide={hideToast}
       />
-    </ScreenContainer>
+    </>
   );
 });
 

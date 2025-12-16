@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { ScreenContainer } from '../../components/ScreenContainer';
+
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { colors } from '../../theme/colors';
@@ -31,7 +31,7 @@ export const LoginScreen = observer(() => {
   };
 
   return (
-    <ScreenContainer>
+    <>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -110,7 +110,7 @@ export const LoginScreen = observer(() => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </ScreenContainer>
+    </>
   );
 });
 

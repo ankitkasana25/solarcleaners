@@ -6,7 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import { ScreenContainer } from '../../components/ScreenContainer';
+
 import { Input } from '../../components/Input';
 import { Toast } from '../../components/Toast';
 import { Button } from '../../components/Button';
@@ -16,14 +16,19 @@ import { useNavigation } from '@react-navigation/native';
 
 export const ForgotPasswordScreen = () => {
   const navigation = useNavigation<any>();
-  
+
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>(
+    'info',
+  );
 
-  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+  const showToast = (
+    message: string,
+    type: 'success' | 'error' | 'info' = 'info',
+  ) => {
     setToastMessage(message);
     setToastType(type);
     setToastVisible(true);
@@ -45,18 +50,18 @@ export const ForgotPasswordScreen = () => {
     }
 
     setIsLoading(true);
-    
+
     try {
       // Simulate sending OTP
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise(resolve => setTimeout(() => resolve(undefined), 2000));
+
       showToast('OTP has been sent to your email', 'success');
-      
+
       // Navigate to OTP verification screen
       setTimeout(() => {
-        navigation.navigate('OTPVerification', { 
-          email, 
-          isFromForgotPassword: true 
+        navigation.navigate('OTPVerification', {
+          email,
+          isFromForgotPassword: true,
         });
       }, 1000);
     } catch (error) {
@@ -67,12 +72,13 @@ export const ForgotPasswordScreen = () => {
   };
 
   return (
-    <ScreenContainer>
+    <>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
           <Text style={styles.title}>Forgot Password</Text>
           <Text style={styles.subtitle}>
-            Enter your email address and we'll send you an OTP to reset your password
+            Enter your email address and we'll send you an OTP to reset your
+            password
           </Text>
         </View>
 
@@ -107,7 +113,7 @@ export const ForgotPasswordScreen = () => {
         type={toastType}
         onHide={hideToast}
       />
-    </ScreenContainer>
+    </>
   );
 };
 

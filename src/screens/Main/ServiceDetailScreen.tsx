@@ -7,16 +7,18 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
-  Alert,
   TextInput,
   Platform,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRootStore } from '../../stores/RootStore';
+
 import { ScreenContainer } from '../../components/ScreenContainer';
 import { ImageIcon } from '../../components/ImageIcon';
 import { colors } from '../../theme/colors';
+import { lightTheme } from '../../theme/theme';
 import { Toast } from '../../components/Toast';
 
 const { width } = Dimensions.get('window');
@@ -36,6 +38,7 @@ interface ServiceData {
 export const ServiceDetailScreen = observer(() => {
   const navigation = useNavigation<any>();
   const route = useRoute();
+  const insets = useSafeAreaInsets();
   const { service } = (route.params as { service: ServiceData }) || {
     service: {},
   };
@@ -59,12 +62,13 @@ export const ServiceDetailScreen = observer(() => {
   };
 
   if (!service || !service.id) {
-    // ...
+    // Handle case where service data is missing
   }
 
   // Calculate Price Logic
   const parsedSize = parseFloat(systemSize) || 0;
-  const basePrice = service.price && service.price > 0 ? service.price : 500; // Default base price to 500
+  // If service.price is not defined, we fallback to 500
+  const basePrice = service.price && service.price > 0 ? service.price : 500;
   const totalPrice = parsedSize * basePrice;
 
   const handleAddToCart = () => {
@@ -88,10 +92,6 @@ export const ServiceDetailScreen = observer(() => {
   };
 
   const handleBuyNow = () => {
-    // Update cart item price if it exists or add new
-    // For simplicity, we just navigate if it exists, but ideally we'd update the price based on new size selection
-    // Given the requirement "already in cart" toast, we might not update existing items easily without more complex logic.
-    // Let's stick to the add-if-not-exists pattern.
     const existingItem = cartStore.items.find(item => item.id === service.id);
     if (!existingItem) {
       cartStore.addToCart({
@@ -110,12 +110,12 @@ export const ServiceDetailScreen = observer(() => {
   return (
     <ScreenContainer style={styles.container}>
       {/* Custom Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { marginTop: insets.top }]}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.iconButton}
         >
-          <ImageIcon name="arrow-left" size={18} color={colors.headerTitle} />
+          <ImageIcon name="arrow-left" size={20} color={colors.headerTitle} />
         </TouchableOpacity>
         <Text style={styles.headerTitle} numberOfLines={1}>
           {service.title}
@@ -145,12 +145,11 @@ export const ServiceDetailScreen = observer(() => {
       />
 
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: 100 + insets.bottom }]} // Extra padding for footer
         showsVerticalScrollIndicator={false}
       >
         {/* Image Section */}
         <View style={styles.imageContainer}>
-          {/* Handle both remote URI and local require/import images */}
           <Image
             source={service.image?.uri ? service.image : { uri: service.image }}
             style={styles.image as any}
@@ -170,26 +169,32 @@ export const ServiceDetailScreen = observer(() => {
             </View>
           </View>
 
-          {/* Size Selector Mockup */}
-          <View style={styles.sizeSection}>
-            <Text style={styles.sectionLabel}>Solar System Size (kW):</Text>
-            <View style={styles.sizeInput}>
-              <TextInput
-                value={systemSize}
-                onChangeText={setSystemSize}
-                keyboardType="numeric"
-                style={styles.sizeTextInput}
-              />
-              <Text style={styles.sizeUnit}>kW</Text>
+          {/* Configuration Section */}
+          <View style={styles.configContainer}>
+            <View style={styles.configHeader}>
+              <Text style={styles.sectionLabel}>Solar System Size</Text>
+              <View style={styles.infoIcon}>
+                <Text style={styles.infoText}>i</Text>
+              </View>
+            </View>
+
+            <View style={styles.sizeSection}>
+              <View style={styles.sizeInputWrapper}>
+                <TextInput
+                  value={systemSize}
+                  onChangeText={setSystemSize}
+                  keyboardType="numeric"
+                  style={styles.sizeTextInput}
+                />
+                <Text style={styles.sizeUnit}>kW</Text>
+              </View>
+              <View style={styles.dividerVertical} />
+              <View style={styles.estimatedPriceContainer}>
+                <Text style={styles.estimatedLabel}>Estimated Price</Text>
+                <Text style={styles.priceValue}>₹{totalPrice.toLocaleString()}</Text>
+              </View>
             </View>
           </View>
-
-          <Text style={styles.priceDisplay}>
-            Total Price:{' '}
-            <Text style={styles.priceValue}>
-              ₹{totalPrice.toLocaleString()}
-            </Text>
-          </Text>
 
           <Text style={styles.sectionHeader}>About this service</Text>
           <Text style={styles.description}>
@@ -207,9 +212,10 @@ export const ServiceDetailScreen = observer(() => {
                 'Provides early detection of micro-cracks or hotspots.',
               ]
             ).map((item, index) => (
-              <Text key={index} style={styles.bulletPoint}>
-                {index + 1}. {item}
-              </Text>
+              <View key={index} style={styles.highlightRow}>
+                <View style={styles.bulletDot} />
+                <Text style={styles.bulletPoint}>{item}</Text>
+              </View>
             ))}
           </View>
 
@@ -230,7 +236,7 @@ export const ServiceDetailScreen = observer(() => {
           ).map((benefit, index) => (
             <View key={index} style={styles.benefitItem}>
               <View style={styles.benefitIcon}>
-                <Text style={{ fontSize: 20 }}>{benefit.icon}</Text>
+                <Text style={{ fontSize: 22 }}>{benefit.icon}</Text>
               </View>
               <View style={styles.benefitTextContainer}>
                 <Text style={styles.benefitTitle}>{benefit.title}</Text>
@@ -238,15 +244,13 @@ export const ServiceDetailScreen = observer(() => {
               </View>
             </View>
           ))}
-
-          <View style={{ height: 100 }} />
         </View>
       </ScrollView>
 
-      {/* Footer */}
-      <View style={styles.footer}>
+      {/* Premium Footer */}
+      <View style={[styles.footer, { paddingBottom: insets.bottom > 0 ? insets.bottom : 20 }]}>
         <View style={styles.priceContainer}>
-          <Text style={styles.footerPriceLabel}>Total Price</Text>
+          <Text style={styles.footerPriceLabel}>Total Pay</Text>
           <Text style={styles.footerPrice}>₹{totalPrice.toLocaleString()}</Text>
         </View>
         <View style={styles.buttonContainer}>
@@ -276,72 +280,61 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    height: 48,
+    height: 50,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 12,
-    paddingRight: 16,
-    paddingBottom: 12,
-    paddingLeft: 16,
-    gap: 16,
-
-    borderBottomColor: '#F2F2F7',
+    paddingHorizontal: 16,
     backgroundColor: '#fff',
-
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F5F5F5',
+    zIndex: 10,
   },
   iconButton: {
-    padding: 8,
     width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 20,
+    backgroundColor: '#FAFAFA',
   },
   headerTitle: {
     flex: 1,
-    fontFamily: 'NotoSans-Medium',
-    fontWeight: '500',
-    fontSize: 14,
-    lineHeight: 18.2, // 130% of 14px
-    letterSpacing: 0,
+    fontFamily: 'NotoSans-Bold',
+    fontSize: 16,
     color: colors.headerTitle,
     textAlign: 'center',
-    textAlignVertical: 'center',
+    marginHorizontal: 12,
   },
   headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
     width: 40,
+    alignItems: 'flex-end',
   },
   badge: {
     position: 'absolute',
     top: -4,
     right: -4,
-    backgroundColor: '#FF3B30',
+    backgroundColor: lightTheme.colors.redOrange,
     borderRadius: 10,
     minWidth: 18,
     height: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 4,
-    borderWidth: 1.5,
-    borderColor: '#FFF',
+    borderWidth: 2,
+    borderColor: '#fff',
   },
   badgeText: {
     color: '#fff',
     fontSize: 10,
-    fontWeight: 'bold',
+    fontFamily: 'NotoSans-Bold',
   },
   scrollContent: {
-    paddingBottom: 24,
+    flexGrow: 1,
   },
   imageContainer: {
     width: width,
-    height: 250,
-    backgroundColor: '#f5f5f5',
+    height: 260,
+    backgroundColor: '#F5F5F5',
     position: 'relative',
   },
   image: {
@@ -350,117 +343,176 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: 'rgba(0,0,0,0.02)',
   },
   content: {
-    padding: 20,
-    top: -20,
+    flex: 1,
     backgroundColor: '#fff',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginTop: -30,
+    paddingHorizontal: 20,
+    paddingTop: 30,
+    paddingBottom: 20,
   },
   titleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   title: {
     flex: 1,
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: 22,
+    fontFamily: 'NotoSans-Bold',
     color: '#1C1C1E',
+    lineHeight: 28,
     marginRight: 10,
   },
   categoryBadge: {
-    backgroundColor: '#E3F2FD',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
+    backgroundColor: '#EBF5FF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
   },
   categoryText: {
-    color: '#1976D2',
-    fontWeight: '700',
-    fontSize: 12,
+    color: lightTheme.colors.primaryBlue,
+    fontFamily: 'NotoSans-Bold',
+    fontSize: 11,
+    textTransform: 'uppercase',
+  },
+
+  // New Config Container
+  configContainer: {
+    backgroundColor: '#FAFAFA',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#EEEEEE',
+  },
+  configHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sectionLabel: {
+    fontSize: 14,
+    fontFamily: 'NotoSans-Bold',
+    color: '#1C1C1E',
+  },
+  infoIcon: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#BDBDBD',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoText: {
+    fontSize: 10,
+    color: '#BDBDBD',
+    fontWeight: 'bold',
   },
   sizeSection: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 20,
-    backgroundColor: '#F9FAFB',
-    padding: 12,
-    borderRadius: 12,
-  },
-  sectionLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1C1C1E',
-  },
-  sizeInput: {
-    flexDirection: 'row',
     backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12,
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderColor: '#F0F0F0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  sizeInputWrapper: {
+    flexDirection: 'row',
     alignItems: 'center',
-    width: 100,
-    height: 40,
+    flex: 1,
   },
   sizeTextInput: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 20,
+    fontFamily: 'NotoSans-Bold',
     color: '#1C1C1E',
     padding: 0,
+    minWidth: 40,
   },
   sizeUnit: {
+    fontSize: 14,
+    fontFamily: 'NotoSans-Medium',
     color: '#8E8E93',
-    fontWeight: '500',
+    marginLeft: 4,
+    marginTop: 2,
   },
-  priceDisplay: {
-    fontSize: 18,
-    color: colors.persianBlue,
-    fontWeight: '500',
-    marginBottom: 24,
-    backgroundColor: '#F0F7FF',
-    padding: 16,
-    borderRadius: 12,
+  dividerVertical: {
+    width: 1,
+    height: 24,
+    backgroundColor: '#E0E0E0',
+    marginHorizontal: 16,
+  },
+  estimatedPriceContainer: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  estimatedLabel: {
+    fontSize: 10,
+    fontFamily: 'NotoSans-Medium',
+    color: '#8E8E93',
+    marginBottom: 2,
   },
   priceValue: {
-    fontWeight: '600',
-    fontSize: 22,
-    color: colors.persianBlue,
-    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
-    letterSpacing: 0.5,
-  },
-  sectionHeader: {
+    fontFamily: 'NotoSans-Bold',
     fontSize: 18,
-    fontWeight: '700',
+    color: lightTheme.colors.primaryBlue,
+  },
+
+  sectionHeader: {
+    fontSize: 16,
+    fontFamily: 'NotoSans-Bold',
+    color: '#1C1C1E',
     marginBottom: 12,
     marginTop: 8,
-    color: '#1C1C1E',
   },
   description: {
-    fontSize: 15,
-    color: '#666',
-    lineHeight: 24,
-    marginBottom: 16,
+    fontSize: 14,
+    fontFamily: 'NotoSans-Regular',
+    color: '#666666',
+    lineHeight: 22,
+    marginBottom: 24,
   },
   highlightsContainer: {
-    marginBottom: 20,
+    marginBottom: 24,
+  },
+  highlightRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 10,
+  },
+  bulletDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: lightTheme.colors.primaryBlue,
+    marginTop: 8,
+    marginRight: 10,
   },
   bulletPoint: {
-    fontSize: 15,
-    color: '#444',
-    marginBottom: 8,
+    flex: 1,
+    fontSize: 14,
+    fontFamily: 'NotoSans-Medium',
+    color: '#444444',
     lineHeight: 22,
   },
   benefitItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#F0F0F0',
@@ -468,15 +520,15 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
+    shadowOpacity: 0.02,
     shadowRadius: 4,
-    elevation: 1,
+    elevation: 0.5,
   },
   benefitIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#F5F5F7',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#F5F9FF',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -485,80 +537,91 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   benefitTitle: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 15,
+    fontFamily: 'NotoSans-Bold',
     color: '#1C1C1E',
     marginBottom: 2,
   },
   benefitDesc: {
-    fontSize: 13,
+    fontSize: 12,
+    fontFamily: 'NotoSans-Regular',
     color: '#8E8E93',
   },
+
+  // Premium Footer
   footer: {
-    flexDirection: 'row',
-    padding: 16,
-    paddingBottom: 24,
-    borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: '#fff',
+    flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#F5F5F5',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 10,
+    shadowRadius: 10,
+    elevation: 20,
   },
   priceContainer: {
-    flex: 0.4,
+    flex: 1,
+    justifyContent: 'center',
   },
   footerPriceLabel: {
     fontSize: 12,
+    fontFamily: 'NotoSans-Medium',
     color: '#8E8E93',
     marginBottom: 2,
   },
   footerPrice: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: colors.persianBlue,
-    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
-    letterSpacing: 0.5,
+    fontSize: 22,
+    fontFamily: 'NotoSans-Bold',
+    color: lightTheme.colors.primaryBlue,
   },
   buttonContainer: {
-    flex: 0.6,
     flexDirection: 'row',
     gap: 12,
+    alignItems: 'center',
   },
   addToCartButton: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: colors.primary,
+    borderColor: '#E0E0E0',
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    minWidth: 100,
+    height: 44,
   },
   addToCartText: {
-    color: colors.primary,
-    fontWeight: '700',
-    fontSize: 14,
+    color: '#424242',
+    fontFamily: 'NotoSans-Bold',
+    fontSize: 13,
   },
   buyNowButton: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: colors.primary,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    backgroundColor: lightTheme.colors.primaryBlue,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: colors.primary,
+    minWidth: 110,
+    height: 44,
+    shadowColor: lightTheme.colors.primaryBlue,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 4,
   },
   buyNowText: {
     color: '#fff',
-    fontWeight: '700',
-    fontSize: 14,
+    fontFamily: 'NotoSans-Bold',
+    fontSize: 13,
   },
 });

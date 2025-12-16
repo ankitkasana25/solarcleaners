@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Platform, TextInput } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { lightTheme } from '../theme/theme';
 
 interface CartItemCardProps {
     title: string;
@@ -8,7 +9,7 @@ interface CartItemCardProps {
     image: any;
     details?: string;
     systemSize?: string;
-    onEdit?: () => void; // Keep for navigation/other edits if needed, but primary "Edit" requested is for size
+    onEdit?: () => void;
     onUpdateSize?: (newSize: string) => void;
     onRemove?: () => void;
 }
@@ -26,7 +27,6 @@ export const CartItemCard = ({
     const [isEditing, setIsEditing] = useState(false);
     const [editValue, setEditValue] = useState(systemSize || '');
 
-    // Normalize image source
     const imageSource = typeof image === 'string'
         ? { uri: image }
         : image?.uri
@@ -51,7 +51,6 @@ export const CartItemCard = ({
 
     return (
         <View style={styles.container}>
-            {/* Image */}
             <View style={styles.imageContainer}>
                 <Image
                     source={imageSource}
@@ -60,12 +59,15 @@ export const CartItemCard = ({
                 />
             </View>
 
-            {/* Content */}
             <View style={styles.content}>
                 <View style={styles.headerRow}>
                     <Text style={styles.title} numberOfLines={2}>{title}</Text>
-                    <TouchableOpacity onPress={onRemove} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                        <Ionicons name="trash-outline" size={20} color="#FF3B30" />
+                    <TouchableOpacity
+                        onPress={onRemove}
+                        style={styles.deleteButton}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                        <Ionicons name="trash-outline" size={18} color={lightTheme.colors.redOrange} />
                     </TouchableOpacity>
                 </View>
 
@@ -81,20 +83,23 @@ export const CartItemCard = ({
                         <Text style={styles.unitText}>kW System</Text>
                     </View>
                 ) : (
-                    details && <Text style={styles.details}>{details}</Text>
+                    <View style={styles.detailsContainer}>
+                        {details && <Text style={styles.details}>{details}</Text>}
+                    </View>
                 )}
 
-                <Text style={styles.price}>₹{price.toLocaleString()}</Text>
+                <View style={styles.footerRow}>
+                    <Text style={styles.price}>₹{price.toLocaleString()}</Text>
 
-                <TouchableOpacity onPress={toggleEdit} style={styles.editButton}>
-                    <Text style={styles.editText}>{isEditing ? 'Save' : 'Edit Details'}</Text>
-                    <Ionicons
-                        name={isEditing ? "checkmark-circle" : "create-outline"}
-                        size={16}
-                        color="#2D44B5"
-                        style={{ marginLeft: 4 }}
-                    />
-                </TouchableOpacity>
+                    <TouchableOpacity onPress={toggleEdit} style={styles.editButton}>
+                        <Text style={styles.editText}>{isEditing ? 'Save' : 'Edit'}</Text>
+                        {/* <Ionicons
+                            name={isEditing ? "checkmark" : "create-outline"}
+                            size={14}
+                            color={lightTheme.colors.primaryBlue}
+                        /> */}
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
     );
@@ -103,25 +108,24 @@ export const CartItemCard = ({
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        backgroundColor: '#fff',
-        borderRadius: 16,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
         padding: 12,
         marginBottom: 16,
-        // Shadow
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.05,
-        shadowRadius: 8,
+        shadowRadius: 10,
         elevation: 3,
         borderWidth: 1,
-        borderColor: '#F0F0F0',
+        borderColor: '#F2F2F7',
     },
     imageContainer: {
-        width: 80,
-        height: 80,
-        borderRadius: 12,
+        width: 88,
+        height: 88,
+        borderRadius: 16,
         overflow: 'hidden',
-        backgroundColor: '#F5F5F7',
+        backgroundColor: '#F7F8FA',
         marginRight: 16,
     },
     image: {
@@ -131,6 +135,7 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         justifyContent: 'space-between',
+        paddingVertical: 2,
     },
     headerRow: {
         flexDirection: 'row',
@@ -138,16 +143,29 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
     },
     title: {
-        fontSize: 16,
-        fontWeight: '700',
-        color: '#1C1C1E',
+        fontSize: 15,
+        fontFamily: 'NotoSans-Bold',
+        color: lightTheme.colors.headerTitle, // Using theme color
         flex: 1,
         marginRight: 8,
+        lineHeight: 20,
+    },
+    deleteButton: {
+        padding: 4,
+    },
+    detailsContainer: {
+        marginTop: 4,
     },
     details: {
-        fontSize: 13,
-        color: '#8E8E93',
-        marginTop: 4,
+        fontSize: 12,
+        fontFamily: 'NotoSans-Medium',
+        color: lightTheme.colors.slateGray,
+        backgroundColor: '#F5F7FA',
+        alignSelf: 'flex-start',
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        borderRadius: 6,
+        overflow: 'hidden',
     },
     editContainer: {
         flexDirection: 'row',
@@ -156,40 +174,49 @@ const styles = StyleSheet.create({
     },
     sizeInput: {
         borderWidth: 1,
-        borderColor: '#2D44B5',
-        borderRadius: 4,
-        paddingHorizontal: 8,
-        paddingVertical: 2,
+        borderColor: lightTheme.colors.primaryBlue,
+        borderRadius: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 4,
         fontSize: 14,
-        color: '#1C1C1E',
-        minWidth: 50,
+        fontFamily: 'NotoSans-Bold',
+        color: lightTheme.colors.headerTitle,
+        minWidth: 60,
         textAlign: 'center',
         marginRight: 8,
         backgroundColor: '#F0F7FF',
+        height: 32,
     },
     unitText: {
-        fontSize: 13,
-        color: '#1C1C1E',
-        fontWeight: '500',
+        fontSize: 12,
+        fontFamily: 'NotoSans-Medium',
+        color: lightTheme.colors.gray3,
+    },
+    footerRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 8,
     },
     price: {
         fontSize: 18,
-        fontWeight: '600',
-        color: '#2D44B5',
-        fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
+        fontFamily: 'NotoSans-Bold',
+        color: lightTheme.colors.primaryBlue,
         letterSpacing: 0.5,
-        marginTop: 4,
     },
     editButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 8,
-        alignSelf: 'flex-start',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        backgroundColor: '#F0F7FF',
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#E3F2FD',
     },
     editText: {
-        fontSize: 13,
-        fontWeight: '500',
-        color: '#2D44B5',
-        marginRight: 2,
+        fontSize: 12,
+        fontFamily: 'NotoSans-Bold',
+        color: lightTheme.colors.primaryBlue,
     },
 });
