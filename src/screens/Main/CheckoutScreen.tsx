@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer } from '../../components/ScreenContainer';
 import { useRootStore } from '../../stores/RootStore';
 import { observer } from 'mobx-react-lite';
 import { useNavigation } from '@react-navigation/native';
+import { ImageIcon } from '../../components/ImageIcon'; // Use ImageIcon for consistency
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { colors } from '../../theme/colors';
+import { lightTheme } from '../../theme/theme';
 
 export const CheckoutScreen = observer(() => {
     const { cartStore, bookingStore } = useRootStore();
     const navigation = useNavigation<any>();
     const [paymentMethod, setPaymentMethod] = useState<'Pay on Visit' | 'UPI'>('Pay on Visit');
+    const insets = useSafeAreaInsets();
 
     const handlePlaceOrder = () => {
         if (cartStore.items.length === 0) {
@@ -32,177 +37,306 @@ export const CheckoutScreen = observer(() => {
     };
 
     return (
-        <ScreenContainer>
+        <ScreenContainer style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color="#2E3A59" />
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconButton}>
+                    <ImageIcon name="arrow-left" size={20} color={colors.headerTitle} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Checkout</Text>
-                <View style={{ width: 40 }} /> {/* Spacer to balance title */}
+                <View style={{ width: 40 }} />
             </View>
 
-            <ScrollView contentContainerStyle={styles.container}>
+            <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: 100 + insets.bottom }]}>
+                {/* Order Summary Section */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Order Summary</Text>
-                    {cartStore.items.map((item, index) => (
-                        <View key={index} style={styles.itemRow}>
-                            <Text style={styles.itemText}>
-                                {item.title} x {item.quantity}
-                                {item.systemSize ? ` (${item.systemSize} kW)` : ''}
-                            </Text>
-                            <Text style={styles.itemPrice}>₹{(item.price * item.quantity).toLocaleString()}</Text>
+                    <View style={styles.card}>
+                        {cartStore.items.map((item, index) => (
+                            <View key={index} style={styles.itemRowWrapper}>
+                                <View style={styles.itemRow}>
+                                    <View style={styles.itemInfo}>
+                                        <Text style={styles.itemTitle}>{item.title}</Text>
+                                        <Text style={styles.itemSubtitle}>
+                                            Qty: {item.quantity} {item.systemSize ? `• ${item.systemSize} kW` : ''}
+                                        </Text>
+                                    </View>
+                                    <Text style={styles.itemPrice}>₹{(item.price * item.quantity).toLocaleString()}</Text>
+                                </View>
+                                {index < cartStore.items.length - 1 && <View style={styles.divider} />}
+                            </View>
+                        ))}
+
+                        <View style={styles.totalDivider} />
+
+                        <View style={styles.totalRow}>
+                            <Text style={styles.totalLabel}>Total Amount</Text>
+                            <Text style={styles.totalValue}>₹{cartStore.totalPrice.toLocaleString()}</Text>
                         </View>
-                    ))}
-                    <View style={styles.divider} />
-                    <View style={styles.totalRow}>
-                        <Text style={styles.totalText}>Total Amount</Text>
-                        <Text style={styles.totalPrice}>₹{cartStore.totalPrice.toLocaleString()}</Text>
                     </View>
                 </View>
 
+                {/* Payment Method Section */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Payment Method</Text>
 
                     <TouchableOpacity
-                        style={[styles.methodCard, paymentMethod === 'Pay on Visit' && styles.selectedMethod]}
+                        style={[styles.methodCard, paymentMethod === 'Pay on Visit' && styles.selectedMethodCard]}
                         onPress={() => setPaymentMethod('Pay on Visit')}
+                        activeOpacity={0.7}
                     >
-                        <Ionicons name={paymentMethod === 'Pay on Visit' ? "radio-button-on" : "radio-button-off"} size={24} color="#2D44B5" />
-                        <Text style={styles.methodText}>Pay on Visit (Cash/Card)</Text>
+                        <View style={styles.radioContainer}>
+                            <View style={[styles.radioOuter, paymentMethod === 'Pay on Visit' && styles.radioOuterSelected]}>
+                                {paymentMethod === 'Pay on Visit' && <View style={styles.radioInner} />}
+                            </View>
+                        </View>
+                        <View style={styles.methodContent}>
+                            <Text style={styles.methodTitle}>Pay on Visit</Text>
+                            <Text style={styles.methodSubtitle}>Cash or Card after service</Text>
+                        </View>
+                        <Ionicons name="card-outline" size={24} color={paymentMethod === 'Pay on Visit' ? lightTheme.colors.primaryBlue : '#BDBDBD'} />
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={[styles.methodCard, paymentMethod === 'UPI' && styles.selectedMethod]}
+                        style={[styles.methodCard, paymentMethod === 'UPI' && styles.selectedMethodCard]}
                         onPress={() => setPaymentMethod('UPI')}
+                        activeOpacity={0.7}
                     >
-                        <Ionicons name={paymentMethod === 'UPI' ? "radio-button-on" : "radio-button-off"} size={24} color="#2D44B5" />
-                        <Text style={styles.methodText}>UPI / Netbanking</Text>
+                        <View style={styles.radioContainer}>
+                            <View style={[styles.radioOuter, paymentMethod === 'UPI' && styles.radioOuterSelected]}>
+                                {paymentMethod === 'UPI' && <View style={styles.radioInner} />}
+                            </View>
+                        </View>
+                        <View style={styles.methodContent}>
+                            <Text style={styles.methodTitle}>UPI / Netbanking</Text>
+                            <Text style={styles.methodSubtitle}>Secure online payment</Text>
+                        </View>
+                        <Ionicons name="card-outline" size={24} color={paymentMethod === 'UPI' ? lightTheme.colors.primaryBlue : '#BDBDBD'} />
                     </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity style={styles.payButton} onPress={handlePlaceOrder}>
-                    <Text style={styles.payButtonText}>Place Order</Text>
-                </TouchableOpacity>
             </ScrollView>
+
+            {/* Footer */}
+            <View style={[styles.footer, { paddingBottom: insets.bottom > 0 ? insets.bottom : 20 }]}>
+                <View style={styles.footerTotal}>
+                    <Text style={styles.footerTotalLabel}>Total to Pay</Text>
+                    <Text style={styles.footerTotalValue}>₹{cartStore.totalPrice.toLocaleString()}</Text>
+                </View>
+                <TouchableOpacity style={styles.placeOrderButton} onPress={handlePlaceOrder} activeOpacity={0.9}>
+                    <Text style={styles.placeOrderText}>Place Order</Text>
+                    <Ionicons name="arrow-forward" size={16} color="#fff" style={{ marginLeft: 8 }} />
+                </TouchableOpacity>
+            </View>
         </ScreenContainer>
     );
 });
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
+        flex: 1,
+        backgroundColor: '#fff', // Premium gray background
     },
     header: {
-        height: 48,
+        height: 56,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingTop: 12,
-        paddingRight: 16,
-        paddingBottom: 12,
-        paddingLeft: 16,
-        gap: 16,
+        paddingHorizontal: 16,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
-        borderBottomColor: '#F2F2F7',
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
+        borderBottomColor: '#F0F0F0',
     },
-    backButton: {
-        padding: 8,
+    iconButton: {
+        width: 40,
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 20,
+        backgroundColor: '#FAFAFA',
     },
     headerTitle: {
-        fontFamily: 'NotoSans-Medium',
-        fontWeight: '500',
-        fontSize: 14,
-        lineHeight: 18.2,
-        letterSpacing: 0,
-        color: '#2E3A59',
+        fontSize: 16,
+        fontFamily: 'NotoSans-Bold',
+        color: colors.headerTitle,
+    },
+    scrollContent: {
+        padding: 20,
     },
     section: {
-        backgroundColor: '#fff',
-        borderRadius: 16,
-        padding: 20,
-        marginBottom: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 2,
+        marginBottom: 24,
     },
     sectionTitle: {
-        fontSize: 18,
-        fontWeight: '600',
+        fontSize: 16,
+        fontFamily: 'NotoSans-Bold',
         color: '#1C1C1E',
-        marginBottom: 16,
+        marginBottom: 12,
+        marginLeft: 4,
+    },
+    card: {
+        backgroundColor: '#fff',
+        borderRadius: 16,
+        padding: 16,
+        borderWidth: 1,
+        borderColor: '#F0F0F0',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.02,
+        shadowRadius: 8,
+        elevation: 1,
+    },
+    itemRowWrapper: {
+        marginBottom: 12,
     },
     itemRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 8,
+        alignItems: 'flex-start',
     },
-    itemText: {
-        fontSize: 14,
-        color: '#666',
+    itemInfo: {
         flex: 1,
+        paddingRight: 12,
+    },
+    itemTitle: {
+        fontSize: 14,
+        fontFamily: 'NotoSans-Bold',
+        color: '#1C1C1E',
+        marginBottom: 2,
+    },
+    itemSubtitle: {
+        fontSize: 12,
+        fontFamily: 'NotoSans-Regular',
+        color: '#8E8E93',
     },
     itemPrice: {
         fontSize: 14,
-        fontWeight: '500',
-        color: '#333',
+        fontFamily: 'NotoSans-Bold',
+        color: '#1C1C1E',
     },
     divider: {
         height: 1,
+        backgroundColor: '#F5F5F5',
+        marginTop: 12,
+    },
+    totalDivider: {
+        height: 1,
         backgroundColor: '#F0F0F0',
         marginVertical: 12,
+        borderStyle: 'dashed',
+        borderWidth: 1,
+        borderColor: '#F0F0F0',
     },
     totalRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginTop: 4,
     },
-    totalText: {
-        fontSize: 16,
-        fontWeight: '600',
+    totalLabel: {
+        fontSize: 14,
+        fontFamily: 'NotoSans-Bold',
         color: '#1C1C1E',
     },
-    totalPrice: {
-        fontSize: 20,
-        fontWeight: '700',
-        color: '#2D44B5',
+    totalValue: {
+        fontSize: 18,
+        fontFamily: 'NotoSans-Bold',
+        color: lightTheme.colors.primaryBlue,
     },
+
+    // Payment Methods
     methodCard: {
         flexDirection: 'row',
         alignItems: 'center',
+        backgroundColor: '#fff',
+        borderRadius: 12,
         padding: 16,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#E5E5EA',
         marginBottom: 12,
+        borderWidth: 1,
+        borderColor: '#F0F0F0',
     },
-    selectedMethod: {
-        borderColor: '#2D44B5',
-        backgroundColor: 'rgba(45, 68, 181, 0.05)',
+    selectedMethodCard: {
+        borderColor: lightTheme.colors.primaryBlue,
+        backgroundColor: '#F0F7FF',
     },
-    methodText: {
-        fontSize: 16,
-        color: '#1C1C1E',
-        marginLeft: 12,
+    radioContainer: {
+        marginRight: 16,
     },
-    payButton: {
-        backgroundColor: '#2D44B5',
-        paddingVertical: 18,
-        borderRadius: 12,
+    radioOuter: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#D1D1D6',
         alignItems: 'center',
-        marginTop: 20,
+        justifyContent: 'center',
     },
-    payButtonText: {
+    radioOuterSelected: {
+        borderColor: lightTheme.colors.primaryBlue,
+    },
+    radioInner: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        backgroundColor: lightTheme.colors.primaryBlue,
+    },
+    methodContent: {
+        flex: 1,
+    },
+    methodTitle: {
+        fontSize: 14,
+        fontFamily: 'NotoSans-Bold',
+        color: '#1C1C1E',
+        marginBottom: 2,
+    },
+    methodSubtitle: {
+        fontSize: 12,
+        fontFamily: 'NotoSans-Regular',
+        color: '#8E8E93',
+    },
+
+    // Footer
+    footer: {
+        backgroundColor: '#fff',
+        padding: 20,
+        borderTopWidth: 1,
+        borderTopColor: '#F0F0F0',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 10,
+    },
+    footerTotal: {
+        flex: 1,
+    },
+    footerTotalLabel: {
+        fontSize: 12,
+        fontFamily: 'NotoSans-Medium',
+        color: '#8E8E93',
+    },
+    footerTotalValue: {
+        fontSize: 20,
+        fontFamily: 'NotoSans-Bold',
+        color: '#1C1C1E',
+    },
+    placeOrderButton: {
+        backgroundColor: lightTheme.colors.primaryBlue,
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        shadowColor: lightTheme.colors.primaryBlue,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    placeOrderText: {
         color: '#fff',
-        fontSize: 18,
-        fontWeight: '600',
+        fontSize: 14,
+        fontFamily: 'NotoSans-Bold',
     },
 });

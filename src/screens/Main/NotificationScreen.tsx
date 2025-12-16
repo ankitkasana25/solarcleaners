@@ -1,9 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer } from '../../components/ScreenContainer';
 import { useNavigation } from '@react-navigation/native';
+import { ImageIcon } from '../../components/ImageIcon';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../theme/colors';
+import { lightTheme } from '../../theme/theme';
 
 // Dummy Notifications
 const dummyNotifications = [
@@ -32,38 +35,46 @@ const dummyNotifications = [
 
 export const NotificationScreen = () => {
     const navigation = useNavigation();
+    const insets = useSafeAreaInsets();
 
     return (
-        <ScreenContainer>
+        <ScreenContainer style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color="#1C1C1E" />
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconButton}>
+                    <ImageIcon name="arrow-left" size={20} color={colors.headerTitle} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Notifications</Text>
                 <View style={{ width: 40 }} />
             </View>
 
-            <View style={styles.container}>
+            <View style={styles.content}>
                 <FlatList
                     data={dummyNotifications}
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => (
-                        <View style={[styles.notificationCard, !item.read && styles.unreadCard]}>
-                            <View style={styles.iconContainer}>
+                        <TouchableOpacity
+                            style={[styles.notificationCard, !item.read && styles.unreadCard]}
+                            activeOpacity={0.7}
+                        >
+                            <View style={[styles.iconContainer,
+                            { backgroundColor: item.title.includes('Offer') ? 'rgba(255, 159, 10, 0.1)' : 'rgba(13, 129, 252, 0.1)' }
+                            ]}>
                                 <Ionicons
                                     name={item.title.includes('Offer') ? 'pricetag' : 'notifications'}
-                                    size={24}
-                                    color={colors.primary}
+                                    size={20}
+                                    color={item.title.includes('Offer') ? lightTheme.colors.secondaryOrange : lightTheme.colors.primaryBlue}
                                 />
                             </View>
                             <View style={styles.textContainer}>
-                                <Text style={styles.title}>{item.title}</Text>
-                                <Text style={styles.message}>{item.message}</Text>
-                                <Text style={styles.time}>{item.time}</Text>
+                                <View style={styles.titleRow}>
+                                    <Text style={[styles.title, !item.read && styles.unreadTitle]}>{item.title}</Text>
+                                    <Text style={styles.time}>{item.time}</Text>
+                                </View>
+                                <Text style={styles.message} numberOfLines={2}>{item.message}</Text>
                             </View>
                             {!item.read && <View style={styles.unreadDot} />}
-                        </View>
+                        </TouchableOpacity>
                     )}
                     contentContainerStyle={styles.listContent}
                     showsVerticalScrollIndicator={false}
@@ -76,71 +87,100 @@ export const NotificationScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F9F9F9',
+        backgroundColor: '#fff',
     },
     header: {
+        height: 56,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 16,
-        paddingVertical: 12,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#F0F0F0',
     },
-    backButton: {
-        padding: 8,
+    iconButton: {
+        width: 40,
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 20,
+        backgroundColor: '#FAFAFA',
     },
     headerTitle: {
-        fontSize: 18,
-        fontWeight: '700',
-        color: '#1C1C1E',
+        fontSize: 16,
+        fontFamily: 'NotoSans-Bold',
+        color: colors.headerTitle,
+    },
+    content: {
+        flex: 1,
+        backgroundColor: '#fff',
     },
     listContent: {
-        padding: 16,
+        padding: 20,
     },
     notificationCard: {
         flexDirection: 'row',
         backgroundColor: '#fff',
         padding: 16,
-        borderRadius: 12,
-        marginBottom: 12,
+        borderRadius: 16,
+        marginBottom: 16,
         borderWidth: 1,
         borderColor: '#F0F0F0',
         alignItems: 'flex-start',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.02,
+        shadowRadius: 8,
+        elevation: 1,
     },
     unreadCard: {
-        backgroundColor: '#F4F9FF',
-        borderColor: 'rgba(45, 68, 181, 0.1)',
+        backgroundColor: '#F8FBFF',
+        borderColor: '#E3F2FD',
     },
     iconContainer: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
         marginRight: 16,
-        marginTop: 2,
     },
     textContainer: {
         flex: 1,
     },
-    title: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#1C1C1E',
+    titleRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: 4,
     },
-    message: {
+    title: {
         fontSize: 14,
+        fontFamily: 'NotoSans-Bold',
+        color: '#1C1C1E',
+        flex: 1,
+        marginRight: 8,
+    },
+    unreadTitle: {
+        color: lightTheme.colors.primaryBlue,
+    },
+    message: {
+        fontSize: 13,
+        fontFamily: 'NotoSans-Regular',
         color: '#666',
-        marginBottom: 8,
-        lineHeight: 20,
+        lineHeight: 18,
     },
     time: {
-        fontSize: 12,
+        fontSize: 10,
+        fontFamily: 'NotoSans-Medium',
         color: '#999',
     },
     unreadDot: {
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: colors.primary,
+        backgroundColor: lightTheme.colors.primaryBlue,
         marginLeft: 8,
         marginTop: 6,
     },

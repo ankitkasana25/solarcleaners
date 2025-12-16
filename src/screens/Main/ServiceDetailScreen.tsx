@@ -110,7 +110,7 @@ export const ServiceDetailScreen = observer(() => {
   return (
     <ScreenContainer style={styles.container}>
       {/* Custom Header */}
-      <View style={[styles.header, { marginTop: insets.top }]}>
+      <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.iconButton}
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    height: 50,
+    height: 48,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
