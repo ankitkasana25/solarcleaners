@@ -5,6 +5,8 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 
 import { Input } from '../../components/Input';
@@ -85,19 +87,26 @@ export const ResetPasswordScreen = observer(() => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: '#fff' }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.header}>
           <Text style={styles.title}>Reset Password</Text>
           <Text style={styles.subtitle}>
-            We've sent you a one-time code. Please enter it below to continue.
+            Enter the new password for your account. Make it strong!
           </Text>
         </View>
 
         <View style={styles.form}>
           <Input
             label="Set new Password"
-            placeholder="abcd"
+            placeholder="Min 8 chars, 1 Upper, 1 Special"
             value={newPassword}
             onChangeText={setNewPassword}
             secureTextEntry={!showNewPassword}
@@ -145,7 +154,7 @@ export const ResetPasswordScreen = observer(() => {
         type={toastType}
         onHide={hideToast}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 });
 
@@ -157,23 +166,28 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 40,
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   title: {
-    ...typography.header,
-    marginBottom: 8,
-    textAlign: 'center',
+    fontSize: 28,
+    fontFamily: 'NotoSans-Bold',
+    color: '#1C1C1E',
+    marginBottom: 12,
+    textAlign: 'left',
   },
   subtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
+    fontSize: 14,
+    fontFamily: 'NotoSans-Regular',
+    color: '#666666',
+    textAlign: 'left',
+    lineHeight: 22,
   },
   form: {
     width: '100%',
   },
   passwordStrengthContainer: {
-    marginBottom: 20,
+    marginBottom: 24,
+    marginTop: -8,
   },
   passwordStrengthBar: {
     height: 4,
@@ -182,12 +196,15 @@ const styles = StyleSheet.create({
   },
   passwordStrengthText: {
     fontSize: 12,
-    fontWeight: '500',
+    fontFamily: 'NotoSans-Medium',
   },
   eyeIcon: {
     fontSize: 20,
   },
   resetButton: {
-    marginTop: 20,
+    marginTop: 24,
+    backgroundColor: '#0D81FC', // lightTheme.colors.primaryBlue
+    borderRadius: 12,
+    height: 50,
   },
 });

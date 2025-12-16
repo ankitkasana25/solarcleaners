@@ -103,7 +103,7 @@ export const SignupScreen = observer(() => {
         >
           <View style={styles.header}>
             <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join us for cleaner energy</Text>
+            <Text style={styles.subtitle}>Join us for specific solar solutions</Text>
           </View>
 
           <View style={styles.form}>
@@ -194,22 +194,36 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   header: {
-    marginBottom: 30,
+    marginBottom: 32,
+    alignItems: 'flex-start',
   },
   title: {
-    ...typography.header,
+    fontSize: 28,
+    fontFamily: 'NotoSans-Bold',
+    color: '#1C1C1E',
     marginBottom: 8,
+    textAlign: 'left',
   },
   subtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
+    fontSize: 14,
+    fontFamily: 'NotoSans-Regular',
+    color: '#666666',
+    textAlign: 'left',
   },
   form: {
     width: '100%',
   },
   signupButton: {
-    marginTop: 16,
-    marginBottom: 24,
+    marginTop: 24,
+    marginBottom: 32,
+    backgroundColor: '#0D81FC', // lightTheme.colors.primaryBlue
+    borderRadius: 12,
+    height: 50,
+    shadowColor: '#0D81FC',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   divider: {
     flexDirection: 'row',
@@ -219,18 +233,19 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: colors.border,
+    backgroundColor: '#E5E5EA',
   },
   dividerText: {
     marginHorizontal: 16,
-    color: colors.textSecondary,
-    fontSize: 14,
+    color: '#8E8E93',
+    fontSize: 12,
+    fontFamily: 'NotoSans-Medium',
   },
   socialButtons: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: 32,
-    gap: 16,
+    gap: 20,
   },
   socialButton: {
     width: 56,
@@ -238,26 +253,33 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#F2F2F7',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
     elevation: 2,
   },
   socialIcon: {
-    width: 32,
-    height: 32,
+    width: 24,
+    height: 24,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
   },
   footerText: {
-    color: colors.textSecondary,
+    color: '#8E8E93',
+    fontFamily: 'NotoSans-Regular',
+    fontSize: 14,
   },
   footerLink: {
-    color: colors.primary,
-    fontWeight: 'bold',
+    color: '#0D81FC',
+    fontFamily: 'NotoSans-Bold', // Fixed typo
+    marginLeft: 4,
+    fontSize: 14,
   },
 });

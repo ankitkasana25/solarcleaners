@@ -5,13 +5,14 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 
 import { OTPInput } from '../../components/OTPInput';
 import { Toast } from '../../components/Toast';
 import { Button } from '../../components/Button';
-import { colors } from '../../theme/colors';
+import { lightTheme } from '../../theme/theme';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useRootStore } from '../../stores/RootStore';
 import { observer } from 'mobx-react-lite';
@@ -100,8 +101,8 @@ export const OTPVerificationScreen = observer(() => {
           // Navigate to home screen after successful signup
           await authStore.login(email || '');
           setIsLoading(false);
-          // Navigate to main app (you may need to adjust this navigation)
-          navigation.navigate('Main');
+          // Navigate to main app
+          navigation.navigate('MainTabs');
         } else if (isFromForgotPassword) {
           setIsLoading(false);
           navigation.navigate('ResetPassword', { email });
@@ -156,13 +157,21 @@ export const OTPVerificationScreen = observer(() => {
   };
 
   return (
-    <>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: '#fff' }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.header}>
           <Text style={styles.title}>OTP Verification</Text>
           <Text style={styles.subtitle}>
-            An OTP has been sent to your registered Email
+            We've sent a verification code to your email
           </Text>
+          <Text style={styles.emailText}>{email || 'your email'}</Text>
         </View>
 
         <View style={styles.form}>
@@ -173,45 +182,27 @@ export const OTPVerificationScreen = observer(() => {
           />
 
           <View style={styles.timerContainer}>
-            <Text style={styles.timerLabel}>Resend: </Text>
-            <Text style={styles.timerText}>{formatTime(timer)} seconds</Text>
+            <Text style={styles.timerLabel}>Dish't receive code? </Text>
+            {canResend ? (
+              <TouchableOpacity onPress={handleResendOTP}>
+                <Text style={styles.resendText}>Resend</Text>
+              </TouchableOpacity>
+            ) : (
+              <Text style={styles.timerText}>Resend in {formatTime(timer)}</Text>
+            )}
           </View>
 
           <Button
-            title="Verify OTP"
+            title="Verify & Proceed"
             onPress={handleVerifyOTP}
             loading={isLoading}
             disabled={otp.length !== 5}
             style={styles.verifyButton}
           />
 
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>or continue with</Text>
-            <View style={styles.dividerLine} />
-          </View>
-
-          <View style={styles.socialButtons}>
-            <TouchableOpacity style={styles.socialButton}>
-              <Image
-                source={require('../../assets/icons/google.png')}
-                style={styles.socialIcon}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton}>
-              <Image
-                source={require('../../assets/icons/apple.png')}
-                style={styles.socialIcon}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-          </View>
-
           <View style={styles.footer}>
-            <Text style={styles.footerText}>Already have an account? </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-              <Text style={styles.footerLink}>Sign In</Text>
+              <Text style={styles.footerLink}>← Back to Login</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -223,7 +214,7 @@ export const OTPVerificationScreen = observer(() => {
         type={toastType}
         onHide={hideToast}
       />
-    </>
+    </KeyboardAvoidingView>
   );
 });
 
@@ -234,97 +225,71 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   header: {
-    marginTop: 20,
     marginBottom: 40,
+    alignItems: 'flex-start',
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: 8,
+    fontFamily: 'NotoSans-Bold',
+    color: '#1C1C1E',
+    marginBottom: 12,
+    textAlign: 'left',
   },
   subtitle: {
     fontSize: 14,
-    color: colors.textSecondary,
-    lineHeight: 20,
+    fontFamily: 'NotoSans-Regular',
+    color: '#666666',
+    textAlign: 'left',
+    marginBottom: 4,
+  },
+  emailText: {
+    fontSize: 14,
+    fontFamily: 'NotoSans-Bold',
+    color: '#1C1C1E',
+    textAlign: 'left',
   },
   form: {
     width: '100%',
   },
   otpContainer: {
-    marginBottom: 20,
+    marginBottom: 32,
     width: '100%',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
   },
   timerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginBottom: 30,
+    justifyContent: 'center',
+    marginBottom: 32,
   },
   timerLabel: {
     fontSize: 14,
-    color: colors.textSecondary,
+    fontFamily: 'NotoSans-Regular',
+    color: '#666666',
   },
   timerText: {
     fontSize: 14,
-    color: colors.textSecondary,
-    fontWeight: '500',
+    fontFamily: 'NotoSans-Bold',
+    color: '#666666',
+  },
+  resendText: {
+    fontSize: 14,
+    fontFamily: 'NotoSans-Bold',
+    color: lightTheme.colors.primaryBlue,
   },
   verifyButton: {
     marginBottom: 24,
-    width: '100%',
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-    width: '100%',
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#E0E0E0',
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    color: colors.textSecondary,
-    fontSize: 13,
-  },
-  socialButtons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 32,
-    gap: 16,
-  },
-  socialButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F5F5F5',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  socialIcon: {
-    width: 32,
-    height: 32,
+    backgroundColor: lightTheme.colors.primaryBlue,
+    borderRadius: 12,
+    height: 50,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
   },
-  footerText: {
-    color: colors.textSecondary,
-    fontSize: 14,
-  },
   footerLink: {
-    color: colors.primary,
-    fontWeight: '600',
+    color: lightTheme.colors.primaryBlue,
+    fontFamily: 'NotoSans-Bold',
     fontSize: 14,
   },
 });

@@ -5,13 +5,14 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 
 import { Input } from '../../components/Input';
 import { Toast } from '../../components/Toast';
 import { Button } from '../../components/Button';
-import { colors } from '../../theme/colors';
-import { typography } from '../../theme/typography';
+import { lightTheme } from '../../theme/theme';
 import { useNavigation } from '@react-navigation/native';
 
 export const ForgotPasswordScreen = () => {
@@ -72,19 +73,26 @@ export const ForgotPasswordScreen = () => {
   };
 
   return (
-    <>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: '#fff' }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.header}>
           <Text style={styles.title}>Forgot Password</Text>
           <Text style={styles.subtitle}>
             Enter your email address and we'll send you an OTP to reset your
-            password
+            password.
           </Text>
         </View>
 
         <View style={styles.form}>
           <Input
-            label="Email"
+            label="Email Address"
             placeholder="Enter your email"
             value={email}
             onChangeText={setEmail}
@@ -113,7 +121,7 @@ export const ForgotPasswordScreen = () => {
         type={toastType}
         onHide={hideToast}
       />
-    </>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -125,30 +133,38 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 40,
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   title: {
-    ...typography.header,
-    marginBottom: 8,
-    textAlign: 'center',
+    fontSize: 28,
+    fontFamily: 'NotoSans-Bold',
+    color: '#1C1C1E',
+    marginBottom: 12,
+    textAlign: 'left',
   },
   subtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
+    fontSize: 14,
+    fontFamily: 'NotoSans-Regular',
+    color: '#666666',
+    textAlign: 'left',
+    lineHeight: 22,
   },
   form: {
     width: '100%',
   },
   sendButton: {
-    marginTop: 20,
+    marginTop: 24,
+    backgroundColor: lightTheme.colors.primaryBlue,
+    borderRadius: 12,
+    height: 50,
   },
   footer: {
-    marginTop: 30,
+    marginTop: 32,
     alignItems: 'center',
   },
   backToLoginText: {
-    color: colors.primary,
-    fontWeight: '600',
+    color: lightTheme.colors.primaryBlue,
+    fontFamily: 'NotoSans-Bold',
+    fontSize: 14,
   },
 });
