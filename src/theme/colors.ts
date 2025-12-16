@@ -1,16 +1,16 @@
+import { lightTheme } from './theme';
+
 export const colors = {
-    primary: '#007AFF', // Blue from the design
-    secondary: '#5AC8FA', // Light blue/cyan
-    background: '#FFFFFF',
-    text: '#333333',
-    textSecondary: '#666666',
-    inputBackground: '#F5F5F5',
-    error: '#FF3B30',
-    success: '#34C759',
+    ...lightTheme.colors,
+    // Backwards compatibility layer
+    text: lightTheme.colors.gray1,
+    textSecondary: lightTheme.colors.gray3,
+    error: lightTheme.colors.redOrange,
+    success: lightTheme.colors.secondaryGreen,
     white: '#FFFFFF',
     black: '#000000',
-    border: '#E5E5EA',
+    border: lightTheme.colors.gray4,
     google: '#DB4437',
     apple: '#000000',
-    gold: '#FFD700',
+    gold: lightTheme.colors.subscribeGold,
 };

@@ -115,7 +115,7 @@ export const ServiceDetailScreen = observer(() => {
           onPress={() => navigation.goBack()}
           style={styles.iconButton}
         >
-          <ImageIcon name="arrow-left" size={18} color="#2E3A59" />
+          <ImageIcon name="arrow-left" size={18} color={colors.headerTitle} />
         </TouchableOpacity>
         <Text style={styles.headerTitle} numberOfLines={1}>
           {service.title}
@@ -126,7 +126,7 @@ export const ServiceDetailScreen = observer(() => {
             onPress={() => navigation.navigate('MainTabs', { screen: 'Cart' })}
           >
             <View>
-              <ImageIcon name="cart" size={20} color="#2E3A59" />
+              <ImageIcon name="cart" size={20} color={colors.headerTitle} />
               {cartStore.totalCount > 0 && (
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>{cartStore.totalCount}</Text>
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 18.2, // 130% of 14px
     letterSpacing: 0,
-    color: '#2E3A59',
+    color: colors.headerTitle,
     textAlign: 'center',
     textAlignVertical: 'center',
   },
@@ -421,7 +421,7 @@ const styles = StyleSheet.create({
   },
   priceDisplay: {
     fontSize: 18,
-    color: '#2D44B5',
+    color: colors.persianBlue,
     fontWeight: '500',
     marginBottom: 24,
     backgroundColor: '#F0F7FF',
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
   priceValue: {
     fontWeight: '600',
     fontSize: 22,
-    color: '#2D44B5',
+    color: colors.persianBlue,
     fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
     letterSpacing: 0.5,
   },
@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
   footerPrice: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#2D44B5',
+    color: colors.persianBlue,
     fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
     letterSpacing: 0.5,
   },
