@@ -87,8 +87,6 @@ import { SeasonalOffers } from '../../components/SeasonalOffers';
 import { SubscriptionPlans } from '../../components/SubscriptionPlans';
 import { FreeConsultation } from '../../components/FreeConsultation';
 
-
-
 export const HomeScreen = observer(() => {
   const navigation = useNavigation();
   // const { authStore } = useRootStore(); // user data available if needed
@@ -182,6 +180,6 @@ const styles = StyleSheet.create({
   },
   horizontalScroll: {
     paddingHorizontal: 20,
-    paddingBottom: 24, // Added more breathing room for shadows
+    paddingBottom: 16, // Added more breathing room for shadows
   },
 });
