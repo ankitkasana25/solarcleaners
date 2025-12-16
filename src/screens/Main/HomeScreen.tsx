@@ -104,6 +104,9 @@ export const HomeScreen = observer(() => {
         style={styles.content}
         showsVerticalScrollIndicator={false}
         decelerationRate="fast"
+        scrollEventThrottle={16}
+        removeClippedSubviews={true}
+        overScrollMode="never"
       >
         <ServicePromotions />
         <SectionTitle
@@ -118,6 +121,8 @@ export const HomeScreen = observer(() => {
           contentContainerStyle={styles.horizontalScroll}
           decelerationRate="fast"
           snapToAlignment="center" // enhances 'smooth' feel for horizontal lists
+          removeClippedSubviews={true}
+          scrollEventThrottle={16}
         >
           {premiumServices.map(service => (
             <PremiumServiceCard
@@ -139,6 +144,8 @@ export const HomeScreen = observer(() => {
           contentContainerStyle={styles.horizontalScroll}
           decelerationRate="fast"
           snapToAlignment="center"
+          removeClippedSubviews={true}
+          scrollEventThrottle={16}
         >
           {trendingServices.map(service => (
             <TrendingServiceCard

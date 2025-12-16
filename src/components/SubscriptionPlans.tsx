@@ -127,10 +127,10 @@ export const SubscriptionPlans = observer(() => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <SectionTitle title="Subscription Plans" badgeText="Annual Plans" />
-                <TouchableOpacity><Text style={styles.viewAll}>View All</Text></TouchableOpacity>
-            </View>
+            <SectionTitle
+                title="Subscription Plans"
+                badgeText="Annual Plans"
+            />
 
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent} pagingEnabled snapToInterval={PLAN_WIDTH + 16}>
                 {plans.map((plan) => (
@@ -175,12 +175,7 @@ const styles = StyleSheet.create({
     container: {
         marginBottom: 24,
     },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingRight: 20,
-    },
+
     viewAll: {
         color: '#007AFF',
         fontWeight: '600',

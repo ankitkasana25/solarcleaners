@@ -216,6 +216,9 @@ export const ServicesScreen = () => {
         style={styles.content}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        scrollEventThrottle={16}
+        removeClippedSubviews={true}
+        overScrollMode="never"
       >
         <ServiceCategories
           categories={CATEGORIES}

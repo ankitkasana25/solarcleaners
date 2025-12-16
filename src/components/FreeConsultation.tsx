@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
 import { SectionTitle } from './SectionTitle';
 import { colors } from '../theme/colors';
-
-import { Toast } from './Toast'; // Import Toast
+import { lightTheme } from '../theme/theme';
+import { Toast } from './Toast';
 
 export const FreeConsultation = () => {
-    const [phone, setPhone] = React.useState('');
-    const [message, setMessage] = React.useState('');
-    const [toastVisible, setToastVisible] = React.useState(false);
-    const [toastMessage, setToastMessage] = React.useState('');
-    const [toastType, setToastType] = React.useState<'success' | 'error' | 'info'>('info');
+    const [phone, setPhone] = useState('');
+    const [message, setMessage] = useState('');
+    const [toastVisible, setToastVisible] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
 
     const handleRequestCall = () => {
         if (!phone) {
@@ -20,7 +20,6 @@ export const FreeConsultation = () => {
             return;
         }
 
-        // Simulating submission
         setToastMessage('Request sent! We will call you soon.');
         setToastType('success');
         setToastVisible(true);
@@ -105,11 +104,11 @@ const styles = StyleSheet.create({
         padding: 24,
         borderWidth: 1,
         borderColor: '#F2F2F7',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 2,
+        shadowColor: lightTheme.colors.primaryBlue,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 16,
+        elevation: 4,
     },
     headerContent: {
         flexDirection: 'row',
@@ -120,7 +119,7 @@ const styles = StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 24,
-        backgroundColor: '#F2F2F7',
+        backgroundColor: '#F0F7FF',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 16,
@@ -133,13 +132,14 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 18,
-        fontWeight: '700',
-        color: '#1C1C1E', // Dark text
+        fontFamily: 'NotoSans-Bold',
+        color: '#1C1C1E',
         marginBottom: 4,
     },
     subtitle: {
         fontSize: 14,
-        color: '#666666', // Grey text
+        fontFamily: 'NotoSans-Regular',
+        color: '#666666',
         lineHeight: 20,
     },
     formContainer: {
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     inputWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F9FAFB', // Very light grey bg
+        backgroundColor: '#F9FAFB',
         borderRadius: 12,
         paddingHorizontal: 16,
         height: 52,
@@ -164,24 +164,25 @@ const styles = StyleSheet.create({
         flex: 1,
         color: '#1C1C1E',
         fontSize: 15,
+        fontFamily: 'NotoSans-Regular',
     },
     submitButton: {
         marginTop: 20,
-        backgroundColor: colors.primary, // Solid brand color
+        backgroundColor: lightTheme.colors.primaryBlue,
         paddingVertical: 16,
         borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: colors.primary,
+        shadowColor: lightTheme.colors.primaryBlue,
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
+        shadowOpacity: 0.3,
         shadowRadius: 8,
-        elevation: 3,
+        elevation: 4,
     },
     submitButtonText: {
         color: '#FFF',
         fontSize: 16,
-        fontWeight: '600',
+        fontFamily: 'NotoSans-Bold',
     },
     footerStrip: {
         borderTopWidth: 1,
@@ -192,9 +193,10 @@ const styles = StyleSheet.create({
     footerText: {
         color: '#8E8E93',
         fontSize: 13,
+        fontFamily: 'NotoSans-Medium',
     },
     footerPhone: {
-        color: colors.primary,
-        fontWeight: '600',
+        color: lightTheme.colors.primaryBlue,
+        fontFamily: 'NotoSans-Bold',
     },
 });
