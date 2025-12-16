@@ -28,7 +28,7 @@ export const ScreenHeader = ({
                 {/* Left: Hamburger and Title */}
                 <View style={styles.leftSection}>
                     <TouchableOpacity onPress={openDrawer} style={styles.menuButton}>
-                        <ImageIcon name="menu" size={28} color="#000000ff" />
+                        <ImageIcon name="menu" size={24} color="#2E3A59" />
                     </TouchableOpacity>
                     <Text style={styles.title}>{title}</Text>
                 </View>
@@ -36,15 +36,21 @@ export const ScreenHeader = ({
                 {/* Right: Actions */}
                 <View style={styles.rightSection}>
                     {showNotification && (
-                        <TouchableOpacity style={styles.iconButton}>
-                            <ImageIcon name="bell" size={24} color="#1C1C1E" />
+                        <TouchableOpacity
+                            style={styles.iconButton}
+                            onPress={() => navigation.navigate('MainStack' as never, { screen: 'Notifications' } as never)}
+                        >
+                            <ImageIcon name="bell" size={24} color="#2E3A59" />
                             <View style={styles.notificationBadge} />
                         </TouchableOpacity>
                     )}
                     {showProfile && (
-                        <TouchableOpacity style={styles.profileButton}>
+                        <TouchableOpacity
+                            style={styles.profileButton}
+                            onPress={() => navigation.navigate('UserProfile' as never)}
+                        >
                             <View style={styles.profilePlaceholder}>
-                                <ImageIcon name="profile" size={20} />
+                                <ImageIcon name="profile" size={20} color="#FFFFFF" />
                             </View>
                         </TouchableOpacity>
                     )}
@@ -58,15 +64,23 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#FFFFFF',
         borderBottomWidth: 1,
-        borderBottomColor: '#F0F0F0',
-        paddingBottom: 8,
+        borderBottomColor: '#F2F2F7',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
     },
     contentContainer: {
+        height: 48,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        height: 50,
+        paddingTop: 12,
+        paddingRight: 16,
+        paddingBottom: 12,
+        paddingLeft: 16,
+        gap: 16,
     },
     leftSection: {
         flexDirection: 'row',
@@ -74,19 +88,23 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     menuButton: {
-        marginRight: 16,
+        padding: 8,
     },
     title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#1C1C1E',
+        fontFamily: 'NotoSans-Medium',
+        fontWeight: '500',
+        fontSize: 14,
+        lineHeight: 18.2, // 130% of 14px
+        letterSpacing: 0,
+        color: '#2E3A59',
+        textAlignVertical: 'center',
     },
     rightSection: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     iconButton: {
-        marginLeft: 16,
+        padding: 8,
         position: 'relative',
     },
     notificationBadge: {
@@ -101,7 +119,8 @@ const styles = StyleSheet.create({
         borderColor: '#FFF',
     },
     profileButton: {
-        marginLeft: 16,
+        marginLeft: 8,
+        padding: 4,
     },
     profilePlaceholder: {
         width: 32,
@@ -110,6 +129,5 @@ const styles = StyleSheet.create({
         backgroundColor: '#007AFF',
         justifyContent: 'center',
         alignItems: 'center',
-        position: 'relative',
     },
 });

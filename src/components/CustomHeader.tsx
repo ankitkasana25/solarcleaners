@@ -5,11 +5,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  Platform,
   StatusBar,
 } from 'react-native';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context'; // Import hook
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme/colors';
 import { ImageIcon } from './ImageIcon';
 
@@ -19,7 +18,7 @@ interface CustomHeaderProps {
 
 export const CustomHeader = ({ title }: CustomHeaderProps) => {
   const navigation = useNavigation<any>();
-  const insets = useSafeAreaInsets(); // Get safe area insets
+  const insets = useSafeAreaInsets();
 
   const openDrawer = () => {
     navigation.dispatch(DrawerActions.openDrawer());
@@ -30,41 +29,11 @@ export const CustomHeader = ({ title }: CustomHeaderProps) => {
       style={[
         styles.container,
         {
-          paddingTop: Math.max(insets.top, 10),
-          height: 60 + Math.max(insets.top, 10),
+          paddingTop: insets.top,
         },
       ]}
     >
-      {/* If inside SafeAreaView, insets might be handled. But if this is a header, usually it needs to pad for status bar manually if translucency is on.
-                 However, if used inside ScreenContainer (which is SafeAreaView), double padding might occur.
-                 Best practice for custom headers: Do NOT add top padding if the container is already safe.
-                 BUT, legacy code often nests headers weirdly.
-                 Given 'safearea in the android 15', robust approach is using insets.
-                 If safe area view is parent, use edges to avoid top inset there OR here.
-                 I'll assume this header can stand alone.
-                 But wait, if ScreenContainer is SafeAreaView, it adds padding.
-                 If CustomHeader adds padding too, we get huge whitespace.
-                 I should rely on the PARENT SafeAreaView (ScreenContainer) to provide the safety.
-                 So CustomHeader should strictly just be the content bar (height ~60, centered).
-                 BUT, if HomeScreen does NOT have a header (it uses SearchBar directly), then CustomHeader is likely used in other screens *without* ScreenContainer?
-                 No, we updated ScreenContainer.
-                 If CustomHeader is used in stacks via `header: () => ...`, the stack container might NOT be SafeAreaView.
-                 Let's make CustomHeader adaptable? 
-                 Simple fix: Use standard height and center content. Remove manual top padding if it's meant to be in safe content.
-                 However, usually one wants the header background to extend behind status bar.
-                 If so, padding is needed.
-                 Let's stick to safe padding but maybe conditionally?
-                 The user complaint is 'overlapping'.
-                 If I use `ScreenContainer` in screens, the content is PUSHED DOWN properly.
-                 So CustomHeader (if used inside) should NOT have top padding.
-                 Let's remove the forced top padding/height calc and use flex/minHeight.
-            */}
       <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
-      {/* Note: SafeAreaView (ScreenContainer) handles top padding.
-                 So we just need a row of 60px height.
-                 But if CustomHeader is used as a Stack Header (absolute positioned or outside safe area), it might need padding.
-                 Let's try standardizing it to a simple toolbar.
-            */}
       <View style={styles.contentContainer}>
         <View style={styles.leftContainer}>
           <TouchableOpacity onPress={openDrawer} style={styles.iconButton}>
@@ -110,17 +79,18 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    // Height handled by content
   },
   contentContainer: {
-    // New container for actual toolbar content
-    height: 60,
+    height: 48,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingRight: 16,
+    paddingBottom: 12,
+    paddingLeft: 16,
+    gap: 16,
   },
-  // ... rest of styles
   leftContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -129,13 +99,13 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   title: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: colors.text,
-    marginLeft: 8,
     fontFamily: 'NotoSans-Medium',
+    fontWeight: '500',
+    fontSize: 14,
+    lineHeight: 18.2, // 130% of 14px
     letterSpacing: 0,
-    textAlignVertical: 'center', // Android only
+    color: '#2E3A59',
+    textAlignVertical: 'center',
   },
   rightContainer: {
     flexDirection: 'row',
@@ -163,6 +133,6 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#E1E1E1', // Fallback color
+    backgroundColor: '#E1E1E1',
   },
 });

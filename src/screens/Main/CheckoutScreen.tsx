@@ -36,7 +36,7 @@ export const CheckoutScreen = observer(() => {
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color="#1C1C1E" />
+                    <Ionicons name="arrow-back" size={24} color="#2E3A59" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Checkout</Text>
                 <View style={{ width: 40 }} /> {/* Spacer to balance title */}
@@ -94,22 +94,34 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     header: {
+        height: 48,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+        paddingTop: 12,
+        paddingRight: 16,
+        paddingBottom: 12,
+        paddingLeft: 16,
+        gap: 16,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
-        borderBottomColor: '#F0F0F0',
+        borderBottomColor: '#F2F2F7',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
     },
     backButton: {
         padding: 8,
     },
     headerTitle: {
-        fontSize: 18,
-        fontWeight: '700',
-        color: '#1C1C1E',
+        fontFamily: 'NotoSans-Medium',
+        fontWeight: '500',
+        fontSize: 14,
+        lineHeight: 18.2,
+        letterSpacing: 0,
+        color: '#2E3A59',
     },
     section: {
         backgroundColor: '#fff',

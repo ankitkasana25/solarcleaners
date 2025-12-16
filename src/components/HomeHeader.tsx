@@ -2,7 +2,6 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { ImageIcon } from './ImageIcon';
 
 export const HomeHeader = () => {
@@ -16,23 +15,28 @@ export const HomeHeader = () => {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.contentContainer}>
-        {/* Left: Hamburger and Location */}
+        {/* Left: Hamburger */}
         <View style={styles.leftSection}>
           <TouchableOpacity onPress={openDrawer} style={styles.menuButton}>
-            <ImageIcon name="menu" size={28} color="#000000ff" />
+            <ImageIcon name="menu" size={24} color="#2E3A59" />
           </TouchableOpacity>
         </View>
 
         {/* Right: Actions */}
         <View style={styles.rightSection}>
-          <TouchableOpacity style={styles.iconButton}>
-            <ImageIcon name="bell" size={24} color="#1C1C1E" />
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => navigation.navigate('MainStack' as never, { screen: 'Notifications' } as never)}
+          >
+            <ImageIcon name="bell" size={24} color="#2E3A59" />
             <View style={styles.notificationBadge} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.profileButton} onPress={() => navigation.navigate('UserProfile' as never)}>
-            {/* Placeholder for Profile Image */}
+          <TouchableOpacity
+            style={styles.profileButton}
+            onPress={() => navigation.navigate('UserProfile' as never)}
+          >
             <View style={styles.profilePlaceholder}>
-              <ImageIcon name="profile" size={20} />
+              <ImageIcon name="profile" size={20} color="#FFFFFF" />
             </View>
           </TouchableOpacity>
         </View>
@@ -45,47 +49,37 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
-    paddingBottom: 8,
+    borderBottomColor: '#F2F2F7',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   contentContainer: {
+    height: 48,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    height: 50, // Standard header height content area
+    paddingTop: 12,
+    paddingRight: 16,
+    paddingBottom: 12,
+    paddingLeft: 16,
+    gap: 16,
   },
   leftSection: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   menuButton: {
-    marginRight: 16,
-  },
-  appLogo: {
-    width: 100,
-    height: 32,
-    marginRight: 16,
-  },
-  locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  locationIcon: {
-    marginRight: 4,
-  },
-  locationText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1C1C1E',
-    marginRight: 4,
+    padding: 8,
   },
   rightSection: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   iconButton: {
-    marginLeft: 16,
+    padding: 8,
     position: 'relative',
   },
   notificationBadge: {
@@ -100,26 +94,15 @@ const styles = StyleSheet.create({
     borderColor: '#FFF',
   },
   profileButton: {
-    marginLeft: 16,
+    marginLeft: 8,
+    padding: 4,
   },
   profilePlaceholder: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#007AFF', // or an image
+    backgroundColor: '#007AFF',
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
-  },
-  onlineBadge: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#34C759',
-    borderWidth: 1,
-    borderColor: '#FFF',
   },
 });

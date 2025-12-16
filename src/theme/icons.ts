@@ -20,7 +20,7 @@ export const iconAssets = {
     // Fallbacks
     location: require('../assets/icons/menu.png'), // Fallback
     dropdown: require('../assets/icons/menu.png'), // Fallback
-    'arrow-left': require('../assets/icons/menu.png'), // Placeholder
+    'arrow-left': require('../assets/icons/arrow_back.png'),
     share: require('../assets/icons/menu.png'), // Placeholder
 };
 

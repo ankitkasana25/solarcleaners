@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Dimensions, Alert, TextInput, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  Dimensions,
+  Alert,
+  TextInput,
+  Platform,
+} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import { useRootStore } from '../../stores/RootStore';
@@ -7,7 +18,6 @@ import { ScreenContainer } from '../../components/ScreenContainer';
 import { ImageIcon } from '../../components/ImageIcon';
 import { colors } from '../../theme/colors';
 import { Toast } from '../../components/Toast';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const { width } = Dimensions.get('window');
 
@@ -26,16 +36,23 @@ interface ServiceData {
 export const ServiceDetailScreen = observer(() => {
   const navigation = useNavigation<any>();
   const route = useRoute();
-  const { service } = (route.params as { service: ServiceData }) || { service: {} };
+  const { service } = (route.params as { service: ServiceData }) || {
+    service: {},
+  };
   const { cartStore } = useRootStore();
   const [systemSize, setSystemSize] = useState('1.0');
 
   // Toast state
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>(
+    'info',
+  );
 
-  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+  const showToast = (
+    message: string,
+    type: 'success' | 'error' | 'info' = 'info',
+  ) => {
     setToastMessage(message);
     setToastType(type);
     setToastVisible(true);
@@ -94,19 +111,22 @@ export const ServiceDetailScreen = observer(() => {
     <ScreenContainer style={styles.container}>
       {/* Custom Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconButton}>
-          {/* Use Ionicons for a proper back arrow */}
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.iconButton}
+        >
+          <ImageIcon name="arrow-left" size={18} color="#2E3A59" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle} numberOfLines={1}>{service.title}</Text>
+        <Text style={styles.headerTitle} numberOfLines={1}>
+          {service.title}
+        </Text>
         <View style={styles.headerRight}>
-          {/* Removed Share icon? User said: "remove the Menu icon... and the cart will show there". The current header has Share and Cart. I'll remove Share to act like "removing the extra menu icon" if that's what they meant, or just keep Cart. User instruction: "remove the Menu icon from the header and the cart will show there". Previously it was Back (Menu placeholder), Title, Share, Cart. I will remove Share. */}
           <TouchableOpacity
             style={styles.iconButton}
             onPress={() => navigation.navigate('MainTabs', { screen: 'Cart' })}
           >
             <View>
-              <ImageIcon name="cart" size={24} color={colors.text} />
+              <ImageIcon name="cart" size={20} color="#2E3A59" />
               {cartStore.totalCount > 0 && (
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>{cartStore.totalCount}</Text>
@@ -124,7 +144,10 @@ export const ServiceDetailScreen = observer(() => {
         onHide={() => setToastVisible(false)}
       />
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Image Section */}
         <View style={styles.imageContainer}>
           {/* Handle both remote URI and local require/import images */}
@@ -141,7 +164,9 @@ export const ServiceDetailScreen = observer(() => {
           <View style={styles.titleRow}>
             <Text style={styles.title}>{service.title}</Text>
             <View style={styles.categoryBadge}>
-              <Text style={styles.categoryText}>{service.category || 'Service'}</Text>
+              <Text style={styles.categoryText}>
+                {service.category || 'Service'}
+              </Text>
             </View>
           </View>
 
@@ -159,32 +184,54 @@ export const ServiceDetailScreen = observer(() => {
             </View>
           </View>
 
-          <Text style={styles.priceDisplay}>Total Price: <Text style={styles.priceValue}>₹{totalPrice.toLocaleString()}</Text></Text>
+          <Text style={styles.priceDisplay}>
+            Total Price:{' '}
+            <Text style={styles.priceValue}>
+              ₹{totalPrice.toLocaleString()}
+            </Text>
+          </Text>
 
           <Text style={styles.sectionHeader}>About this service</Text>
           <Text style={styles.description}>
-            {service.description || 'A thorough one-time deep cleaning session tailored for heavily soiled panels.'}
+            {service.description ||
+              'A thorough one-time deep cleaning session tailored for heavily soiled panels.'}
           </Text>
 
           {/* Technical Highlights */}
           <View style={styles.highlightsContainer}>
             <Text style={styles.sectionHeader}>Technical Highlights</Text>
-            {(service.technicalHighlights || [
-              "Targets heavy grime: moss, sap, lichen, cement dust.",
-              "Can recover up to 30-40% of lost output.",
-              "Provides early detection of micro-cracks or hotspots."
-            ]).map((item, index) => (
-              <Text key={index} style={styles.bulletPoint}>{index + 1}. {item}</Text>
+            {(
+              service.technicalHighlights || [
+                'Targets heavy grime: moss, sap, lichen, cement dust.',
+                'Can recover up to 30-40% of lost output.',
+                'Provides early detection of micro-cracks or hotspots.',
+              ]
+            ).map((item, index) => (
+              <Text key={index} style={styles.bulletPoint}>
+                {index + 1}. {item}
+              </Text>
             ))}
           </View>
 
           <Text style={styles.sectionHeader}>Benefits</Text>
-          {(service.benefits || [
-            { icon: '⚡', title: 'Improved Efficiency', description: "Maximize your system's output" },
-            { icon: '💰', title: 'Cost Savings', description: "Reduce long-term maintenance costs" }
-          ]).map((benefit, index) => (
+          {(
+            service.benefits || [
+              {
+                icon: '⚡',
+                title: 'Improved Efficiency',
+                description: "Maximize your system's output",
+              },
+              {
+                icon: '💰',
+                title: 'Cost Savings',
+                description: 'Reduce long-term maintenance costs',
+              },
+            ]
+          ).map((benefit, index) => (
             <View key={index} style={styles.benefitItem}>
-              <View style={styles.benefitIcon}><Text style={{ fontSize: 20 }}>{benefit.icon}</Text></View>
+              <View style={styles.benefitIcon}>
+                <Text style={{ fontSize: 20 }}>{benefit.icon}</Text>
+              </View>
               <View style={styles.benefitTextContainer}>
                 <Text style={styles.benefitTitle}>{benefit.title}</Text>
                 <Text style={styles.benefitDesc}>{benefit.description}</Text>
@@ -203,10 +250,18 @@ export const ServiceDetailScreen = observer(() => {
           <Text style={styles.footerPrice}>₹{totalPrice.toLocaleString()}</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart} activeOpacity={0.8}>
+          <TouchableOpacity
+            style={styles.addToCartButton}
+            onPress={handleAddToCart}
+            activeOpacity={0.8}
+          >
             <Text style={styles.addToCartText}>Add to Cart</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buyNowButton} onPress={handleBuyNow} activeOpacity={0.9}>
+          <TouchableOpacity
+            style={styles.buyNowButton}
+            onPress={handleBuyNow}
+            activeOpacity={0.9}
+          >
             <Text style={styles.buyNowText}>Buy Now</Text>
           </TouchableOpacity>
         </View>
@@ -221,14 +276,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
+    height: 48,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    justifyContent: 'space-between',
+    paddingTop: 12,
+    paddingRight: 16,
+    paddingBottom: 12,
+    paddingLeft: 16,
+    gap: 16,
+
+    borderBottomColor: '#F2F2F7',
     backgroundColor: '#fff',
-    elevation: 2,
+
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -236,19 +296,25 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 8,
+    width: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerTitle: {
     flex: 1,
-    fontSize: 18,
-    fontWeight: '700',
+    fontFamily: 'NotoSans-Medium',
+    fontWeight: '500',
+    fontSize: 14,
+    lineHeight: 18.2, // 130% of 14px
+    letterSpacing: 0,
+    color: '#2E3A59',
     textAlign: 'center',
-    marginHorizontal: 16,
-    color: '#1C1C1E',
+    textAlignVertical: 'center',
   },
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    width: 40,
   },
   badge: {
     position: 'absolute',
