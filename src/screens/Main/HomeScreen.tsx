@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native'; // Consolidated import
+import { StyleSheet, ScrollView } from 'react-native'; // Consolidated import
 import { useNavigation } from '@react-navigation/native';
 
 import { SearchBar } from '../../components/SearchBar';
@@ -164,8 +164,6 @@ export const HomeScreen = observer(() => {
         <SeasonalOffers />
         <SubscriptionPlans />
         <FreeConsultation />
-
-        <View style={{ height: 50 }} />
         {/* Bottom spacer */}
       </ScrollView>
     </>

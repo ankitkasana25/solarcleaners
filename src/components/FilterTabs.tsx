@@ -48,40 +48,40 @@ export const FilterTabs = ({ tabs, activeTab, onTabPress }: FilterTabsProps) => 
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'transparent',
         paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: '#F0F0F0',
+        marginBottom: 8,
     },
     scrollContent: {
         paddingHorizontal: 20,
-        gap: 12,
+        gap: 10,
     },
     tab: {
-        paddingHorizontal: 20,
-        paddingVertical: 8,
-        borderRadius: 28,
-        shadowColor: '#0D81FC',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 4,
-        elevation: 3,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: 'transparent',
     },
     activeTab: {
         backgroundColor: colors.primary,
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 6,
     },
     inactiveTab: {
         backgroundColor: '#FFFFFF',
-        borderWidth: 2,
-        borderColor: colors.primary,
+        borderColor: '#E1E1E1',
     },
     tabText: {
-        fontSize: 15,
-        fontWeight: '600',
-        color: colors.primary,
+        fontSize: 14,
+        fontFamily: 'NotoSans-Medium',
+        color: '#8E8E93',
     },
     activeTabText: {
-        fontWeight: '700',
+        fontFamily: 'NotoSans-Bold',
         color: '#FFFFFF',
     },
 });

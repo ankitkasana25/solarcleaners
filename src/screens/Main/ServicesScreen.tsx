@@ -10,12 +10,12 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenContainer } from '../../components/ScreenContainer';
-import { ScreenHeader } from '../../components/ScreenHeader';
 import { SearchBar } from '../../components/SearchBar';
 import { FilterTabs, FilterTab } from '../../components/FilterTabs';
+import { SectionTitle } from '../../components/SectionTitle'; // Added
+import { ImageIcon } from '../../components/ImageIcon'; // Added
 
-import { colors } from '../../theme/colors';
-import { typography } from '../../theme/typography';
+import { lightTheme } from '../../theme/theme'; // Updated usage
 import { FAQSection } from '../../components/FAQSection';
 
 const { width } = Dimensions.get('window');
@@ -335,22 +335,18 @@ interface ServiceSectionProps {
 const ServiceSection = ({
   title,
   services,
-  icon = '🔧',
-}: ServiceSectionProps) => {
+}: { title: string; services: any[] }) => {
   return (
     <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <View style={styles.sectionTitleContainer}>
-          <View style={styles.iconContainer}>
-            <Text style={styles.sectionIcon}>{icon}</Text>
-          </View>
-          <Text style={styles.sectionTitle}>{title}</Text>
-        </View>
-        <TouchableOpacity style={styles.seeAllButton}>
-          <Text style={styles.seeAllText}>See All</Text>
-          <Text style={styles.seeAllArrow}>→</Text>
-        </TouchableOpacity>
-      </View>
+      <SectionTitle
+        title={title}
+        tagline={`Explore ${title} Services`}
+        rightElement={
+          <TouchableOpacity>
+            <Text style={styles.seeAllText}>View All</Text>
+          </TouchableOpacity>
+        }
+      />
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -400,22 +396,18 @@ export const ServicesScreen = () => {
           <ServiceSection
             title="Cleaning"
             services={servicesData.cleaning}
-            icon="✨"
           />
           <ServiceSection
             title="Maintenance"
             services={servicesData.maintenance}
-            icon="🔧"
           />
           <ServiceSection
-            title="Repair"
+            title="Repairing"
             services={servicesData.repairing}
-            icon="🛠️"
           />
           <ServiceSection
             title="Installation"
             services={servicesData.installation}
-            icon="⚡"
           />
           <FAQSection /> {/* Using imported FAQSection component */}
         </>
@@ -443,7 +435,7 @@ export const ServicesScreen = () => {
     return (
       <View style={styles.categoryView}>
         <View style={styles.gridContainer}>
-          {categoryServices.map(service => (
+          {categoryServices.map((service: any) => (
             <View key={service.id} style={styles.gridItemWrapper}>
               <ServiceCard
                 title={service.title}
@@ -497,73 +489,25 @@ export const ServicesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#FAFAFA', // Lighter background
   },
   content: {
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 24,
+    paddingBottom: 40,
   },
   section: {
-    marginTop: 24,
+    marginTop: 16,
     marginBottom: 8,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 16,
-  },
-  sectionTitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  sectionIcon: {
-    fontSize: 22,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#1C1C1E',
-    letterSpacing: -0.5,
-  },
-  seeAllButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    backgroundColor: '#F0F7FF',
   },
   seeAllText: {
     fontSize: 14,
-    color: colors.primary,
-    fontWeight: '600',
-    marginRight: 4,
-  },
-  seeAllArrow: {
-    fontSize: 14,
-    color: colors.primary,
-    fontWeight: 'bold',
+    color: lightTheme.colors.primary,
+    fontFamily: 'NotoSans-Bold',
   },
   cardsContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     gap: 16,
   },
 
@@ -571,112 +515,108 @@ const styles = StyleSheet.create({
   horizontalServiceCard: {
     width: CARD_WIDTH,
     backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    overflow: 'hidden',
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#F0F0F0',
+    borderColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    marginBottom: 10,
   },
   horizontalImageContainer: {
     position: 'relative',
-    height: 160,
+    height: 180, // Taller images
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: 'hidden',
   },
   horizontalPlaceholderImage: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#E8F1FF',
+    backgroundColor: lightTheme.colors.antiFlashWhite,
   },
-  // REMOVED horizontalImageIcon styles
 
   // Grid Service Card Styles
   gridServiceCard: {
     width: GRID_CARD_WIDTH,
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    overflow: 'hidden',
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#F0F0F0',
+    borderColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
   },
   gridImageContainer: {
     position: 'relative',
-    height: 120,
+    height: 140,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    overflow: 'hidden',
   },
   gridPlaceholderImage: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#F0F7FF',
+    backgroundColor: lightTheme.colors.antiFlashWhite,
   },
-  // REMOVED gridImageIcon styles
 
   // Common Card Styles
-  imageOverlay: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(13, 129, 252, 0.05)',
-  },
-  // REMOVED categoryIcon and categoryIconLarge styles
-
   badgeContainer: {
     position: 'absolute',
     top: 12,
     left: 12,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
+    gap: 8,
   },
   badge: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: 6,
+    backgroundColor: 'rgba(0,0,0,0.6)',
   },
-  featuredBadge: {
-    backgroundColor: '#4CD964',
-  },
-  popularBadge: {
-    backgroundColor: '#FF9500',
-  },
-  urgentBadge: {
-    backgroundColor: '#FF3B30',
-  },
-  discountBadge: {
-    backgroundColor: '#5856D6',
-  },
+  featuredBadge: { backgroundColor: lightTheme.colors.primary },
+  popularBadge: { backgroundColor: lightTheme.colors.subscribeGold },
+  urgentBadge: { backgroundColor: lightTheme.colors.redOrange },
+  discountBadge: { backgroundColor: '#5856D6' },
+
   badgeText: {
     color: '#FFFFFF',
     fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0.3,
+    fontFamily: 'NotoSans-Bold',
+    textTransform: 'uppercase',
   },
 
   // Card Content Styles
   horizontalCardContent: {
-    padding: 20,
-  },
-  gridCardContent: {
     padding: 16,
   },
+  gridCardContent: {
+    padding: 12,
+  },
   titleContainer: {
-    marginBottom: 16,
+    marginBottom: 12,
   },
   horizontalCardTitle: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 16,
+    fontFamily: 'NotoSans-Bold',
     color: '#1C1C1E',
-    lineHeight: 24,
-    marginBottom: 6,
+    marginBottom: 4,
   },
   gridCardTitle: {
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: 14,
+    fontFamily: 'NotoSans-Bold',
     color: '#1C1C1E',
-    lineHeight: 20,
     marginBottom: 4,
   },
   cardDescription: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#8E8E93',
-    lineHeight: 18,
+    fontFamily: 'NotoSans-Medium',
   },
 
   cardFooter: {
@@ -686,64 +626,52 @@ const styles = StyleSheet.create({
   },
   priceDurationContainer: {
     flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   priceContainer: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    marginBottom: 6,
   },
   priceCurrency: {
     fontSize: 14,
-    fontWeight: '600',
-    color: colors.primary,
+    fontFamily: 'NotoSans-Bold',
+    color: lightTheme.colors.primary,
   },
   priceText: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: colors.primary,
-    marginHorizontal: 2,
+    fontSize: 18,
+    fontFamily: 'NotoSans-Bold',
+    color: lightTheme.colors.primary,
+    marginLeft: 2,
   },
   priceUnit: {
     fontSize: 12,
     color: '#8E8E93',
-    fontWeight: '500',
+    fontFamily: 'NotoSans-Regular',
+    marginLeft: 2,
   },
   durationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: lightTheme.colors.antiFlashWhite,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
   durationIcon: {
-    fontSize: 12,
+    fontSize: 10,
     marginRight: 4,
   },
   durationText: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#8E8E93',
-    fontWeight: '500',
-  },
-
-  // Action Buttons
-  horizontalActionButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 12,
-  },
-  gridActionButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 10,
-  },
-  actionButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
+    fontFamily: 'NotoSans-Medium',
   },
 
   // Grid Container
   categoryView: {
-    padding: 20,
+    padding: 16,
   },
   gridContainer: {
     flexDirection: 'row',
@@ -777,18 +705,17 @@ const styles = StyleSheet.create({
     fontSize: 40,
   },
   emptyText: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 18,
+    fontFamily: 'NotoSans-Bold',
     marginBottom: 8,
     color: '#1C1C1E',
   },
   emptySubtext: {
-    fontSize: 15,
+    fontSize: 14,
     color: '#8E8E93',
     textAlign: 'center',
-    lineHeight: 22,
+    fontFamily: 'NotoSans-Regular',
   },
-
   // Floating Cart Button
   floatingCartButton: {
     position: 'absolute',
@@ -797,10 +724,10 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: colors.primary,
+    backgroundColor: lightTheme.colors.primaryBlue,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: colors.primary,
+    shadowColor: lightTheme.colors.primaryBlue,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 12,

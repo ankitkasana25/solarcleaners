@@ -6,23 +6,28 @@ interface SectionTitleProps {
     title: string;
     tagline?: string;
     badgeText?: string;
+    rightElement?: React.ReactNode;
 }
 
 export const SectionTitle = ({
     title,
     tagline,
     badgeText,
+    rightElement,
 }: SectionTitleProps) => {
     return (
         <View style={styles.container}>
             <View style={styles.headerRow}>
-                <View style={styles.accentBar} />
-                <Text style={styles.title}>{title}</Text>
-                {badgeText && (
-                    <View style={styles.badge}>
-                        <Text style={styles.badgeText}>{badgeText}</Text>
-                    </View>
-                )}
+                <View style={styles.titleContainer}>
+                    <View style={styles.accentBar} />
+                    <Text style={styles.title} numberOfLines={1}>{title}</Text>
+                    {badgeText && (
+                        <View style={styles.badge}>
+                            <Text style={styles.badgeText}>{badgeText}</Text>
+                        </View>
+                    )}
+                </View>
+                {rightElement && <View>{rightElement}</View>}
             </View>
             {tagline && <Text style={styles.tagline}>{tagline}</Text>}
         </View>
@@ -38,7 +43,14 @@ const styles = StyleSheet.create({
     headerRow: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         marginBottom: 4,
+    },
+    titleContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1, // Takes available space
+        marginRight: 8,
     },
     accentBar: {
         width: 4,
@@ -54,6 +66,7 @@ const styles = StyleSheet.create({
         color: lightTheme.colors.headerTitle,
         marginRight: 8,
         letterSpacing: 0.5,
+        flexShrink: 1,
     },
     badge: {
         backgroundColor: lightTheme.colors.miniBlue, // subtle green/blue
