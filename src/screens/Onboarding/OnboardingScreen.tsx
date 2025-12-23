@@ -1,48 +1,138 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import {
     View,
     Text,
     StyleSheet,
-    FlatList,
     Dimensions,
     TouchableOpacity,
-    NativeSyntheticEvent,
-    NativeScrollEvent,
     Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Animated, {
+    useSharedValue,
+    useAnimatedScrollHandler,
+    useAnimatedStyle,
+    interpolate,
+    Extrapolate,
+    withSpring,
+    SharedValue,
+} from 'react-native-reanimated';
 import { ScreenContainer } from '../../components/ScreenContainer';
 import { lightTheme } from '../../theme/theme';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const { width, height } = Dimensions.get('window');
 
 const SLIDES = [
     {
         id: '1',
-        title: 'We Provide Professional\nSolar Cleaning at a very\nfriendly price',
+        title: 'Professional Solar Cleaning',
+        subtitle: 'Eco-friendly solutions for your solar panels at an affordable price point.',
         image: require('../../assets/Images/onboarding1.png'),
     },
     {
         id: '2',
-        title: 'Expert Solar Panel\nCleaning Services for\nMaximum Efficiency',
+        title: 'Maximum Efficiency',
+        subtitle: 'Our expert team ensures your solar panels operate at 100% capacity.',
         image: require('../../assets/Images/onboarding2.png'),
     },
     {
         id: '3',
-        title: 'Book Your Service\nand Enjoy Clean\nSolar Panels',
+        title: 'Instant Booking',
+        subtitle: 'Schedule a service in seconds and enjoy professional maintenance.',
         image: require('../../assets/Images/onboarding3.png'),
     },
 ];
 
+const PaginationDot = ({ index, scrollX }: { index: number, scrollX: SharedValue<number> }) => {
+    const animatedStyle = useAnimatedStyle(() => {
+        const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
+
+        const dotWidth = interpolate(
+            scrollX.value,
+            inputRange,
+            [8, 32, 8],
+            Extrapolate.CLAMP
+        );
+
+        const opacity = interpolate(
+            scrollX.value,
+            inputRange,
+            [0.4, 1, 0.4],
+            Extrapolate.CLAMP
+        );
+
+        return {
+            width: dotWidth,
+            opacity,
+        };
+    });
+
+    return <Animated.View style={[styles.dot, animatedStyle]} />;
+};
+
+const OnboardingSlide = ({ item, index, scrollX }: { item: typeof SLIDES[0], index: number, scrollX: SharedValue<number> }) => {
+    const slideStyle = useAnimatedStyle(() => {
+        const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
+        const opacity = interpolate(scrollX.value, inputRange, [0, 1, 0], Extrapolate.CLAMP);
+        return { opacity };
+    });
+
+    const imageStyle = useAnimatedStyle(() => {
+        const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
+        const scale = interpolate(scrollX.value, inputRange, [0.4, 1, 0.4], Extrapolate.CLAMP);
+        const rotate = `${interpolate(scrollX.value, inputRange, [-20, 0, 20], Extrapolate.CLAMP)}deg`;
+
+        return {
+            transform: [{ scale }, { rotate }],
+        };
+    });
+
+    const textStyle = useAnimatedStyle(() => {
+        const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
+        const translateY = interpolate(scrollX.value, inputRange, [100, 0, -100], Extrapolate.CLAMP);
+
+        return {
+            transform: [{ translateY }],
+        };
+    });
+
+    return (
+        <View style={styles.slide}>
+            <Animated.View style={[styles.imageWrapper, imageStyle]}>
+                <View style={styles.circleBackground}>
+                    <Image
+                        source={item.image}
+                        style={styles.image}
+                        resizeMode="cover"
+                    />
+                </View>
+            </Animated.View>
+
+            <Animated.View style={[styles.contentBlock, textStyle]}>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.subtitleText}>{item.subtitle}</Text>
+            </Animated.View>
+        </View>
+    );
+};
+
 export const OnboardingScreen = () => {
     const navigation = useNavigation<any>();
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const flatListRef = useRef<FlatList>(null);
+    const scrollX = useSharedValue(0);
+    const flatListRef = useRef<Animated.FlatList<any>>(null);
+
+    const scrollHandler = useAnimatedScrollHandler({
+        onScroll: (event) => {
+            scrollX.value = event.contentOffset.x;
+        },
+    });
 
     const handleNext = () => {
-        if (currentIndex < SLIDES.length - 1) {
+        const nextIndex = Math.round(scrollX.value / width) + 1;
+        if (nextIndex < SLIDES.length) {
             flatListRef.current?.scrollToIndex({
-                index: currentIndex + 1,
+                index: nextIndex,
                 animated: true,
             });
         } else {
@@ -54,73 +144,59 @@ export const OnboardingScreen = () => {
         navigation.replace('Login');
     };
 
-    const onMomentumScrollEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-        const contentOffsetX = e.nativeEvent.contentOffset.x;
-        const newIndex = Math.round(contentOffsetX / width);
-        setCurrentIndex(newIndex);
-    };
-
-    const renderItem = ({ item }: { item: typeof SLIDES[0] }) => {
-        return (
-            <View style={styles.slide}>
-                {/* Circular Image Container */}
-                <View style={styles.imageContainer}>
-                    <View style={styles.circleBackground}>
-                        <Image
-                            source={item.image}
-                            style={styles.image}
-                            resizeMode="cover"
-                        />
-                    </View>
-                </View>
-
-                {/* Title */}
-                <Text style={styles.title}>{item.title}</Text>
-            </View>
-        );
-    };
+    const buttonStyle = useAnimatedStyle(() => {
+        const isLastSlide = scrollX.value >= (SLIDES.length - 1.5) * width;
+        return {
+            width: withSpring(isLastSlide ? 160 : 64, { damping: 15 }),
+            borderRadius: withSpring(isLastSlide ? 16 : 32, { damping: 15 }),
+        };
+    });
 
     return (
         <ScreenContainer style={styles.container}>
-            {/* Skip Button */}
             <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
                 <Text style={styles.skipText}>Skip</Text>
             </TouchableOpacity>
 
-            <FlatList
+            <Animated.FlatList
                 ref={flatListRef}
                 data={SLIDES}
-                renderItem={renderItem}
+                renderItem={({ item, index }) => (
+                    <OnboardingSlide item={item} index={index} scrollX={scrollX} />
+                )}
                 horizontal
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
-                onMomentumScrollEnd={onMomentumScrollEnd}
+                onScroll={scrollHandler}
+                scrollEventThrottle={16}
                 keyExtractor={(item) => item.id}
                 bounces={false}
             />
 
-            {/* Footer with Pagination & Button */}
             <View style={styles.footer}>
-                {/* Pagination Dots */}
                 <View style={styles.pagination}>
                     {SLIDES.map((_, index) => (
-                        <View
-                            key={index}
-                            style={[
-                                styles.dot,
-                                currentIndex === index ? styles.activeDot : styles.inactiveDot
-                            ]}
-                        />
+                        <PaginationDot key={index} index={index} scrollX={scrollX} />
                     ))}
                 </View>
 
-                {/* Next/Get Started Button */}
                 <TouchableOpacity
                     style={styles.nextButton}
                     onPress={handleNext}
-                    activeOpacity={0.8}
+                    activeOpacity={0.9}
                 >
-                    <Text style={styles.nextButtonIcon}>›</Text>
+                    <Animated.View style={[styles.buttonContent, buttonStyle]}>
+                        <View style={styles.buttonTextWrapper}>
+                            <Text style={styles.buttonLabel}>
+                                {scrollX.value >= (SLIDES.length - 1.2) * width ? 'Get Started' : ''}
+                            </Text>
+                            <Ionicons
+                                name={scrollX.value >= (SLIDES.length - 1.2) * width ? 'rocket-outline' : 'arrow-forward'}
+                                size={24}
+                                color="#fff"
+                            />
+                        </View>
+                    </Animated.View>
                 </TouchableOpacity>
             </View>
         </ScreenContainer>
@@ -138,53 +214,61 @@ const styles = StyleSheet.create({
         zIndex: 10,
         paddingVertical: 8,
         paddingHorizontal: 16,
-        backgroundColor: '#EBF1FF',
+        backgroundColor: '#F8FAFC',
         borderRadius: 20,
     },
     skipText: {
         fontSize: 14,
-        fontFamily: lightTheme.fontfamily.notoSans_medium,
-        color: lightTheme.colors.primaryBlue,
+        fontFamily: 'NotoSans-Bold',
+        color: '#64748B',
     },
     slide: {
         width: width,
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 24,
-        paddingTop: 100,
+        paddingHorizontal: 30,
+        height: height,
+        backgroundColor: '#FFFFFF',
     },
-    imageContainer: {
-        width: width * 0.75,
-        height: width * 0.75,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 60,
+    imageWrapper: {
+        marginBottom: 50,
     },
     circleBackground: {
-        width: '100%',
-        height: '100%',
+        width: width * 0.75,
+        height: width * 0.75,
+        backgroundColor: '#F1F5F9',
         borderRadius: width * 0.375,
-        backgroundColor: '#EBF1FF',
         overflow: 'hidden',
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#0D81FC',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.05,
         shadowRadius: 20,
-        elevation: 8,
+        elevation: 5,
     },
     image: {
         width: '100%',
         height: '100%',
     },
+    contentBlock: {
+        alignItems: 'center',
+        width: '100%',
+    },
     title: {
-        fontSize: 24,
-        fontFamily: lightTheme.fontfamily.notoSans_bold,
-        color: lightTheme.colors.gray1,
+        fontSize: 28,
+        fontFamily: 'NotoSans-Bold',
+        color: '#1E293B',
         textAlign: 'center',
-        lineHeight: 32,
-        paddingHorizontal: 20,
+        marginBottom: 16,
+    },
+    subtitleText: {
+        fontSize: 16,
+        fontFamily: 'NotoSans-Regular',
+        color: '#64748B',
+        textAlign: 'center',
+        lineHeight: 24,
+        paddingHorizontal: 10,
     },
     footer: {
         position: 'absolute',
@@ -192,41 +276,43 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         alignItems: 'center',
-        gap: 32,
     },
     pagination: {
         flexDirection: 'row',
-        gap: 8,
+        height: 40,
+        alignItems: 'center',
     },
     dot: {
         height: 8,
         borderRadius: 4,
-    },
-    activeDot: {
-        width: 32,
-        backgroundColor: lightTheme.colors.primaryBlue,
-    },
-    inactiveDot: {
-        width: 8,
-        backgroundColor: '#D1D5DB',
+        backgroundColor: '#0D81FC',
+        marginHorizontal: 4,
     },
     nextButton: {
-        width: 64,
+        marginTop: 20,
+    },
+    buttonContent: {
         height: 64,
+        width: 64,
         borderRadius: 32,
-        backgroundColor: lightTheme.colors.primaryBlue,
-        alignItems: 'center',
+        backgroundColor: '#0D81FC',
         justifyContent: 'center',
-        shadowColor: lightTheme.colors.primaryBlue,
-        shadowOffset: { width: 0, height: 4 },
+        alignItems: 'center',
+        shadowColor: '#0D81FC',
+        shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.3,
-        shadowRadius: 12,
+        shadowRadius: 15,
         elevation: 8,
     },
-    nextButtonIcon: {
-        fontSize: 36,
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        marginLeft: 4,
+    buttonTextWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttonLabel: {
+        color: '#fff',
+        fontFamily: 'NotoSans-Bold',
+        fontSize: 16,
+        marginRight: 8,
     },
 });

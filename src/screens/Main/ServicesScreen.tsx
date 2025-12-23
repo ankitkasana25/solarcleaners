@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,14 +19,35 @@ import { ServiceCard } from '../../components/ServiceCard';
 import { ServiceSection } from '../../components/ServiceSection';
 import { lightTheme } from '../../theme/theme';
 import { FAQSection } from '../../components/FAQSection';
+import ServicePromotions from '../../components/ServicePromotions';
 
 const { width } = Dimensions.get('window');
 
 const CATEGORIES: Category[] = [
-  { id: 'cleaning', label: 'Panel Deep Cleaning', icon: '✨', color: '#EBF1FF' },
-  { id: 'maintenance', label: 'System Health Check', icon: '🛡️', color: '#EBF1FF' },
-  { id: 'repairing', label: 'Inverter & Repairs', icon: '🛠️', color: '#EBF1FF' },
-  { id: 'installation', label: 'New Installation', icon: '⚡', color: '#EBF1FF' },
+  {
+    id: 'cleaning',
+    label: 'Panel Deep Cleaning',
+    icon: '✨',
+    color: '#EBF1FF',
+  },
+  {
+    id: 'maintenance',
+    label: 'System Health Check',
+    icon: '🛡️',
+    color: '#EBF1FF',
+  },
+  {
+    id: 'repairing',
+    label: 'Inverter & Repairs',
+    icon: '🛠️',
+    color: '#EBF1FF',
+  },
+  {
+    id: 'installation',
+    label: 'New Installation',
+    icon: '⚡',
+    color: '#EBF1FF',
+  },
   { id: 'water', label: 'Water Solutions', icon: '💧', color: '#EBF1FF' },
   { id: 'consultation', label: 'Expert Consult', icon: '👨‍🔧', color: '#EBF1FF' },
 ];
@@ -40,19 +68,17 @@ export const ServicesScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.headerContainer, { paddingTop: insets.top + 10 }]}>
+      {/* <View style={[styles.headerContainer, { paddingTop: insets.top + 10 }]}>
         <View style={styles.headerTop}>
           <TouchableOpacity style={styles.locationSelector} activeOpacity={0.7}>
             <View style={styles.locationIconBg}>
-              <Ionicons name="location" size={12} color={lightTheme.colors.primaryBlue} />
+              <Ionicons
+                name="location"
+                size={12}
+                color={lightTheme.colors.primaryBlue}
+              />
             </View>
-            <View>
-              <Text style={styles.locationLabel}>Location</Text>
-              <View style={styles.locationRow}>
-                <Text style={styles.locationValue}>Sector 62, Noida</Text>
-                <Ionicons name="chevron-down" size={12} color={lightTheme.colors.slateGray} />
-              </View>
-            </View>
+      
           </TouchableOpacity>
           <TouchableOpacity style={styles.cartBtn} activeOpacity={0.7}>
             <Ionicons name="cart-outline" size={24} color="#1C1C1E" />
@@ -63,10 +89,17 @@ export const ServicesScreen = () => {
         </View>
 
         <View style={styles.searchWrapper}>
-          <Ionicons name="search-outline" size={20} color="#8E8E93" style={styles.searchIcon} />
-          <Text style={styles.placeholderText}>Search for 'Panel Cleaning'</Text>
+          <Ionicons
+            name="search-outline"
+            size={20}
+            color="#8E8E93"
+            style={styles.searchIcon}
+          />
+          <Text style={styles.placeholderText}>
+            Search for 'Panel Cleaning'
+          </Text>
         </View>
-      </View>
+      </View> */}
 
       <ScrollView
         style={styles.content}
@@ -74,6 +107,8 @@ export const ServicesScreen = () => {
         contentContainerStyle={styles.scrollContent}
         overScrollMode="never"
       >
+        <ServicePromotions />
+
         <ServiceCategories
           categories={CATEGORIES}
           activeCategory={activeTab}
@@ -84,7 +119,9 @@ export const ServicesScreen = () => {
           <View style={styles.banner}>
             <View style={styles.bannerText}>
               <Text style={styles.bannerTitle}>Solar Plant Health Checkup</Text>
-              <Text style={styles.bannerSub}>Get 20% OFF on your first inspection</Text>
+              <Text style={styles.bannerSub}>
+                Get 20% OFF on your first inspection
+              </Text>
               <TouchableOpacity style={styles.bannerBtn}>
                 <Text style={styles.bannerBtnText}>Book now</Text>
               </TouchableOpacity>
@@ -108,6 +145,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    marginTop: 10,
   },
   headerContainer: {
     backgroundColor: '#FFFFFF',
@@ -241,5 +279,5 @@ const styles = StyleSheet.create({
   },
   bannerIcon: {
     fontSize: 40,
-  }
+  },
 });

@@ -17,6 +17,7 @@ import { ServiceThumbnail } from '../../components/ServiceThumbnail';
 import { FreeConsultation } from '../../components/FreeConsultation';
 import { WeatherGreeting } from '../../components/WeatherGreeting';
 import { UpcomingServiceCard } from '../../components/UpcomingServiceCard';
+import { PremiumBookedCard } from '../../components/PremiumBookedCard';
 
 const premiumServices = [
   {
@@ -75,6 +76,30 @@ const upcomingServices = [
     title: 'Solar Community',
     launchDate: 'EARLY 2026',
     image: { uri: 'https://images.unsplash.com/photo-1558449028-b53a39d100fc?w=800&q=80' },
+  },
+];
+
+const mostBookedServices = [
+  {
+    rank: 1,
+    title: 'Mirror Finish Clean',
+    bookings: '1,450+',
+    rating: '4.9',
+    image: { uri: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&q=80' },
+  },
+  {
+    rank: 2,
+    title: 'Pure Hydro Guard',
+    bookings: '920+',
+    rating: '4.8',
+    image: { uri: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&q=80' },
+  },
+  {
+    rank: 3,
+    title: 'Solar Cell Refresh',
+    bookings: '810+',
+    rating: '4.7',
+    image: { uri: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80' },
   },
 ];
 
@@ -137,7 +162,7 @@ export const HomeScreen = observer(() => {
           city="Noida, India"
         />
 
-        <ServicePromotions />
+        {/* <ServicePromotions /> */}
 
         <View style={styles.sectionWrapper}>
           <SectionTitle
@@ -185,7 +210,7 @@ export const HomeScreen = observer(() => {
         </View>
 
         <View style={styles.sectionWrapper}>
-          <SectionTitle title="Most booked services" />
+          <SectionTitle title="Most Booked Services" badgeText="Top Choice" />
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -193,13 +218,15 @@ export const HomeScreen = observer(() => {
             decelerationRate="fast"
             snapToAlignment="start"
           >
-            {trendingServices.map(service => (
-              <TrendingServiceCard
-                key={service.id}
+            {mostBookedServices.map(service => (
+              <PremiumBookedCard
+                key={service.rank}
+                rank={service.rank}
                 title={service.title}
+                bookings={service.bookings}
+                rating={service.rating}
                 image={service.image}
-                discount={service.discount}
-                onPress={() => (navigation as any).navigate('ServiceDetail', { service })}
+                onPress={() => console.log('Booking detailed:', service.title)}
               />
             ))}
           </ScrollView>
