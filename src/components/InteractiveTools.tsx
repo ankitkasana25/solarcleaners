@@ -50,7 +50,7 @@ const ToolCard = ({ item, index, onPress }: { item: any; index: number; onPress:
             >
                 <View style={styles.imageBackground}>
                     <Image
-                        source={item.gif}
+                        source={item.image}
                         style={styles.imageStyle}
                         resizeMode="cover"
                     />
@@ -87,8 +87,8 @@ const tools = [
         id: '1',
         title: 'Solar Health',
         desc: 'System Diagnostics',
-        gif: { uri: 'https://media.tenor.com/t7mFr6y-p5sAAAAC/solar-panels-solar-energy.gif' }, // Pulse/Solar
-        colors: ['rgba(17, 153, 142, 0.6)', 'rgba(56, 239, 125, 0.3)'],
+        image: { uri: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&q=80' },
+        colors: ['rgba(0, 180, 219, 0.7)', 'rgba(0, 131, 176, 0.4)'],
         icon: '🛡️',
         content: [
             {
@@ -109,8 +109,8 @@ const tools = [
         id: '2',
         title: 'ROI Calculator',
         desc: 'Investment Return',
-        gif: { uri: 'https://media.tenor.com/9v6N_O_u0SAAAAAC/graph-going-up-money.gif' }, // Data/Finance
-        colors: ['rgba(41, 128, 185, 0.6)', 'rgba(109, 213, 250, 0.3)'],
+        image: { uri: 'https://images.unsplash.com/photo-1551288049-bbbda540d3b9?w=800&q=80' },
+        colors: ['rgba(41, 128, 185, 0.7)', 'rgba(109, 213, 250, 0.4)'],
         icon: '💰',
         content: [
             {
@@ -131,8 +131,8 @@ const tools = [
         id: '3',
         title: 'Sun Forecast',
         desc: 'Generation Potential',
-        gif: { uri: 'https://media.tenor.com/eBf6d6m6m2YAAAAC/sun-sunny.gif' }, // Sun/Weather
-        colors: ['rgba(255, 126, 95, 0.6)', 'rgba(254, 180, 123, 0.3)'],
+        image: { uri: 'https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?w=800&q=80' },
+        colors: ['rgba(255, 126, 95, 0.7)', 'rgba(254, 180, 123, 0.4)'],
         icon: '☀️',
         content: [
             {
@@ -153,8 +153,8 @@ const tools = [
         id: '4',
         title: 'AI Support',
         desc: 'Instant Help',
-        gif: { uri: 'https://media.tenor.com/uS_hC6O5YAsAAAAC/ai-artificial-intelligence.gif' }, // Tech/AI
-        colors: ['rgba(142, 45, 226, 0.6)', 'rgba(74, 0, 224, 0.3)'],
+        image: { uri: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80' },
+        colors: ['rgba(142, 45, 226, 0.7)', 'rgba(74, 0, 224, 0.4)'],
         icon: '🤖',
         content: [
             {
@@ -180,7 +180,7 @@ export const InteractiveTools = () => {
         navigation.navigate('ToolInfo', {
             tool: {
                 ...tool,
-                image: tool.gif.uri,
+                image: tool.image.uri,
                 description: tool.desc
             }
         });
