@@ -16,6 +16,7 @@ import { SubscriptionPlans } from '../../components/SubscriptionPlans';
 import { ServiceThumbnail } from '../../components/ServiceThumbnail';
 import { FreeConsultation } from '../../components/FreeConsultation';
 import { WeatherGreeting } from '../../components/WeatherGreeting';
+import { UpcomingServiceCard } from '../../components/UpcomingServiceCard';
 
 const premiumServices = [
   {
@@ -47,6 +48,33 @@ const premiumServices = [
     title: 'Roof Maintenance',
     description: 'Protect your roof and ensure solar stability.',
     image: { uri: 'https://images.unsplash.com/photo-1632759162351-39516e499d35?w=800&q=80' },
+  },
+];
+
+const upcomingServices = [
+  {
+    id: 'up_1',
+    title: 'Drone Health Scan',
+    launchDate: 'LAUNCHING JAN 15',
+    image: { uri: 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=800&q=80' },
+  },
+  {
+    id: 'up_2',
+    title: 'AI Power Predictor',
+    launchDate: 'COMING NEXT MONTH',
+    image: { uri: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80' },
+  },
+  {
+    id: 'up_3',
+    title: 'EV Solar Dock',
+    launchDate: 'BETA TESTING',
+    image: { uri: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=800&q=80' },
+  },
+  {
+    id: 'up_4',
+    title: 'Solar Community',
+    launchDate: 'EARLY 2026',
+    image: { uri: 'https://images.unsplash.com/photo-1558449028-b53a39d100fc?w=800&q=80' },
   },
 ];
 
@@ -137,19 +165,20 @@ export const HomeScreen = observer(() => {
         <InteractiveTools />
 
         <View style={styles.sectionWrapper}>
-          <SectionTitle title="Trending Services" />
+          <SectionTitle title="Upcoming Features" badgeText="Future Tech" />
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.horizontalScroll}
             decelerationRate="fast"
           >
-            {premiumServices.slice(0, 4).map(service => (
-              <ServiceThumbnail
+            {upcomingServices.map(service => (
+              <UpcomingServiceCard
                 key={service.id}
                 title={service.title}
+                launchDate={service.launchDate}
                 image={service.image}
-                onPress={() => (navigation as any).navigate('ServiceDetail', { service })}
+                onPress={() => console.log('Notify for:', service.title)}
               />
             ))}
           </ScrollView>
