@@ -23,15 +23,13 @@ export const PremiumServiceCard = ({
         <View style={styles.cardContainer}>
             <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.9}>
                 <View style={styles.imageWrapper}>
-                    <View style={styles.circleBg}>
-                        <Image source={image} style={styles.image} resizeMode="cover" />
-                    </View>
+                    <Image source={image} style={styles.image} resizeMode="cover" />
                 </View>
                 <View style={styles.contentContainer}>
                     <Text style={styles.title} numberOfLines={2}>
                         {title}
                     </Text>
-                    <Text style={styles.description} numberOfLines={3}>
+                    <Text style={styles.description} numberOfLines={2}>
                         {description}
                     </Text>
                 </View>
@@ -52,64 +50,59 @@ const styles = StyleSheet.create({
     },
     card: {
         width: CARD_WIDTH,
+        height: 220, // Fixed height to maintain the 2/3 - 1/3 ratio
         backgroundColor: '#fff',
         borderRadius: 8,
-        padding: 16,
-        alignItems: 'center',
         borderWidth: 1,
         borderColor: '#F0F5FF',
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.08,
-        shadowRadius: 20,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.1,
+        shadowRadius: 15,
         elevation: 8,
         position: 'relative',
-        minHeight: 220,
     },
     imageWrapper: {
-        width: 100,
-        height: 100,
-        marginBottom: 20,
-    },
-    circleBg: {
+        flex: 2, // Occupies top 2/3
         width: '100%',
-        height: '100%',
-        borderRadius: 5,
         backgroundColor: '#F3F6FC',
+        borderTopLeftRadius: 8,
+        borderTopRightRadius: 8,
         overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: '#E7F2FF',
     },
     image: {
         width: '100%',
         height: '100%',
     },
     contentContainer: {
+        flex: 1, // Occupies bottom 1/3
+        paddingHorizontal: 15,
+        paddingVertical: 10,
         alignItems: 'center',
-        width: '100%',
-        marginBottom: 10,
+        justifyContent: 'center',
     },
     title: {
-        fontSize: 16,
+        fontSize: 15,
         fontFamily: 'NotoSans-Bold',
         color: '#2E3A59',
-        marginBottom: 8,
-        textAlign: 'center',
-        lineHeight: 20,
-    },
-    description: {
-        fontSize: 12,
-        fontFamily: 'NotoSans-Medium',
-        color: '#838297',
+        marginBottom: 4,
         textAlign: 'center',
         lineHeight: 18,
     },
+    description: {
+        fontSize: 11,
+        fontFamily: 'NotoSans-Medium',
+        color: '#838297',
+        textAlign: 'center',
+        lineHeight: 16,
+    },
     actionButtonContainer: {
         position: 'absolute',
-        bottom: -20,
+        bottom: -18,
         left: 0,
         right: 0,
         alignItems: 'center',
+        zIndex: 10,
     },
     arrowIcon: {
         backgroundColor: lightTheme.colors.primaryBlue,
@@ -121,10 +114,10 @@ const styles = StyleSheet.create({
         borderWidth: 4,
         borderColor: '#fff',
         shadowColor: lightTheme.colors.primaryBlue,
-        shadowOffset: { width: 0, height: 5 },
+        shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
-        shadowRadius: 10,
-        elevation: 5,
+        shadowRadius: 8,
+        elevation: 4,
     },
 });
 
