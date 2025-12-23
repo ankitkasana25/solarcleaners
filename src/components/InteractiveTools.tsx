@@ -1,19 +1,94 @@
-import React from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Dimensions, ImageBackground } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, Dimensions, Image, Pressable } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SectionTitle } from './SectionTitle';
 import { useNavigation } from '@react-navigation/native';
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withSpring,
+    withRepeat,
+    withDelay,
+    FadeInDown
+} from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
-const ITEM_WIDTH = (width - 60) / 2; // Two items with gap
+const ITEM_WIDTH = (width - 60) / 2;
+
+const ToolCard = ({ item, index, onPress }: { item: any; index: number; onPress: (item: any) => void }) => {
+    const scale = useSharedValue(1);
+    const pulse = useSharedValue(1);
+
+    useEffect(() => {
+        pulse.value = withRepeat(
+            withSpring(1.5, { damping: 2, stiffness: 80 }),
+            -1,
+            true
+        );
+    }, []);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: scale.value }],
+    }));
+
+    const pulseStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: pulse.value }],
+        opacity: 2 - pulse.value,
+    }));
+
+    return (
+        <Animated.View
+            entering={FadeInDown.delay(index * 150).springify()}
+            style={[styles.cardWrapper, animatedStyle]}
+        >
+            <TouchableOpacity
+                activeOpacity={1}
+                onPressIn={() => (scale.value = withSpring(0.95))}
+                onPressOut={() => (scale.value = withSpring(1))}
+                onPress={() => onPress(item)}
+                style={styles.touchable}
+            >
+                <View style={styles.imageBackground}>
+                    <Image
+                        source={item.gif}
+                        style={styles.imageStyle}
+                        resizeMode="cover"
+                    />
+                    <LinearGradient
+                        colors={item.colors}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={styles.gradientOverlay}
+                    />
+                    <View style={styles.visibleContent}>
+                        <View style={styles.topInfo}>
+                            <View style={styles.iconContainer}>
+                                <Text style={styles.icon}>{item.icon}</Text>
+                            </View>
+                            <View style={styles.liveBadge}>
+                                <Animated.View style={[styles.liveDot, pulseStyle]} />
+                                <View style={[styles.liveDot, { position: 'absolute', left: 8 }]} />
+                                <Text style={styles.liveText}>LIVE</Text>
+                            </View>
+                        </View>
+                        <View>
+                            <Text style={styles.cardTitle}>{item.title}</Text>
+                            <Text style={styles.cardDesc}>{item.desc}</Text>
+                        </View>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        </Animated.View>
+    );
+};
 
 const tools = [
     {
         id: '1',
         title: 'Solar Health',
         desc: 'System Diagnostics',
-        image: { uri: 'https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=500&q=80' },
-        colors: ['rgba(17, 153, 142, 0.7)', 'rgba(56, 239, 125, 0.4)'],
+        gif: { uri: 'https://media.tenor.com/t7mFr6y-p5sAAAAC/solar-panels-solar-energy.gif' }, // Pulse/Solar
+        colors: ['rgba(17, 153, 142, 0.6)', 'rgba(56, 239, 125, 0.3)'],
         icon: '🛡️',
         content: [
             {
@@ -34,8 +109,8 @@ const tools = [
         id: '2',
         title: 'ROI Calculator',
         desc: 'Investment Return',
-        image: { uri: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=500&q=80' },
-        colors: ['rgba(41, 128, 185, 0.7)', 'rgba(109, 213, 250, 0.4)'],
+        gif: { uri: 'https://media.tenor.com/9v6N_O_u0SAAAAAC/graph-going-up-money.gif' }, // Data/Finance
+        colors: ['rgba(41, 128, 185, 0.6)', 'rgba(109, 213, 250, 0.3)'],
         icon: '💰',
         content: [
             {
@@ -56,8 +131,8 @@ const tools = [
         id: '3',
         title: 'Sun Forecast',
         desc: 'Generation Potential',
-        image: { uri: 'https://images.unsplash.com/photo-1501630132314-e578fa6aa2f1?w=500&q=80' },
-        colors: ['rgba(255, 126, 95, 0.7)', 'rgba(254, 180, 123, 0.4)'],
+        gif: { uri: 'https://media.tenor.com/eBf6d6m6m2YAAAAC/sun-sunny.gif' }, // Sun/Weather
+        colors: ['rgba(255, 126, 95, 0.6)', 'rgba(254, 180, 123, 0.3)'],
         icon: '☀️',
         content: [
             {
@@ -78,8 +153,8 @@ const tools = [
         id: '4',
         title: 'AI Support',
         desc: 'Instant Help',
-        image: { uri: 'https://images.unsplash.com/photo-1531746790709-3c9c0f158929?w=500&q=80' },
-        colors: ['rgba(142, 45, 226, 0.7)', 'rgba(74, 0, 224, 0.4)'],
+        gif: { uri: 'https://media.tenor.com/uS_hC6O5YAsAAAAC/ai-artificial-intelligence.gif' }, // Tech/AI
+        colors: ['rgba(142, 45, 226, 0.6)', 'rgba(74, 0, 224, 0.3)'],
         icon: '🤖',
         content: [
             {
@@ -105,7 +180,7 @@ export const InteractiveTools = () => {
         navigation.navigate('ToolInfo', {
             tool: {
                 ...tool,
-                image: tool.image.uri,
+                image: tool.gif.uri,
                 description: tool.desc
             }
         });
@@ -115,36 +190,13 @@ export const InteractiveTools = () => {
         <View style={styles.container}>
             <SectionTitle title="Interactive Tools" badgeText="Smart Features" />
             <View style={styles.grid}>
-                {tools.map((item) => (
-                    <TouchableOpacity
+                {tools.map((item, index) => (
+                    <ToolCard
                         key={item.id}
-                        activeOpacity={0.9}
-                        style={styles.cardWrapper}
-                        onPress={() => handlePress(item)}
-                    >
-                        <ImageBackground
-                            source={item.image}
-                            style={styles.imageBackground}
-                            imageStyle={styles.imageStyle}
-                        >
-                            <LinearGradient
-                                colors={item.colors}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 1 }}
-                                style={styles.gradientOverlay}
-                            >
-                                <View style={styles.visibleContent}>
-                                    <View style={styles.iconContainer}>
-                                        <Text style={styles.icon}>{item.icon}</Text>
-                                    </View>
-                                    <View>
-                                        <Text style={styles.cardTitle}>{item.title}</Text>
-                                        <Text style={styles.cardDesc}>{item.desc}</Text>
-                                    </View>
-                                </View>
-                            </LinearGradient>
-                        </ImageBackground>
-                    </TouchableOpacity>
+                        item={item}
+                        index={index}
+                        onPress={handlePress}
+                    />
                 ))}
             </View>
         </View>
@@ -165,31 +217,40 @@ const styles = StyleSheet.create({
     cardWrapper: {
         width: ITEM_WIDTH,
         height: 160,
+        marginBottom: 8,
+    },
+    touchable: {
+        flex: 1,
+    },
+    imageBackground: {
+        flex: 1,
         borderRadius: 20,
+        backgroundColor: '#F3F6FC',
+        overflow: 'hidden',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15,
         shadowRadius: 10,
         elevation: 6,
-        marginBottom: 8,
-    },
-    imageBackground: {
-        width: '100%',
-        height: '100%',
-        justifyContent: 'flex-end',
     },
     imageStyle: {
-        borderRadius: 20,
+        ...StyleSheet.absoluteFillObject,
+        width: '100%',
+        height: '100%',
     },
     gradientOverlay: {
         ...StyleSheet.absoluteFillObject,
-        borderRadius: 20,
         padding: 16,
-        justifyContent: 'space-between',
     },
     visibleContent: {
         flex: 1,
+        padding: 16,
         justifyContent: 'space-between',
+    },
+    topInfo: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
     },
     iconContainer: {
         width: 38,
@@ -204,18 +265,42 @@ const styles = StyleSheet.create({
     icon: {
         fontSize: 20,
     },
+    liveBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.3)',
+    },
+    liveDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: '#FF4B4B',
+        marginRight: 4,
+    },
+    liveText: {
+        fontSize: 8,
+        fontFamily: 'NotoSans-Bold',
+        color: '#FFFFFF',
+        letterSpacing: 1,
+    },
     cardTitle: {
         fontSize: 16,
-        fontWeight: '700',
+        fontFamily: 'NotoSans-Bold',
         color: '#FFFFFF',
-        marginBottom: 4,
-        textShadowColor: 'rgba(0, 0, 0, 0.2)',
+        marginBottom: 2,
+        textShadowColor: 'rgba(0, 0, 0, 0.3)',
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 3,
     },
     cardDesc: {
-        fontSize: 12,
+        fontSize: 11,
+        fontFamily: 'NotoSans-Medium',
         color: 'rgba(255,255,255,0.95)',
-        fontWeight: '500',
+        lineHeight: 14,
     },
 });

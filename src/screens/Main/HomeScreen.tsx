@@ -15,6 +15,7 @@ import { SeasonalOffers } from '../../components/SeasonalOffers';
 import { SubscriptionPlans } from '../../components/SubscriptionPlans';
 import { ServiceThumbnail } from '../../components/ServiceThumbnail';
 import { FreeConsultation } from '../../components/FreeConsultation';
+import { WeatherGreeting } from '../../components/WeatherGreeting';
 
 const premiumServices = [
   {
@@ -102,10 +103,11 @@ export const HomeScreen = observer(() => {
         overScrollMode="never"
       >
 
-        <View style={styles.welcomeBox}>
-          <Text style={styles.welcomeText}>Hello, <Text style={styles.userName}>Ankit</Text> 👋</Text>
-          <Text style={styles.subWelcome}>Let's keep your solar panels shining today!</Text>
-        </View>
+        <WeatherGreeting
+          userName="Ankit"
+          temperature="28"
+          city="Noida, India"
+        />
 
         <ServicePromotions />
 
@@ -197,25 +199,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-  },
-  welcomeBox: {
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 20,
-  },
-  welcomeText: {
-    fontSize: 24,
-    fontFamily: 'NotoSans-Bold',
-    color: '#1C1C1E',
-  },
-  userName: {
-    color: lightTheme.colors.primaryBlue,
-  },
-  subWelcome: {
-    fontSize: 14,
-    fontFamily: 'NotoSans-Medium',
-    color: '#8E8E93',
-    marginTop: 4,
   },
   sectionWrapper: {
     marginBottom: 10,
