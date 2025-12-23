@@ -2,9 +2,9 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { lightTheme } from '../theme/theme';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = width * 0.8;
 const GRID_CARD_WIDTH = (width - 48) / 2;
 
 interface ServiceCardProps {
@@ -85,287 +85,243 @@ export const ServiceCard = ({
                     price: 300,
                     duration: '20 min',
                 },
-                {
-                    id: '3',
-                    title: 'Wiring Inspection',
-                    description: 'Inspection of all electrical connections and wiring',
-                    price: 400,
-                    duration: '25 min',
-                },
-                {
-                    id: '4',
-                    title: 'Performance Report',
-                    description:
-                        'Detailed performance analysis and improvement recommendations',
-                    price: 200,
-                    duration: '15 min',
-                    popular: true,
-                },
             ],
         };
 
         navigation.navigate('ServiceDetail', { service: serviceData });
     };
 
-    const CardContent = () => (
-        <>
-            <View
-                style={
-                    gridView ? styles.gridImageContainer : styles.horizontalImageContainer
-                }
-            >
-                <Image
-                    source={{ uri: image }}
-                    style={
-                        gridView
-                            ? styles.gridPlaceholderImage
-                            : styles.horizontalPlaceholderImage
-                    }
-                    resizeMode="cover"
-                />
-
-                {/* Badges */}
-                <View style={styles.badgeContainer}>
-                    {featured && (
-                        <View style={[styles.badge, styles.featuredBadge]}>
-                            <Text style={styles.badgeText}>Featured</Text>
-                        </View>
-                    )}
-                    {popular && (
-                        <View style={[styles.badge, styles.popularBadge]}>
-                            <Text style={styles.badgeText}>Popular</Text>
-                        </View>
-                    )}
-                    {urgent && (
-                        <View style={[styles.badge, styles.urgentBadge]}>
-                            <Text style={styles.badgeText}>Urgent</Text>
-                        </View>
-                    )}
-                    {discount && (
-                        <View style={[styles.badge, styles.discountBadge]}>
-                            <Text style={styles.badgeText}>{discount}</Text>
-                        </View>
-                    )}
-                </View>
-            </View>
-
-            <View
-                style={gridView ? styles.gridCardContent : styles.horizontalCardContent}
-            >
-                <View style={styles.titleContainer}>
-                    <Text
-                        style={gridView ? styles.gridCardTitle : styles.horizontalCardTitle}
-                        numberOfLines={2}
-                    >
-                        {title}
-                    </Text>
-                    {description && (
-                        <Text style={styles.cardDescription} numberOfLines={2}>
-                            {description}
-                        </Text>
-                    )}
-                </View>
-
-                <View style={styles.cardFooter}>
-                    <View style={styles.priceDurationContainer}>
-                        {price && (
-                            <View style={styles.priceContainer}>
-                                <Text style={styles.priceCurrency}>₹</Text>
-                                <Text style={styles.priceText}>{price}</Text>
-                                <Text style={styles.priceUnit}>/service</Text>
-                            </View>
-                        )}
-                        {duration && (
-                            <View style={styles.durationContainer}>
-                                <Text style={styles.durationIcon}>⏱️</Text>
-                                <Text style={styles.durationText}>{duration}</Text>
-                            </View>
-                        )}
-                    </View>
-                </View>
-            </View>
-        </>
-    );
-
     if (gridView) {
         return (
             <TouchableOpacity
-                style={styles.gridServiceCard}
-                activeOpacity={0.9}
+                style={styles.gridCard}
                 onPress={handlePress}
+                activeOpacity={0.85}
             >
-                <CardContent />
+                <View style={styles.gridImageWrapper}>
+                    <Image source={{ uri: image }} style={styles.gridImage} />
+                    {discount && (
+                        <View style={styles.gridDiscount}>
+                            <Text style={styles.discountText}>{discount}</Text>
+                        </View>
+                    )}
+                </View>
+                <View style={styles.gridContent}>
+                    <Text style={styles.gridTitle} numberOfLines={1}>{title}</Text>
+                    <View style={styles.gridFooter}>
+                        <Text style={styles.gridPrice}>₹{price}</Text>
+                        <Ionicons name="arrow-forward-circle" size={20} color={lightTheme.colors.primaryBlue} />
+                    </View>
+                </View>
             </TouchableOpacity>
         );
     }
 
     return (
         <TouchableOpacity
-            style={styles.horizontalServiceCard}
-            activeOpacity={0.9}
+            style={styles.rowCard}
             onPress={handlePress}
+            activeOpacity={0.85}
         >
-            <CardContent />
+            <View style={styles.circleWrapper}>
+                <View style={styles.circleIcon}>
+                    <Image source={{ uri: image }} style={styles.circleImage} />
+                </View>
+                {featured && (
+                    <View style={styles.featuredTag}>
+                        <Ionicons name="star" size={10} color="#FFF" />
+                    </View>
+                )}
+            </View>
+
+            <View style={styles.rowContent}>
+                <View style={styles.rowHeader}>
+                    <Text style={styles.rowTitle} numberOfLines={1}>{title}</Text>
+                    <View style={styles.rowPriceContainer}>
+                        <Text style={styles.rowPrice}>₹{price}</Text>
+                    </View>
+                </View>
+                <Text style={styles.rowDesc} numberOfLines={2}>{description}</Text>
+
+                <View style={styles.rowFooter}>
+                    <View style={styles.durationBox}>
+                        <Ionicons name="time-outline" size={12} color={lightTheme.colors.slateGray} />
+                        <Text style={styles.durationText}>{duration}</Text>
+                    </View>
+                    <TouchableOpacity style={styles.bookNowBtn} onPress={handlePress}>
+                        <Text style={styles.bookNowText}>Book Now</Text>
+                        <Ionicons name="chevron-forward" size={14} color="#FFF" />
+                    </TouchableOpacity>
+                </View>
+            </View>
         </TouchableOpacity>
     );
 };
 
 const styles = StyleSheet.create({
-    // Horizontal Service Card Styles
-    horizontalServiceCard: {
-        width: CARD_WIDTH,
-        backgroundColor: '#FFFFFF',
-        borderRadius: 20,
+    // Row Card (Standard View)
+    rowCard: {
+        flexDirection: 'row',
+        backgroundColor: '#FFF',
+        borderRadius: 24,
+        padding: 16,
+        marginBottom: 16,
+        marginHorizontal: 16,
+        alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#FFFFFF',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
+        borderColor: '#F0F0F0',
+        shadowColor: '#0D81FC',
+        shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.08,
-        shadowRadius: 12,
+        shadowRadius: 10,
         elevation: 4,
-        marginBottom: 10,
     },
-    horizontalImageContainer: {
+    circleWrapper: {
         position: 'relative',
-        height: 180, // Taller images
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        overflow: 'hidden',
+        marginRight: 16,
     },
-    horizontalPlaceholderImage: {
+    circleIcon: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: '#F3F6FC',
+        overflow: 'hidden',
+        borderWidth: 2,
+        borderColor: '#EBF1FF',
+    },
+    circleImage: {
         width: '100%',
         height: '100%',
-        backgroundColor: lightTheme.colors.antiFlashWhite,
+    },
+    featuredTag: {
+        position: 'absolute',
+        top: -4,
+        right: -4,
+        backgroundColor: lightTheme.colors.subscribeGold,
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: '#FFF',
+    },
+    rowContent: {
+        flex: 1,
+    },
+    rowHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 4,
+    },
+    rowTitle: {
+        fontSize: 16,
+        fontFamily: 'NotoSans-Bold',
+        color: lightTheme.colors.headerTitle,
+        flex: 1,
+    },
+    rowPriceContainer: {
+        backgroundColor: '#EBF1FF',
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        borderRadius: 8,
+    },
+    rowPrice: {
+        fontSize: 14,
+        fontFamily: 'NotoSans-Bold',
+        color: lightTheme.colors.primaryBlue,
+    },
+    rowDesc: {
+        fontSize: 12,
+        fontFamily: 'NotoSans-Regular',
+        color: lightTheme.colors.slateGray,
+        lineHeight: 18,
+        marginBottom: 10,
+    },
+    rowFooter: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    durationBox: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    durationText: {
+        fontSize: 11,
+        fontFamily: 'NotoSans-Medium',
+        color: lightTheme.colors.slateGray,
+        marginLeft: 4,
+    },
+    bookNowBtn: {
+        backgroundColor: lightTheme.colors.primaryBlue,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 10,
+    },
+    bookNowText: {
+        color: '#FFF',
+        fontSize: 12,
+        fontFamily: 'NotoSans-Bold',
+        marginRight: 4,
     },
 
-    // Grid Service Card Styles
-    gridServiceCard: {
+    // Grid Card Styles
+    gridCard: {
         width: GRID_CARD_WIDTH,
-        backgroundColor: '#FFFFFF',
-        borderRadius: 16,
+        backgroundColor: '#FFF',
+        borderRadius: 20,
+        overflow: 'hidden',
         borderWidth: 1,
-        borderColor: '#FFFFFF',
+        borderColor: '#F0F0F0',
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
         shadowRadius: 8,
         elevation: 3,
     },
-    gridImageContainer: {
+    gridImageWrapper: {
+        height: 120,
         position: 'relative',
-        height: 140,
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
-        overflow: 'hidden',
     },
-    gridPlaceholderImage: {
+    gridImage: {
         width: '100%',
         height: '100%',
-        backgroundColor: lightTheme.colors.antiFlashWhite,
     },
-
-    // Common Card Styles
-    badgeContainer: {
+    gridDiscount: {
         position: 'absolute',
-        top: 12,
-        left: 12,
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8,
-    },
-    badge: {
-        paddingHorizontal: 8,
-        paddingVertical: 4,
+        top: 8,
+        right: 8,
+        backgroundColor: '#FF4B4B',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
         borderRadius: 6,
-        backgroundColor: 'rgba(0,0,0,0.6)',
     },
-    featuredBadge: { backgroundColor: lightTheme.colors.primary },
-    popularBadge: { backgroundColor: lightTheme.colors.subscribeGold },
-    urgentBadge: { backgroundColor: lightTheme.colors.redOrange },
-    discountBadge: { backgroundColor: '#5856D6' },
-
-    badgeText: {
-        color: '#FFFFFF',
+    discountText: {
+        color: '#FFF',
         fontSize: 10,
         fontFamily: 'NotoSans-Bold',
-        textTransform: 'uppercase',
     },
-
-    // Card Content Styles
-    horizontalCardContent: {
-        padding: 16,
-    },
-    gridCardContent: {
+    gridContent: {
         padding: 12,
     },
-    titleContainer: {
-        marginBottom: 12,
-    },
-    horizontalCardTitle: {
-        fontSize: 16,
+    gridTitle: {
+        fontSize: 13,
         fontFamily: 'NotoSans-Bold',
-        color: '#1C1C1E',
-        marginBottom: 4,
+        color: lightTheme.colors.headerTitle,
+        marginBottom: 8,
     },
-    gridCardTitle: {
-        fontSize: 14,
-        fontFamily: 'NotoSans-Bold',
-        color: '#1C1C1E',
-        marginBottom: 4,
-    },
-    cardDescription: {
-        fontSize: 12,
-        color: '#8E8E93',
-        fontFamily: 'NotoSans-Medium',
-    },
-
-    cardFooter: {
+    gridFooter: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-    priceDurationContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    priceContainer: {
-        flexDirection: 'row',
-        alignItems: 'baseline',
-    },
-    priceCurrency: {
+    gridPrice: {
         fontSize: 14,
         fontFamily: 'NotoSans-Bold',
-        color: lightTheme.colors.primary,
-    },
-    priceText: {
-        fontSize: 18,
-        fontFamily: 'NotoSans-Bold',
-        color: lightTheme.colors.primary,
-        marginLeft: 2,
-    },
-    priceUnit: {
-        fontSize: 12,
-        color: '#8E8E93',
-        fontFamily: 'NotoSans-Regular',
-        marginLeft: 2,
-    },
-    durationContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: lightTheme.colors.antiFlashWhite,
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 8,
-    },
-    durationIcon: {
-        fontSize: 10,
-        marginRight: 4,
-    },
-    durationText: {
-        fontSize: 10,
-        color: '#8E8E93',
-        fontFamily: 'NotoSans-Medium',
+        color: lightTheme.colors.primaryBlue,
     },
 });

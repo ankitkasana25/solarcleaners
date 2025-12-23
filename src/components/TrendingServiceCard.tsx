@@ -10,7 +10,7 @@ import {
 import { lightTheme } from '../theme/theme';
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = width * 0.45; // Compact for trending
+const CARD_WIDTH = width * 0.45;
 
 interface TrendingServiceCardProps {
   title: string;
@@ -26,7 +26,7 @@ export const TrendingServiceCard = ({
   onPress,
 }: TrendingServiceCardProps) => {
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.9}>
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.85}>
       <View style={styles.imageContainer}>
         <Image source={image} style={styles.image} resizeMode="cover" />
         {discount && (
@@ -48,22 +48,18 @@ const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    overflow: 'hidden',
+    borderRadius: 20,
     marginRight: 16,
-    borderWidth: 1,
-    borderColor: lightTheme.colors.lightBorder,
-    shadowColor: lightTheme.colors.inkShadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-    marginBottom: 8, // For shadow visibility
+    marginBottom: 10,
   },
   imageContainer: {
-    height: 120,
+    width: CARD_WIDTH,
+    height: CARD_WIDTH,
+    borderRadius: 24,
+    overflow: 'hidden',
     position: 'relative',
-    backgroundColor: lightTheme.colors.backgroundGray,
+    backgroundColor: '#F7F7F7',
+    marginBottom: 8,
   },
   image: {
     width: '100%',
@@ -71,33 +67,26 @@ const styles = StyleSheet.create({
   },
   discountBadge: {
     position: 'absolute',
-    top: 8,
-    left: 8,
-    backgroundColor: lightTheme.colors.redOrange,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    top: 12,
+    left: 12,
+    backgroundColor: '#FF4B4B',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    zIndex: 1,
   },
   discountText: {
     color: '#FFFFFF',
     fontSize: 10,
-    fontWeight: '700',
     fontFamily: 'NotoSans-Bold',
   },
   contentContainer: {
-    padding: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minHeight: 60,
+    paddingHorizontal: 4,
   },
   title: {
-    flex: 1,
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
     fontFamily: 'NotoSans-Medium',
-    color: lightTheme.colors.gray1000,
-    marginRight: 8,
-    lineHeight: 18,
+    color: '#1C1C1E',
+    lineHeight: 20,
   },
 });

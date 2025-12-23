@@ -1,101 +1,95 @@
 import React, { useState } from 'react';
-import { StyleSheet, ScrollView } from 'react-native'; // Consolidated import
+import { StyleSheet, ScrollView, View, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { observer } from 'mobx-react-lite';
 
 import { SearchBar } from '../../components/SearchBar';
 import { lightTheme } from '../../theme/theme';
-import { observer } from 'mobx-react-lite';
 import { SectionTitle } from '../../components/SectionTitle';
 import { PremiumServiceCard } from '../../components/PremiumServiceCard';
-import { ServicePromotions } from '../../components/ServicePromotions'; // Added import
-// Removed duplicate ScrollView import
+import { ServicePromotions } from '../../components/ServicePromotions';
+import { TrendingServiceCard } from '../../components/TrendingServiceCard';
+import { SolCareShorts } from '../../components/SolCareShorts';
+import { InteractiveTools } from '../../components/InteractiveTools';
+import { SeasonalOffers } from '../../components/SeasonalOffers';
+import { SubscriptionPlans } from '../../components/SubscriptionPlans';
+import { ServiceThumbnail } from '../../components/ServiceThumbnail';
+import { FreeConsultation } from '../../components/FreeConsultation';
 
 const premiumServices = [
   {
-    id: '1',
-    title: 'Cleaning',
-    description: 'Deep cleaning for max efficiency',
-    image: {
-      uri: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&q=80',
-    },
+    id: 'clean_1',
+    title: 'Panel Pro Cleaning',
+    description: 'Deep modular cleaning for maximum energy efficiency.',
+    image: { uri: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80' },
   },
   {
-    id: '2',
-    title: 'Maintenance',
-    description: 'Regular checkups & tuning',
-    image: {
-      uri: 'https://images.unsplash.com/photo-1625301840055-7c1b7198cfc0?w=800&q=80',
-    },
+    id: 'maint_1',
+    title: 'Health Checkup',
+    description: 'Scheduled inspections and performance optimization.',
+    image: { uri: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&q=80' },
   },
   {
-    id: '3',
-    title: 'Repairing',
-    description: 'Expert diagnostics & fixes',
-    image: {
-      uri: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80',
-    },
+    id: 'repair_1',
+    title: 'Expert Repairing',
+    description: 'Fast diagnostics and component-level repairs safely.',
+    image: { uri: 'https://images.unsplash.com/photo-1625301840055-7c1b7198cfc0?w=800&q=80' },
   },
   {
-    id: '4',
-    title: 'Installation',
-    description: 'Seamless setup by pros',
-    image: {
-      uri: 'https://images.unsplash.com/photo-1497440001374-f26997328c1b?w=800&q=80',
-    },
+    id: 'water_1',
+    title: 'Native Water Purifier',
+    description: 'Advanced filtration for pure drinking water.',
+    image: { uri: 'https://images.unsplash.com/photo-1595467793441-2a13cc7ba96d?w=800&q=80' },
+  },
+  {
+    id: 'roof_1',
+    title: 'Roof Maintenance',
+    description: 'Protect your roof and ensure solar stability.',
+    image: { uri: 'https://images.unsplash.com/photo-1632759162351-39516e499d35?w=800&q=80' },
   },
 ];
 
 const trendingServices = [
   {
     id: 'trend_1',
-    title: 'Advance Solar Shielding',
-    image: {
-      uri: 'https://images.unsplash.com/photo-1596464875704-20b17173e659?w=800&q=80',
-    },
+    title: 'Full System\nDeep Clean',
+    image: { uri: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&q=80' },
     discount: '15% OFF',
   },
   {
     id: 'trend_2',
-    title: 'Thermal Drone Inspection',
-    image: {
-      uri: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&q=80',
-    },
+    title: 'Inverter Performance\nCheck',
+    image: { uri: 'https://images.unsplash.com/photo-1611365892117-00ac5ef43759?w=800&q=80' },
     discount: 'HOT',
   },
   {
     id: 'trend_3',
-    title: 'Anti-Bird & Pest Netting',
-    image: {
-      uri: 'https://images.unsplash.com/photo-1594818379496-da1e345b0ded?w=800&q=80',
-    },
+    title: 'Birds & Pest\nProofing',
+    image: { uri: 'https://images.unsplash.com/photo-1596464875704-20b17173e659?w=800&q=80' },
     discount: '20% OFF',
   },
   {
     id: 'trend_4',
-    title: 'Nanotech Coating',
-    image: {
-      uri: 'https://images.unsplash.com/photo-1558449028-b53a39d100fc?w=800&q=80',
-    },
+    title: 'Panel Health\nScan',
+    image: { uri: 'https://images.unsplash.com/photo-1594818379496-da1e345b0ded?w=800&q=80' },
     discount: 'NEW',
+  },
+  {
+    id: 'trend_5',
+    title: 'Generation\nOptimization',
+    image: { uri: 'https://images.unsplash.com/photo-1497440001374-f26997328c1b?w=800&q=80' },
+    discount: '25% OFF',
   },
 ];
 
-import { TrendingServiceCard } from '../../components/TrendingServiceCard';
-import { SolCareShorts } from '../../components/SolCareShorts';
-import { InteractiveTools } from '../../components/InteractiveTools';
-import { SeasonalOffers } from '../../components/SeasonalOffers';
-import { SubscriptionPlans } from '../../components/SubscriptionPlans';
-import { FreeConsultation } from '../../components/FreeConsultation';
-
 export const HomeScreen = observer(() => {
   const navigation = useNavigation();
-  // const { authStore } = useRootStore(); // user data available if needed
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <>
+    <View style={styles.container}>
       <SearchBar
-        placeholder="Search for services..."
+        placeholder="Search for services, maintenance, etc..."
         value={searchQuery}
         onChangeText={setSearchQuery}
         showVoiceSearch
@@ -105,88 +99,133 @@ export const HomeScreen = observer(() => {
         showsVerticalScrollIndicator={false}
         decelerationRate="fast"
         scrollEventThrottle={16}
-        removeClippedSubviews={true}
         overScrollMode="never"
       >
+
+        <View style={styles.welcomeBox}>
+          <Text style={styles.welcomeText}>Hello, <Text style={styles.userName}>Ankit</Text> 👋</Text>
+          <Text style={styles.subWelcome}>Let's keep your solar panels shining today!</Text>
+        </View>
+
         <ServicePromotions />
-        <SectionTitle
-          title="Our Premium Services"
-          tagline="Comprehensive Solar solutions tailored to your needs"
-          badgeText="Certified & Trusted"
-        />
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.horizontalScroll}
-          decelerationRate="fast"
-          snapToAlignment="center" // enhances 'smooth' feel for horizontal lists
-          removeClippedSubviews={true}
-          scrollEventThrottle={16}
-        >
-          {premiumServices.map(service => (
-            <PremiumServiceCard
-              key={service.id}
-              title={service.title}
-              description={service.description}
-              image={service.image}
-              onPress={() =>
-                (navigation as any).navigate('ServiceDetail', { service })
-              }
-            />
-          ))}
-        </ScrollView>
+        <View style={styles.sectionWrapper}>
+          <SectionTitle
+            title="Premium Cleaning Services"
+          />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScroll}
+            decelerationRate="fast"
+            snapToAlignment="center"
+          >
+            {premiumServices.map(service => (
+              <PremiumServiceCard
+                key={service.id}
+                title={service.title}
+                description={service.description}
+                image={service.image}
+                onPress={() => (navigation as any).navigate('ServiceDetail', { service })}
+              />
+            ))}
+          </ScrollView>
+        </View>
 
-        <SectionTitle title="Trending Services" badgeText="Hot Picks" />
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.horizontalScroll}
-          decelerationRate="fast"
-          snapToAlignment="center"
-          removeClippedSubviews={true}
-          scrollEventThrottle={16}
-        >
-          {trendingServices.map(service => (
-            <TrendingServiceCard
-              key={service.id}
-              title={service.title}
-              image={service.image}
-              discount={service.discount}
-              onPress={() =>
-                (navigation as any).navigate('ServiceDetail', {
-                  service: {
-                    ...service,
-                    price: 500,
-                    description: 'Best trending service',
-                  },
-                })
-              }
-            />
-          ))}
-        </ScrollView>
-
-        <SolCareShorts />
         <InteractiveTools />
+
+        <View style={styles.sectionWrapper}>
+          <SectionTitle title="Trending Services" />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScroll}
+            decelerationRate="fast"
+          >
+            {premiumServices.slice(0, 4).map(service => (
+              <ServiceThumbnail
+                key={service.id}
+                title={service.title}
+                image={service.image}
+                onPress={() => (navigation as any).navigate('ServiceDetail', { service })}
+              />
+            ))}
+          </ScrollView>
+        </View>
+
+        <View style={styles.sectionWrapper}>
+          <SectionTitle title="Most booked services" />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScroll}
+            decelerationRate="fast"
+            snapToAlignment="start"
+          >
+            {trendingServices.map(service => (
+              <TrendingServiceCard
+                key={service.id}
+                title={service.title}
+                image={service.image}
+                discount={service.discount}
+                onPress={() => (navigation as any).navigate('ServiceDetail', { service })}
+              />
+            ))}
+          </ScrollView>
+        </View>
+
         <SeasonalOffers />
+
+        <View style={styles.sectionWrapper}>
+          <SectionTitle title="Solar Experts Videos" badgeText="Live" />
+          <SolCareShorts />
+        </View>
+
         <SubscriptionPlans />
         <FreeConsultation />
-        {/* Bottom spacer */}
+
+
       </ScrollView>
-    </>
+    </View>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: lightTheme.colors.coolMist, // Premium background color
+    backgroundColor: '#FFFFFF',
   },
   content: {
     flex: 1,
   },
+  welcomeBox: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 20,
+  },
+  welcomeText: {
+    fontSize: 24,
+    fontFamily: 'NotoSans-Bold',
+    color: '#1C1C1E',
+  },
+  userName: {
+    color: lightTheme.colors.primaryBlue,
+  },
+  subWelcome: {
+    fontSize: 14,
+    fontFamily: 'NotoSans-Medium',
+    color: '#8E8E93',
+    marginTop: 4,
+  },
+  sectionWrapper: {
+    marginBottom: 10,
+  },
   horizontalScroll: {
     paddingHorizontal: 20,
-    paddingBottom: 16, // Added more breathing room for shadows
+    paddingBottom: 20,
+    paddingTop: 10,
+  },
+  footerSpacer: {
+    height: 40,
   },
 });

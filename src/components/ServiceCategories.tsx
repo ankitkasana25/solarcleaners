@@ -1,15 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { lightTheme } from '../theme/theme';
 
 const { width } = Dimensions.get('window');
-// Calculate width for 3.5 items visible or similar
-const ITEM_WIDTH = (width - 48) / 3.5;
+const GRID_ITEM_WIDTH = (width - 60) / 3; // 3 columns with padding/gap
 
 export interface Category {
     id: string;
     label: string;
-    icon: string; // Emoji for now
+    icon: string;
     color: string;
 }
 
@@ -20,115 +19,91 @@ interface ServiceCategoriesProps {
 }
 
 export const ServiceCategories = ({ categories, activeCategory, onCategoryPress }: ServiceCategoriesProps) => {
+    // Filter out 'all' and 'faq' if they don't look like main categories in the screenshot
+    const displayCategories = categories.filter(c => c.id !== 'faq');
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>Categories</Text>
-                <TouchableOpacity>
-                    <Text style={styles.seeAll}>See All</Text>
-                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Explore all services</Text>
             </View>
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-            >
-                {categories.map((cat) => {
+            <View style={styles.gridContainer}>
+                {displayCategories.map((cat) => {
                     const isActive = cat.id === activeCategory;
                     return (
                         <TouchableOpacity
                             key={cat.id}
-                            style={[
-                                styles.card,
-                                { backgroundColor: cat.color },
-                                isActive && styles.activeCard
-                            ]}
+                            style={styles.categoryItem}
                             onPress={() => onCategoryPress(cat.id)}
-                            activeOpacity={0.8}
+                            activeOpacity={0.7}
                         >
-                            <View style={styles.iconContainer}>
+                            <View style={[
+                                styles.iconBox,
+                                isActive && styles.activeIconBox
+                            ]}>
                                 <Text style={styles.icon}>{cat.icon}</Text>
                             </View>
-                            <Text style={styles.label}>{cat.label}</Text>
+                            <Text style={[
+                                styles.label,
+                                isActive && styles.activeLabel
+                            ]}>{cat.label}</Text>
                         </TouchableOpacity>
                     );
                 })}
-            </ScrollView>
+            </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 24,
+        marginBottom: 32,
+        paddingHorizontal: 20,
     },
     header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        marginBottom: 16,
+        marginBottom: 20,
     },
     headerTitle: {
         fontSize: 20,
         fontFamily: 'NotoSans-Bold',
-        color: lightTheme.colors.headerTitle,
-        letterSpacing: 0.5,
+        color: '#1C1C1E',
     },
-    seeAll: {
-        fontSize: 14,
-        fontFamily: 'NotoSans-Bold',
-        color: lightTheme.colors.primaryBlue,
-    },
-    scrollContent: {
-        paddingHorizontal: 20,
-        gap: 16,
-        paddingBottom: 10, // For shadow visibility
-    },
-    card: {
-        width: 110,
-        height: 120,
-        borderRadius: 24,
-        padding: 16,
+    gridContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
         justifyContent: 'space-between',
+        rowGap: 24,
+    },
+    categoryItem: {
+        width: GRID_ITEM_WIDTH,
         alignItems: 'center',
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 8,
-        },
-        shadowOpacity: 0.15,
-        shadowRadius: 10,
-        elevation: 6,
     },
-    activeCard: {
-        borderWidth: 2,
-        borderColor: '#FFFFFF',
-        transform: [{ scale: 1.05 }],
-        shadowOpacity: 0.25,
-    },
-    iconContainer: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        backgroundColor: 'rgba(255,255,255,0.25)',
+    iconBox: {
+        width: GRID_ITEM_WIDTH,
+        height: GRID_ITEM_WIDTH * 0.9,
+        backgroundColor: '#F7F7F7', // Light gray background like screenshot
+        borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 4,
+        marginBottom: 8,
+    },
+    activeIconBox: {
+        backgroundColor: '#EBF1FF',
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
+        borderColor: lightTheme.colors.primaryBlue,
     },
     icon: {
-        fontSize: 28,
+        fontSize: 32,
     },
     label: {
-        fontSize: 13,
-        fontFamily: 'NotoSans-Bold',
-        color: '#FFFFFF',
+        fontSize: 12,
+        fontFamily: 'NotoSans-Medium',
+        color: '#444',
         textAlign: 'center',
-        marginBottom: 4,
-        textShadowColor: 'rgba(0, 0, 0, 0.1)',
-        textShadowOffset: { width: 0, height: 1 },
-        textShadowRadius: 2,
+        lineHeight: 16,
+    },
+    activeLabel: {
+        fontFamily: 'NotoSans-Bold',
+        color: lightTheme.colors.primaryBlue,
     },
 });

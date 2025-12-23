@@ -1,9 +1,11 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, Alert, Image, Pressable } from 'react-native';
+import Carousel from 'react-native-reanimated-carousel';
+import { observer } from 'mobx-react-lite';
+import { useRootStore } from '../stores/RootStore';
 import { lightTheme } from '../theme/theme';
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = width * 0.85;
 
 const PROMOTIONS = [
     {
@@ -11,8 +13,8 @@ const PROMOTIONS = [
         title: 'Happy Weekend',
         discount: '25% OFF',
         description: 'All Solar Services',
-        backgroundColor: '#E8F5E9', // Light green
-        image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&q=80',
+        backgroundColor: '#E8F5E9',
+        image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80',
         accentColor: '#2E7D32',
     },
     {
@@ -20,8 +22,8 @@ const PROMOTIONS = [
         title: 'New User Offer',
         discount: 'Flat ₹200',
         description: 'On First Booking',
-        backgroundColor: '#E3F2FD', // Light Blue
-        image: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=600&q=80',
+        backgroundColor: '#E3F2FD',
+        image: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&q=80',
         accentColor: '#1565C0',
     },
     {
@@ -29,20 +31,28 @@ const PROMOTIONS = [
         title: 'Monsoon Special',
         discount: 'Free Checkup',
         description: 'With Deep Cleaning',
-        backgroundColor: '#FFF3E0', // Light Orange
-        image: 'https://images.unsplash.com/photo-1625301840055-7c1b7198cfc0?w=600&q=80',
+        backgroundColor: '#FFF3E0',
+        image: 'https://images.unsplash.com/photo-1625301840055-7c1b7198cfc0?w=800&q=80',
         accentColor: '#EF6C00',
+    },
+    {
+        id: '4',
+        title: 'Energy Booster',
+        discount: '15% Extra',
+        description: 'On Annual Plans',
+        backgroundColor: '#F3E5F5',
+        image: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&q=80',
+        accentColor: '#7B1FA2',
     }
 ];
 
-import { observer } from 'mobx-react-lite';
-import { useRootStore } from '../stores/RootStore';
-import { Alert } from 'react-native';
-
 export const ServicePromotions = observer(() => {
     const { cartStore } = useRootStore();
+    const [currentSlide, setCurrentSlide] = useState(0);
 
     const handleClaim = (item: typeof PROMOTIONS[0]) => {
+        if (!cartStore) return;
+
         const isApplied = cartStore.appliedOffers.some(offer => offer.id === item.id);
 
         if (isApplied) {
@@ -57,106 +67,137 @@ export const ServicePromotions = observer(() => {
             description: item.description
         });
 
-        Alert.alert('Success', 'Offer applied to your cart!');
+        Alert.alert('Success', `Offer "${item.title}" applied to your cart!`);
     };
+
+    const currentPromotion = PROMOTIONS[currentSlide] || PROMOTIONS[0];
 
     return (
         <View style={styles.container}>
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.contentContainer}
-                decelerationRate="fast"
-                snapToInterval={CARD_WIDTH + 16}
-            >
-                {PROMOTIONS.map((item) => {
-                    const isApplied = cartStore.appliedOffers.some(offer => offer.id === item.id);
-
-                    return (
-                        <View key={item.id} style={[styles.card, { backgroundColor: item.backgroundColor }]}>
-                            <View style={styles.textContainer}>
-                                <Text style={[styles.subTitle, { color: item.accentColor }]}>{item.description}</Text>
-                                <Text style={[styles.discount, { color: item.accentColor }]}>{item.discount}</Text>
+            <Carousel
+                loop
+                width={width}
+                height={220}
+                autoPlay={true}
+                data={PROMOTIONS}
+                scrollAnimationDuration={1000}
+                autoPlayInterval={3000}
+                onSnapToItem={(index) => setCurrentSlide(index)}
+                renderItem={({ item }) => (
+                    <Pressable
+                        style={styles.carouselItem}
+                        onPress={() => handleClaim(item)}
+                    >
+                        <Image
+                            source={{ uri: item.image }}
+                            style={styles.imageStyle}
+                            resizeMode="cover"
+                        />
+                        <View style={styles.overlayContainer} pointerEvents="none">
+                            <View style={[styles.infoCard, { backgroundColor: 'rgba(255,255,255,0.9)' }]}>
+                                <Text style={[styles.subTitle, { color: item.accentColor }]}>
+                                    {item.description}
+                                </Text>
+                                <Text style={[styles.discount, { color: item.accentColor }]}>
+                                    {item.discount}
+                                </Text>
                                 <Text style={styles.title}>{item.title}</Text>
-                                <View
-                                    style={[
-                                        styles.button,
-                                        { backgroundColor: isApplied ? '#4CAF50' : item.accentColor } // Green if applied
-                                    ]}
-                                    onTouchEnd={() => handleClaim(item)} // Simple touch handling
-                                >
-                                    <Text style={styles.buttonText}>
-                                        {isApplied ? 'Applied ✓' : 'Claim Now'}
-                                    </Text>
-                                </View>
+                                <Text style={styles.tapToClaim}>Tap image to claim</Text>
                             </View>
-                            <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
                         </View>
-                    );
-                })}
-            </ScrollView>
+                    </Pressable>
+                )}
+            />
+            {/* Pagination Dots */}
+            <View style={styles.pagination}>
+                {PROMOTIONS.map((_, index) => (
+                    <View
+                        key={index}
+                        style={[
+                            styles.dot,
+                            currentSlide === index && styles.activeDot
+                        ]}
+                    />
+                ))}
+            </View>
         </View>
     );
 });
 
 const styles = StyleSheet.create({
     container: {
-        paddingVertical: 24,
+        paddingVertical: 10,
+        alignItems: 'center',
     },
-    contentContainer: {
-        paddingHorizontal: 20,
-        gap: 16,
-    },
-    card: {
-        width: CARD_WIDTH,
-        height: 160,
-        borderRadius: 24,
-        flexDirection: 'row',
-        overflow: 'hidden',
-        position: 'relative',
-    },
-    textContainer: {
-        flex: 1,
-        padding: 20,
+    carouselItem: {
+        width: width,
+        alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 2,
+    },
+    imageStyle: {
+        borderRadius: 20,
+        width: width - 40,
+        height: 200,
+    },
+    overlayContainer: {
+        position: 'absolute',
+        top: 25,
+        left: 45,
+        zIndex: 10,
+        width: '60%',
+        height: 150,
+        justifyContent: 'center',
+    },
+    infoCard: {
+        padding: 16,
+        borderRadius: 15,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 3,
     },
     title: {
         fontSize: 14,
         fontFamily: 'NotoSans-Bold',
         color: '#1C1C1E',
-        marginTop: 4,
-        marginBottom: 12,
+        marginTop: 2,
     },
     discount: {
-        fontSize: 28,
+        fontSize: 24,
         fontFamily: 'NotoSans-Black',
-        lineHeight: 34,
+        lineHeight: 30,
     },
     subTitle: {
-        fontSize: 12,
-        fontFamily: 'NotoSans-Medium',
-        textTransform: 'uppercase',
-        letterSpacing: 0.5,
-    },
-    button: {
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 8,
-        alignSelf: 'flex-start',
-    },
-    buttonText: {
-        color: '#FFFFFF',
         fontSize: 10,
         fontFamily: 'NotoSans-Bold',
+        textTransform: 'uppercase',
+        letterSpacing: 1,
     },
-    image: {
-        width: '50%',
-        height: '100%',
-        position: 'absolute',
-        right: -20,
-        bottom: -20,
-        borderBottomLeftRadius: 100, // Creative shape
-        transform: [{ rotate: '-10deg' }, { scale: 1.2 }],
+    tapToClaim: {
+        fontSize: 9,
+        fontFamily: 'NotoSans-Medium',
+        color: '#8E8E93',
+        marginTop: 4,
+        fontStyle: 'italic',
     },
+    pagination: {
+        flexDirection: 'row',
+        marginTop: 10,
+    },
+    dot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: '#E0E0E0',
+        marginHorizontal: 4,
+    },
+    activeDot: {
+        backgroundColor: lightTheme.colors.primaryBlue,
+        width: 20,
+    }
 });
+
+export default ServicePromotions;
+
+

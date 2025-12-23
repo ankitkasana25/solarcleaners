@@ -17,9 +17,11 @@ import { useRootStore } from '../../stores/RootStore';
 
 import { ScreenContainer } from '../../components/ScreenContainer';
 import { ImageIcon } from '../../components/ImageIcon';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../theme/colors';
 import { lightTheme } from '../../theme/theme';
 import { Toast } from '../../components/Toast';
+import { PACKAGE_INCLUDES } from '../../data/servicePackages';
 
 const { width } = Dimensions.get('window');
 
@@ -52,6 +54,32 @@ export const ServiceDetailScreen = observer(() => {
     'info',
   );
 
+  // Slot Booking State
+  const [selectedDate, setSelectedDate] = useState<number>(0); // 0-6 (next 7 days)
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+
+  const timeSlots = [
+    { id: 'morning', label: 'Morning', time: '09:00 AM - 12:00 PM', icon: '🌅' },
+    { id: 'afternoon', label: 'Afternoon', time: '12:00 PM - 03:00 PM', icon: '☀️' },
+    { id: 'evening', label: 'Evening', time: '03:00 PM - 06:00 PM', icon: '🌇' },
+  ];
+
+  // Helper to get dates for next 7 days
+  const getDates = () => {
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() + i);
+      dates.push({
+        dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
+        dayNum: d.getDate(),
+        fullDate: d.toISOString().split('T')[0],
+      });
+    }
+    return dates;
+  };
+  const dates = getDates();
+
   const showToast = (
     message: string,
     type: 'success' | 'error' | 'info' = 'info',
@@ -65,13 +93,17 @@ export const ServiceDetailScreen = observer(() => {
     // Handle case where service data is missing
   }
 
-  // Calculate Price Logic
+  // Calculate Price Logic (@ ₹150 per kW)
   const parsedSize = parseFloat(systemSize) || 0;
-  // If service.price is not defined, we fallback to 500
-  const basePrice = service.price && service.price > 0 ? service.price : 500;
+  const basePrice = 150; // Fixed rate per kW
   const totalPrice = parsedSize * basePrice;
 
   const handleAddToCart = () => {
+    if (!selectedSlot) {
+      showToast('Please select a time slot', 'error');
+      return;
+    }
+
     // Check if item already exists in cart
     const existingItem = cartStore.items.find(item => item.id === service.id);
 
@@ -86,12 +118,19 @@ export const ServiceDetailScreen = observer(() => {
         systemSize: systemSize,
         image: service.image,
         details: `${systemSize} kW System`,
+        slotDate: dates[selectedDate].fullDate,
+        slotTime: timeSlots.find(s => s.id === selectedSlot)?.time,
       });
       showToast('Added to cart', 'success');
     }
   };
 
   const handleBuyNow = () => {
+    if (!selectedSlot) {
+      showToast('Please select a time slot', 'error');
+      return;
+    }
+
     const existingItem = cartStore.items.find(item => item.id === service.id);
     if (!existingItem) {
       cartStore.addToCart({
@@ -102,6 +141,8 @@ export const ServiceDetailScreen = observer(() => {
         systemSize: systemSize,
         image: service.image,
         details: `${systemSize} kW System`,
+        slotDate: dates[selectedDate].fullDate,
+        slotTime: timeSlots.find(s => s.id === selectedSlot)?.time,
       });
     }
     navigation.navigate('MainTabs', { screen: 'Cart' });
@@ -202,18 +243,60 @@ export const ServiceDetailScreen = observer(() => {
               'A thorough one-time deep cleaning session tailored for heavily soiled panels.'}
           </Text>
 
-          {/* Technical Highlights */}
+          {/* Slot Booking Section */}
+          <View style={styles.slotBookingContainer}>
+            <Text style={styles.sectionHeader}>Select Schedule</Text>
+
+            {/* Date Selection */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.dateList}
+            >
+              {dates.map((item, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.dateItem,
+                    selectedDate === index && styles.dateItemActive
+                  ]}
+                  onPress={() => setSelectedDate(index)}
+                >
+                  <Text style={[styles.dayName, selectedDate === index && styles.dateTextActive]}>{item.dayName}</Text>
+                  <Text style={[styles.dayNum, selectedDate === index && styles.dateTextActive]}>{item.dayNum}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            {/* Time Slot Selection */}
+            <View style={styles.timeSlotGrid}>
+              {timeSlots.map(slot => (
+                <TouchableOpacity
+                  key={slot.id}
+                  style={[
+                    styles.timeSlotItem,
+                    selectedSlot === slot.id && styles.timeSlotItemActive
+                  ]}
+                  onPress={() => setSelectedSlot(slot.id)}
+                >
+                  <View style={styles.slotHeader}>
+                    <Text style={styles.slotIcon}>{slot.icon}</Text>
+                    <Text style={[styles.slotLabel, selectedSlot === slot.id && styles.slotTextActive]}>{slot.label}</Text>
+                  </View>
+                  <Text style={[styles.slotTime, selectedSlot === slot.id && styles.slotTimeTextActive]}>{slot.time}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* Package Inclusions */}
           <View style={styles.highlightsContainer}>
-            <Text style={styles.sectionHeader}>Technical Highlights</Text>
-            {(
-              service.technicalHighlights || [
-                'Targets heavy grime: moss, sap, lichen, cement dust.',
-                'Can recover up to 30-40% of lost output.',
-                'Provides early detection of micro-cracks or hotspots.',
-              ]
-            ).map((item, index) => (
+            <Text style={styles.sectionHeader}>What's Included</Text>
+            {PACKAGE_INCLUDES.map((item, index) => (
               <View key={index} style={styles.highlightRow}>
-                <View style={styles.bulletDot} />
+                <View style={styles.checkContainer}>
+                  <Ionicons name="checkmark-circle" size={18} color={lightTheme.colors.primaryBlue} />
+                </View>
                 <Text style={styles.bulletPoint}>{item}</Text>
               </View>
             ))}
@@ -472,6 +555,83 @@ const styles = StyleSheet.create({
     color: lightTheme.colors.primaryBlue,
   },
 
+  // Slot Booking Styles
+  slotBookingContainer: {
+    marginBottom: 24,
+  },
+  dateList: {
+    paddingVertical: 10,
+    gap: 12,
+  },
+  dateItem: {
+    width: 60,
+    height: 70,
+    borderRadius: 12,
+    backgroundColor: '#F5F5F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#EEEEEE',
+  },
+  dateItemActive: {
+    backgroundColor: lightTheme.colors.primaryBlue,
+    borderColor: lightTheme.colors.primaryBlue,
+  },
+  dayName: {
+    fontSize: 12,
+    fontFamily: 'NotoSans-Medium',
+    color: '#8E8E93',
+  },
+  dayNum: {
+    fontSize: 18,
+    fontFamily: 'NotoSans-Bold',
+    color: '#1C1C1E',
+    marginTop: 2,
+  },
+  dateTextActive: {
+    color: '#FFFFFF',
+  },
+  timeSlotGrid: {
+    marginTop: 16,
+    gap: 10,
+  },
+  timeSlotItem: {
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#F9F9F9',
+    borderWidth: 1,
+    borderColor: '#EEEEEE',
+  },
+  timeSlotItemActive: {
+    backgroundColor: '#F0F7FF',
+    borderColor: lightTheme.colors.primaryBlue,
+  },
+  slotHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  slotIcon: {
+    fontSize: 16,
+    marginRight: 8,
+  },
+  slotLabel: {
+    fontSize: 14,
+    fontFamily: 'NotoSans-Bold',
+    color: '#1C1C1E',
+  },
+  slotTime: {
+    fontSize: 12,
+    fontFamily: 'NotoSans-Regular',
+    color: '#8E8E93',
+  },
+  slotTextActive: {
+    color: lightTheme.colors.primaryBlue,
+  },
+  slotTimeTextActive: {
+    color: '#5C9CE6',
+  },
+
   sectionHeader: {
     fontSize: 16,
     fontFamily: 'NotoSans-Bold',
@@ -494,13 +654,14 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 10,
   },
-  bulletDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: lightTheme.colors.primaryBlue,
-    marginTop: 8,
-    marginRight: 10,
+  checkContainer: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: '#F0F7FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
   },
   bulletPoint: {
     flex: 1,

@@ -4,11 +4,13 @@ export interface CartItem {
     id: string;
     title: string;
     price: number;
-    basePrice: number; // Added
-    systemSize: string; // Added
+    basePrice: number;
+    systemSize: string;
     image?: any;
     quantity: number;
     details?: string;
+    slotDate?: string; // e.g. "2023-10-25"
+    slotTime?: string; // e.g. "10:00 AM"
 }
 
 export interface Offer {

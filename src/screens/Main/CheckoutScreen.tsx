@@ -9,11 +9,14 @@ import { ImageIcon } from '../../components/ImageIcon'; // Use ImageIcon for con
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../theme/colors';
 import { lightTheme } from '../../theme/theme';
+import { BookingCalendar } from '../../components/BookingCalendar';
 
 export const CheckoutScreen = observer(() => {
     const { cartStore, bookingStore } = useRootStore();
     const navigation = useNavigation<any>();
     const [paymentMethod, setPaymentMethod] = useState<'Pay on Visit' | 'UPI'>('Pay on Visit');
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+    const [selectedTime, setSelectedTime] = useState<string | undefined>();
     const insets = useSafeAreaInsets();
 
     const handlePlaceOrder = () => {
@@ -22,11 +25,18 @@ export const CheckoutScreen = observer(() => {
             return;
         }
 
+        if (!selectedDate || !selectedTime) {
+            Alert.alert('Select Date & Time', 'Please select your preferred date and time slot for the service.');
+            return;
+        }
+
         // Add to bookings
         bookingStore.addBooking({
             items: [...cartStore.items],
             totalPrice: cartStore.totalPrice,
             paymentMethod: paymentMethod,
+            scheduledDate: selectedDate,
+            scheduledTime: selectedTime,
         });
 
         // Clear cart
@@ -73,6 +83,19 @@ export const CheckoutScreen = observer(() => {
                             <Text style={styles.totalLabel}>Total Amount</Text>
                             <Text style={styles.totalValue}>₹{cartStore.totalPrice.toLocaleString()}</Text>
                         </View>
+                    </View>
+                </View>
+
+                {/* Booking Calendar Section */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>📅 Schedule Your Service</Text>
+                    <View style={styles.card}>
+                        <BookingCalendar
+                            onDateSelect={setSelectedDate}
+                            onTimeSelect={setSelectedTime}
+                            selectedDate={selectedDate}
+                            selectedTime={selectedTime}
+                        />
                     </View>
                 </View>
 

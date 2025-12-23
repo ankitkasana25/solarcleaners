@@ -7,6 +7,8 @@ export interface BookingItem {
     date: string;
     status: 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled';
     paymentMethod: 'Pay on Visit' | 'UPI';
+    scheduledDate?: Date;
+    scheduledTime?: string;
 }
 
 export class BookingStore {

@@ -19,7 +19,6 @@ export const SectionTitle = ({
         <View style={styles.container}>
             <View style={styles.headerRow}>
                 <View style={styles.titleContainer}>
-                    <View style={styles.accentBar} />
                     <Text style={styles.title} numberOfLines={1}>{title}</Text>
                     {badgeText && (
                         <View style={styles.badge}>
@@ -52,20 +51,11 @@ const styles = StyleSheet.create({
         flex: 1, // Takes available space
         marginRight: 8,
     },
-    accentBar: {
-        width: 4,
-        height: 18,
-        backgroundColor: lightTheme.colors.primaryBlue,
-        marginRight: 10,
-        borderRadius: 2,
-    },
     title: {
-        fontSize: 18,
+        fontSize: 20,
         fontFamily: 'NotoSans-Bold',
-        fontWeight: '700',
-        color: lightTheme.colors.headerTitle,
+        color: '#1C1C1E',
         marginRight: 8,
-        letterSpacing: 0.5,
         flexShrink: 1,
     },
     badge: {

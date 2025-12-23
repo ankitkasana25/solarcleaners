@@ -3,7 +3,8 @@ import { View, StyleSheet, Dimensions, Image, Text, TouchableOpacity, FlatList, 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
-import { ImageIcon } from '../../components/ImageIcon'; // Assuming usage for icons
+import { lightTheme } from '../../theme/theme';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -11,9 +12,8 @@ interface ReelItem {
     id: string;
     image: string;
     title: string;
-    videoUrl?: string; // For future real implementation
-    likes?: string;
-    comments?: string;
+    description?: string;
+    videoUrl?: string;
 }
 
 export const ReelsScreen = () => {
@@ -22,55 +22,81 @@ export const ReelsScreen = () => {
     const insets = useSafeAreaInsets();
     const { initialIndex = 0, videos = [] } = (route.params as any) || {};
 
-    // Simulate playing state
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
+    const [isPaused, setIsPaused] = useState(false);
+    const [progress, setProgress] = useState(0.45); // Mock progress at 45%
 
     const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
         if (viewableItems.length > 0) {
             setCurrentIndex(viewableItems[0].index);
+            setIsPaused(false); // Play when scrolled to
+            setProgress(0); // Reset progress for new video
         }
     }).current;
 
-    const renderItem = ({ item }: { item: ReelItem }) => (
-        <View style={styles.reelContainer}>
-            {/* Simulated Video Player (Image Background) */}
-            <Image
-                source={{ uri: item.image }}
-                style={styles.backgroundImage}
-                resizeMode="cover"
-            />
+    const togglePlayPause = () => setIsPaused(!isPaused);
 
-            {/* Gradient Overlay for Text Readability */}
+    const handleSkip = (seconds: number) => {
+        // Simulate seeking
+        const newProgress = Math.min(Math.max(progress + (seconds / 60), 0), 1);
+        setProgress(newProgress);
+    };
+
+    const renderItem = ({ item, index }: { item: ReelItem, index: number }) => (
+        <View style={styles.reelContainer}>
+            <TouchableOpacity
+                activeOpacity={1}
+                onPress={togglePlayPause}
+                style={styles.fullScreenTouch}
+            >
+                <Image
+                    source={{ uri: item.image }}
+                    style={styles.backgroundImage}
+                    resizeMode="cover"
+                />
+            </TouchableOpacity>
+
             <LinearGradient
-                colors={['transparent', 'rgba(0,0,0,0.8)']}
+                colors={['rgba(0,0,0,0.4)', 'transparent', 'rgba(0,0,0,0.8)']}
                 style={styles.gradientOverlay}
             />
 
-            {/* Right Side Actions */}
-            <View style={styles.actionsContainer}>
-                <ActionItem icon="❤️" label={item.likes || '1.2k'} />
-                <ActionItem icon="💬" label={item.comments || '342'} />
-                <ActionItem icon="↗️" label="Share" />
-                <ActionItem icon="⋯" label="More" />
+            {/* Video Controls Overlay */}
+            <View style={styles.videoControls}>
+                <TouchableOpacity onPress={() => handleSkip(-10)} style={styles.skipBtn}>
+                    <Ionicons name="refresh-outline" size={30} color="#FFF" />
+                    <Text style={styles.skipText}>-10s</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={togglePlayPause} style={styles.mainPlayBtn}>
+                    <Ionicons name={isPaused ? "play" : "pause"} size={50} color="#FFF" />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => handleSkip(10)} style={styles.skipBtn}>
+                    <Ionicons name="refresh" size={30} color="#FFF" style={{ transform: [{ scaleX: -1 }] }} />
+                    <Text style={styles.skipText}>+10s</Text>
+                </TouchableOpacity>
             </View>
 
-            {/* Bottom Info */}
             <View style={styles.infoContainer}>
-                <View style={styles.userRow}>
-                    <View style={styles.avatarPlaceholder} />
-                    <Text style={styles.userName}>@solar_cleaners_official</Text>
-                    <TouchableOpacity style={styles.followButton}>
-                        <Text style={styles.followText}>Follow</Text>
-                    </TouchableOpacity>
-                </View>
-                <Text style={styles.reelDescription}>{item.title}</Text>
-                <Text style={styles.musicTag}>🎵 Original Audio - Solar Sound</Text>
+                <Text style={styles.reelTitle}>
+                    {item.title}
+                </Text>
+                <Text style={styles.reelSubtitle} numberOfLines={3}>
+                    {item.description || "Learn more about our professional solar services and efficiency optimization techniques."}
+                </Text>
             </View>
 
-            {/* Simulated Play Button Overlay (fades out in real app) */}
-            <View style={styles.playOverlay}>
-                <Text style={styles.playIcon}>▶</Text>
+            {/* Progress Bar */}
+            <View style={styles.progressBarContainer}>
+                <View style={[styles.progressBar, { width: `${progress * 100}%` }]} />
             </View>
+
+            {isPaused && (
+                <View style={styles.playIndicator}>
+                    <Ionicons name="pause" size={60} color="rgba(255,255,255,0.6)" />
+                </View>
+            )}
         </View>
     );
 
@@ -78,12 +104,12 @@ export const ReelsScreen = () => {
         <View style={styles.container}>
             <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
 
-            {/* Header / Back Button */}
-            <View style={[styles.header, { top: insets.top > 0 ? insets.top + 10 : 40 }]}>
+            <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Text style={styles.backButtonText}>← </Text>
+                    <Ionicons name="chevron-back" size={28} color="#FFF" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Shorts</Text>
+                <Text style={styles.headerTitle}>Solar Videos</Text>
+                <View style={{ width: 40 }} />
             </View>
 
             <FlatList
@@ -91,7 +117,6 @@ export const ReelsScreen = () => {
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
                 pagingEnabled
-                // vertical prop removed (default)
                 showsVerticalScrollIndicator={false}
                 initialScrollIndex={initialIndex}
                 getItemLayout={(data, index) => (
@@ -104,15 +129,6 @@ export const ReelsScreen = () => {
     );
 };
 
-const ActionItem = ({ icon, label }: { icon: string, label: string }) => (
-    <View style={styles.actionItem}>
-        <View style={styles.iconCircle}>
-            <Text style={styles.actionIconText}>{icon}</Text>
-        </View>
-        <Text style={styles.actionLabel}>{label}</Text>
-    </View>
-);
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -120,147 +136,118 @@ const styles = StyleSheet.create({
     },
     header: {
         position: 'absolute',
-        // top: 40, // Handled dynamically
+        top: 0,
         left: 0,
         right: 0,
         zIndex: 10,
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         paddingHorizontal: 20,
+        paddingTop: 50, // Fallback for insets
     },
     backButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 10,
+        padding: 8,
     },
-    backButtonText: {
-        color: '#FFF',
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginTop: -2,
+    cameraButton: {
+        padding: 8,
     },
     headerTitle: {
         color: '#FFF',
         fontSize: 18,
-        fontWeight: 'bold',
+        fontFamily: 'NotoSans-Bold',
         textShadowColor: 'rgba(0,0,0,0.5)',
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 4,
+    },
+    fullScreenTouch: {
+        width: width,
+        height: height,
+    },
+    videoControls: {
+        position: 'absolute',
+        top: height * 0.4,
+        width: width,
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        zIndex: 5,
+    },
+    mainPlayBtn: {
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    skipBtn: {
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.2)',
+        padding: 10,
+        borderRadius: 30,
+    },
+    skipText: {
+        color: '#FFF',
+        fontSize: 10,
+        fontFamily: 'NotoSans-Bold',
+        marginTop: 2,
+    },
+    progressBarContainer: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 4,
+        backgroundColor: 'rgba(255,255,255,0.2)',
+    },
+    progressBar: {
+        height: '100%',
+        backgroundColor: lightTheme.colors.primaryBlue,
     },
     reelContainer: {
         width: width,
         height: height,
         backgroundColor: '#1E1E1E',
-        position: 'relative',
     },
     backgroundImage: {
         width: '100%',
         height: '100%',
     },
     gradientOverlay: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        height: '40%',
-    },
-    actionsContainer: {
-        position: 'absolute',
-        right: 16,
-        bottom: 100,
-        alignItems: 'center',
-        zIndex: 5,
-    },
-    actionItem: {
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    iconCircle: {
-        width: 45,
-        height: 45,
-        borderRadius: 22.5,
-        backgroundColor: 'rgba(255,255,255,0.1)',
-        // backdropFilter removed
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 4,
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.2)',
-    },
-    actionIconText: {
-        fontSize: 22,
-    },
-    actionLabel: {
-        color: '#FFF',
-        fontSize: 12,
-        fontWeight: '600',
+        ...StyleSheet.absoluteFillObject,
     },
     infoContainer: {
         position: 'absolute',
-        left: 20,
-        right: 80, // Space for actions
-        bottom: 40,
-        justifyContent: 'flex-end',
+        left: 24,
+        right: 40,
+        bottom: 60,
+        zIndex: 2,
     },
-    userRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    avatarPlaceholder: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: '#FFF',
-        marginRight: 10,
-    },
-    userName: {
+    reelTitle: {
         color: '#FFF',
-        fontWeight: 'bold',
-        fontSize: 16,
-        marginRight: 10,
+        fontSize: 22,
+        fontFamily: 'NotoSans-Bold',
+        marginBottom: 8,
+        textShadowColor: 'rgba(0,0,0,0.5)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 4,
     },
-    followButton: {
-        paddingHorizontal: 12,
-        paddingVertical: 4,
-        borderRadius: 4,
-        borderWidth: 1,
-        borderColor: '#FFF',
-    },
-    followText: {
-        color: '#FFF',
-        fontSize: 12,
-        fontWeight: '700',
-    },
-    reelDescription: {
-        color: '#FFF',
+    reelSubtitle: {
+        color: 'rgba(255,255,255,0.9)',
         fontSize: 14,
+        fontFamily: 'NotoSans-Medium',
         lineHeight: 20,
-        marginBottom: 10,
+        textShadowColor: 'rgba(0,0,0,0.3)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 2,
     },
-    musicTag: {
-        color: '#FFF',
-        fontSize: 12,
-        opacity: 0.9,
-    },
-    playOverlay: {
+    playIndicator: {
         position: 'absolute',
         top: '50%',
         left: '50%',
         marginLeft: -30,
         marginTop: -30,
-        width: 60,
-        height: 60,
-        justifyContent: 'center',
-        alignItems: 'center',
-        opacity: 0.0, // Hidden for now, can be used for pause state
-    },
-    playIcon: {
-        fontSize: 40,
-        color: 'rgba(255,255,255,0.8)',
+        zIndex: 4,
     },
 });

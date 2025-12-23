@@ -1,223 +1,77 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { SearchBar } from '../../components/SearchBar';
 import {
   ServiceCategories,
   Category,
-} from '../../components/ServiceCategories'; // Updated import
+} from '../../components/ServiceCategories';
 import { ServiceCard } from '../../components/ServiceCard';
 import { ServiceSection } from '../../components/ServiceSection';
-
-import { lightTheme } from '../../theme/theme'; // Updated usage
+import { lightTheme } from '../../theme/theme';
 import { FAQSection } from '../../components/FAQSection';
 
 const { width } = Dimensions.get('window');
-const GRID_CARD_WIDTH = (width - 48) / 2;
 
 const CATEGORIES: Category[] = [
-  { id: 'all', label: 'All', icon: '🔍', color: '#78909C' }, // Blue Grey
-  { id: 'cleaning', label: 'Cleaning', icon: '✨', color: '#2AB1AD' }, // Teal
-  { id: 'maintenance', label: 'Maint.', icon: '🔧', color: '#5C9CE6' }, // Blue
-  { id: 'repairing', label: 'Repair', icon: '🛠️', color: '#E85D75' }, // Red/Pink
-  { id: 'installation', label: 'Install', icon: '⚡', color: '#8E44AD' }, // Purple
-  { id: 'faq', label: 'FAQ', icon: '❓', color: '#F1C40F' }, // Yellow
+  { id: 'cleaning', label: 'Panel Deep Cleaning', icon: '✨', color: '#EBF1FF' },
+  { id: 'maintenance', label: 'System Health Check', icon: '🛡️', color: '#EBF1FF' },
+  { id: 'repairing', label: 'Inverter & Repairs', icon: '🛠️', color: '#EBF1FF' },
+  { id: 'installation', label: 'New Installation', icon: '⚡', color: '#EBF1FF' },
+  { id: 'water', label: 'Water Solutions', icon: '💧', color: '#EBF1FF' },
+  { id: 'consultation', label: 'Expert Consult', icon: '👨‍🔧', color: '#EBF1FF' },
 ];
-
-// Updated service data with additional details
-const servicesData = {
-  cleaning: [
-    {
-      id: '1',
-      title: 'Advance Solar Panel Cleaning',
-      description: 'Deep cleaning for optimal performance',
-      discount: '2% OFF',
-      price: 725,
-      duration: '2-3 hours',
-      image:
-        'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&q=80',
-      featured: true,
-      category: 'cleaning',
-    },
-    {
-      id: '2',
-      title: 'Basic Solar Panel Cleaning',
-      description: 'Standard cleaning service',
-      price: 525,
-      duration: '1-2 hours',
-      image:
-        'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=600&q=80',
-      category: 'cleaning',
-    },
-  ],
-  maintenance: [
-    {
-      id: '3',
-      title: 'Annual Maintenance Contract (AMC)',
-      description: 'Year-round maintenance coverage',
-      price: 1200,
-      duration: 'Annual',
-      image:
-        'https://images.unsplash.com/photo-1625301840055-7c1b7198cfc0?w=600&q=80',
-      popular: true,
-      category: 'maintenance',
-    },
-    {
-      id: '4',
-      title: 'Comprehensive Maintenance Package',
-      description: 'Complete system maintenance',
-      price: 850,
-      duration: '3-4 hours',
-      image:
-        'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600&q=80',
-      category: 'maintenance',
-    },
-  ],
-  repairing: [
-    {
-      id: '5',
-      title: 'Inverter Repair',
-      description: 'Professional inverter diagnostics & repair',
-      price: 650,
-      duration: '2-3 hours',
-      image:
-        'https://images.unsplash.com/photo-1497440001374-f26997328c1b?w=600&q=80',
-      category: 'repairing',
-    },
-    {
-      id: '6',
-      title: 'Panel Replacement',
-      description: 'Damaged panel replacement service',
-      price: 950,
-      duration: '3-4 hours',
-      image:
-        'https://images.unsplash.com/photo-1594818379496-da1e345b0ded?w=600&q=80',
-      urgent: true,
-      category: 'repairing',
-    },
-  ],
-  installation: [
-    {
-      id: '7',
-      title: 'New Solar Panel Installation',
-      description: 'Complete new system installation',
-      price: 2500,
-      duration: '1-2 days',
-      image:
-        'https://images.unsplash.com/photo-1559302504-64aae6ca6b6f?w=600&q=80',
-      featured: true,
-      category: 'installation',
-    },
-    {
-      id: '8',
-      title: 'System Upgrade Installation',
-      description: 'Upgrade existing solar system',
-      price: 1800,
-      duration: '1 day',
-      image:
-        'https://images.unsplash.com/photo-1548613053-220e89574c8a?w=600&q=80',
-      category: 'installation',
-    },
-  ],
-  faq: [],
-};
 
 export const ServicesScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const navigation = useNavigation<any>();
+  const insets = useSafeAreaInsets();
 
   const handleCategoryPress = (id: string) => {
-    if (id === 'all') {
-      setActiveTab('all');
-    } else {
-      const category = CATEGORIES.find(c => c.id === id);
-      navigation.navigate('ServiceCategory', {
-        categoryId: id,
-        categoryTitle: category?.label,
-      });
-    }
-  };
-
-  const renderContent = () => {
-    if (activeTab === 'all') {
-      return (
-        <>
-          <ServiceSection title="Cleaning" services={servicesData.cleaning} />
-          <ServiceSection
-            title="Maintenance"
-            services={servicesData.maintenance}
-          />
-          <ServiceSection title="Repairing" services={servicesData.repairing} />
-          <ServiceSection
-            title="Installation"
-            services={servicesData.installation}
-          />
-          <FAQSection /> {/* Using imported FAQSection component */}
-        </>
-      );
-    }
-
-    if (activeTab === 'faq') {
-      return <FAQSection />; // Using imported FAQSection component
-    }
-
-    const categoryServices =
-      servicesData[activeTab as keyof typeof servicesData];
-    if (!categoryServices || categoryServices.length === 0) {
-      return (
-        <View style={styles.emptyState}>
-          <View style={styles.emptyIconContainer}>
-            <Text style={styles.emptyIcon}>📦</Text>
-          </View>
-          <Text style={styles.emptyText}>No services found</Text>
-          <Text style={styles.emptySubtext}>Check back later for updates</Text>
-        </View>
-      );
-    }
-
-    return (
-      <View style={styles.categoryView}>
-        <View style={styles.gridContainer}>
-          {categoryServices.map((service: any) => (
-            <View key={service.id} style={styles.gridItemWrapper}>
-              <ServiceCard
-                title={service.title}
-                description={service.description}
-                image={service.image}
-                discount={service.discount}
-                price={service.price}
-                duration={service.duration}
-                featured={service.featured}
-                popular={service.popular}
-                urgent={service.urgent}
-                id={service.id}
-                category={service.category}
-                gridView={true}
-              />
-            </View>
-          ))}
-        </View>
-      </View>
-    );
+    const category = CATEGORIES.find(c => c.id === id);
+    navigation.navigate('ServiceCategory', {
+      categoryId: id,
+      categoryTitle: category?.label,
+    });
   };
 
   return (
-    <>
-      <SearchBar
-        placeholder="Search a Service"
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        showVoiceSearch={true}
-      />
+    <View style={styles.container}>
+      <View style={[styles.headerContainer, { paddingTop: insets.top + 10 }]}>
+        <View style={styles.headerTop}>
+          <TouchableOpacity style={styles.locationSelector} activeOpacity={0.7}>
+            <View style={styles.locationIconBg}>
+              <Ionicons name="location" size={12} color={lightTheme.colors.primaryBlue} />
+            </View>
+            <View>
+              <Text style={styles.locationLabel}>Location</Text>
+              <View style={styles.locationRow}>
+                <Text style={styles.locationValue}>Sector 62, Noida</Text>
+                <Ionicons name="chevron-down" size={12} color={lightTheme.colors.slateGray} />
+              </View>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.cartBtn} activeOpacity={0.7}>
+            <Ionicons name="cart-outline" size={24} color="#1C1C1E" />
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>2</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.searchWrapper}>
+          <Ionicons name="search-outline" size={20} color="#8E8E93" style={styles.searchIcon} />
+          <Text style={styles.placeholderText}>Search for 'Panel Cleaning'</Text>
+        </View>
+      </View>
 
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
-        scrollEventThrottle={16}
-        removeClippedSubviews={true}
         overScrollMode="never"
       >
         <ServiceCategories
@@ -226,93 +80,166 @@ export const ServicesScreen = () => {
           onCategoryPress={handleCategoryPress}
         />
 
-        {renderContent()}
+        <View style={styles.bannerContainer}>
+          <View style={styles.banner}>
+            <View style={styles.bannerText}>
+              <Text style={styles.bannerTitle}>Solar Plant Health Checkup</Text>
+              <Text style={styles.bannerSub}>Get 20% OFF on your first inspection</Text>
+              <TouchableOpacity style={styles.bannerBtn}>
+                <Text style={styles.bannerBtnText}>Book now</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.bannerImagePlaceholder}>
+              <Text style={styles.bannerIcon}>🛡️</Text>
+            </View>
+          </View>
+        </View>
+
+        <ServiceSection title="Best Sellers" services={[]} />
       </ScrollView>
-    </>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA', // Lighter background
+    backgroundColor: '#FFFFFF',
   },
   content: {
     flex: 1,
   },
-  scrollContent: {
-    paddingTop: 16,
-    paddingBottom: 40,
+  headerContainer: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 20,
+    paddingBottom: 15,
   },
-  // Grid Container
-  categoryView: {
-    padding: 16,
-  },
-  gridContainer: {
+  headerTop: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
+    alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 15,
   },
-  gridItemWrapper: {
-    width: GRID_CARD_WIDTH,
-    marginBottom: 16,
+  locationSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-
-  // Empty State
-  emptyState: {
-    flex: 1,
+  locationIconBg: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#EBF1FF',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 80,
-    paddingHorizontal: 40,
+    marginRight: 8,
   },
-  emptyIconContainer: {
+  locationLabel: {
+    fontSize: 10,
+    fontFamily: 'NotoSans-Medium',
+    color: lightTheme.colors.slateGray,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  locationValue: {
+    fontSize: 13,
+    fontFamily: 'NotoSans-Bold',
+    color: '#1C1C1E',
+    marginRight: 4,
+  },
+  cartBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#F7F7F7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  badge: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    backgroundColor: '#FF4B4B',
+    paddingHorizontal: 5,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#FFF',
+  },
+  badgeText: {
+    color: '#FFF',
+    fontSize: 10,
+    fontFamily: 'NotoSans-Bold',
+  },
+  searchWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F7F7F7',
+    height: 44,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  placeholderText: {
+    fontSize: 14,
+    color: '#8E8E93',
+    fontFamily: 'NotoSans-Medium',
+  },
+  scrollContent: {
+    paddingBottom: 40,
+  },
+  bannerContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  banner: {
+    flexDirection: 'row',
+    backgroundColor: '#F3F6FC',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  bannerText: {
+    flex: 1,
+  },
+  bannerTitle: {
+    fontSize: 20,
+    fontFamily: 'NotoSans-Bold',
+    color: '#1C1C1E',
+    marginBottom: 4,
+  },
+  bannerSub: {
+    fontSize: 12,
+    fontFamily: 'NotoSans-Medium',
+    color: '#8E8E93',
+    marginBottom: 16,
+  },
+  bannerBtn: {
+    backgroundColor: '#1C1C1E',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 10,
+    alignSelf: 'flex-start',
+  },
+  bannerBtnText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontFamily: 'NotoSans-Bold',
+  },
+  bannerImagePlaceholder: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#F0F7FF',
+    backgroundColor: '#FFF',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginLeft: 10,
   },
-  emptyIcon: {
+  bannerIcon: {
     fontSize: 40,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontFamily: 'NotoSans-Bold',
-    marginBottom: 8,
-    color: '#1C1C1E',
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#8E8E93',
-    textAlign: 'center',
-    fontFamily: 'NotoSans-Regular',
-  },
-  // Floating Cart Button
-  floatingCartButton: {
-    position: 'absolute',
-    bottom: 24,
-    right: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: lightTheme.colors.primaryBlue,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: lightTheme.colors.primaryBlue,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  cartIconContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cartIcon: {
-    fontSize: 28,
-  },
+  }
 });
