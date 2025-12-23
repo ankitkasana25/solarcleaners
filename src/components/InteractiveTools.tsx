@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Dimensions, ImageBackground } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SectionTitle } from './SectionTitle';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 const ITEM_WIDTH = (width - 60) / 2; // Two items with gap
@@ -11,43 +12,116 @@ const tools = [
         id: '1',
         title: 'Solar Health',
         desc: 'System Diagnostics',
-        image: { uri: 'https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=500&q=80' }, // Clean panel
-        colors: ['rgba(17, 153, 142, 0.7)', 'rgba(56, 239, 125, 0.4)'], // Green
+        image: { uri: 'https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=500&q=80' },
+        colors: ['rgba(17, 153, 142, 0.7)', 'rgba(56, 239, 125, 0.4)'],
         icon: '🛡️',
+        content: [
+            {
+                title: 'Understanding Solar Health',
+                body: 'Solar panel efficiency is critical for maximizing your energy output. Over time, environmental factors like micro-cracks or natural wearing can degrade your system\'s performance.'
+            },
+            {
+                title: 'The Impact of Dust and Debris',
+                body: 'Even a thin layer of dust can reduce your solar panel\'s efficiency by up to 25%. Regular inspections are necessary to identify hotspots and potential cell damage early.'
+            },
+            {
+                title: 'When to Call a Professional',
+                body: 'If you notice a significant drop in your energy generation history, it might be more than just dust. Loose wiring or inverter issues require professional diagnostics.'
+            }
+        ]
     },
     {
         id: '2',
         title: 'ROI Calculator',
         desc: 'Investment Return',
-        image: { uri: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=500&q=80' }, // Finance/Calculator
-        colors: ['rgba(41, 128, 185, 0.7)', 'rgba(109, 213, 250, 0.4)'], // Blue
+        image: { uri: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=500&q=80' },
+        colors: ['rgba(41, 128, 185, 0.7)', 'rgba(109, 213, 250, 0.4)'],
         icon: '💰',
+        content: [
+            {
+                title: 'Maximizing Your Investment',
+                body: 'Solar energy is an investment that pays for itself over time. Most systems have a payback period of 5 to 7 years, but this depends heavily on proper maintenance.'
+            },
+            {
+                title: 'Efficiency vs. Return',
+                body: 'A dirty panel takes longer to pay for itself. By maintaining peak efficiency through professional cleaning, you accelerate your return on investment significantly.'
+            },
+            {
+                title: 'Factors Affecting ROI',
+                body: 'Your geographic location, local electricity rates, and system orientation are key factors. We help you track these metrics to ensure you\'re saving as much as possible.'
+            }
+        ]
     },
     {
         id: '3',
         title: 'Sun Forecast',
         desc: 'Generation Potential',
-        image: { uri: 'https://images.unsplash.com/photo-1501630132314-e578fa6aa2f1?w=500&q=80' }, // Cloudy/Sunny Sky
-        colors: ['rgba(255, 126, 95, 0.7)', 'rgba(254, 180, 123, 0.4)'], // Orange/Sunset
+        image: { uri: 'https://images.unsplash.com/photo-1501630132314-e578fa6aa2f1?w=500&q=80' },
+        colors: ['rgba(255, 126, 95, 0.7)', 'rgba(254, 180, 123, 0.4)'],
         icon: '☀️',
+        content: [
+            {
+                title: 'Seasonal Power Generation',
+                body: 'Solar generation varies significantly between seasons. Understanding the sun\'s path across your property helps in predicting monthly power bills more accurately.'
+            },
+            {
+                title: 'Weather and Solar Output',
+                body: 'While solar panels still generate power during cloudy days, their efficiency drops. We provide localized forecasts to help you manage your heavy appliance usage.'
+            },
+            {
+                title: 'Preparing for High Heat',
+                body: 'Contrary to popular belief, extreme heat can slightly reduce panel efficiency. Proper airflow and specialized mounting are essential for maintaining stable output during peak summer.'
+            }
+        ]
     },
     {
         id: '4',
         title: 'AI Support',
         desc: 'Instant Help',
-        image: { uri: 'https://images.unsplash.com/photo-1531746790709-3c9c0f158929?w=500&q=80' }, // Tech/AI
-        colors: ['rgba(142, 45, 226, 0.7)', 'rgba(74, 0, 224, 0.4)'], // Purple
+        image: { uri: 'https://images.unsplash.com/photo-1531746790709-3c9c0f158929?w=500&q=80' },
+        colors: ['rgba(142, 45, 226, 0.7)', 'rgba(74, 0, 224, 0.4)'],
         icon: '🤖',
+        content: [
+            {
+                title: 'Instant Troubleshooting',
+                body: 'Our AI-driven support tool can diagnose 80% of common solar maintenance issues through a few simple questions or a photo analysis of your inverter display.'
+            },
+            {
+                title: 'Educational Resources',
+                body: 'Ask the AI about best practices for maintenance, how to read your inverter, or what specific error codes on your system mean.'
+            },
+            {
+                title: 'Seamless Service Booking',
+                body: 'If the AI detects an issue that requires manual intervention, it can directly connect you with our technical team to schedule an expert site visit.'
+            }
+        ]
     },
 ];
 
 export const InteractiveTools = () => {
+    const navigation = useNavigation<any>();
+
+    const handlePress = (tool: any) => {
+        navigation.navigate('ToolInfo', {
+            tool: {
+                ...tool,
+                image: tool.image.uri,
+                description: tool.desc
+            }
+        });
+    };
+
     return (
         <View style={styles.container}>
             <SectionTitle title="Interactive Tools" badgeText="Smart Features" />
             <View style={styles.grid}>
                 {tools.map((item) => (
-                    <TouchableOpacity key={item.id} activeOpacity={0.9} style={styles.cardWrapper}>
+                    <TouchableOpacity
+                        key={item.id}
+                        activeOpacity={0.9}
+                        style={styles.cardWrapper}
+                        onPress={() => handlePress(item)}
+                    >
                         <ImageBackground
                             source={item.image}
                             style={styles.imageBackground}
