@@ -79,12 +79,39 @@ export const CheckoutScreen = observer(() => {
 
                         <View style={styles.totalDivider} />
 
+                        <View style={styles.breakdownRow}>
+                            <Text style={styles.breakdownLabel}>Subtotal</Text>
+                            <Text style={styles.breakdownValue}>₹{cartStore.cartSubTotal.toLocaleString()}</Text>
+                        </View>
+                        {cartStore.appliedOffers.length > 0 && (
+                            <View style={styles.breakdownRow}>
+                                <Text style={styles.breakdownLabel}>Discount Applied</Text>
+                                <Text style={[styles.breakdownValue, { color: '#2ED97B' }]}>-₹{cartStore.discountAmount.toLocaleString()}</Text>
+                            </View>
+                        )}
+
                         <View style={styles.totalRow}>
                             <Text style={styles.totalLabel}>Total Amount</Text>
                             <Text style={styles.totalValue}>₹{cartStore.totalPrice.toLocaleString()}</Text>
                         </View>
                     </View>
                 </View>
+
+                {/* Applied Coupons Summary (Informational) */}
+                {cartStore.appliedOffers.length > 0 && (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Applied Offers</Text>
+                        {cartStore.appliedOffers.map(offer => (
+                            <View key={offer.id} style={styles.compactOfferCard}>
+                                <Ionicons name="checkmark-circle" size={18} color={lightTheme.colors.primaryBlue} />
+                                <View style={styles.compactOfferText}>
+                                    <Text style={styles.offerTextBold}>{offer.title}</Text>
+                                    <Text style={styles.offerTextSmall}>{offer.description} • {offer.discount}</Text>
+                                </View>
+                            </View>
+                        ))}
+                    </View>
+                )}
 
                 {/* Booking Calendar Section */}
                 <View style={styles.section}>
@@ -150,6 +177,7 @@ export const CheckoutScreen = observer(() => {
                     <Ionicons name="arrow-forward" size={16} color="#fff" style={{ marginLeft: 8 }} />
                 </TouchableOpacity>
             </View>
+
         </ScreenContainer>
     );
 });
@@ -361,5 +389,44 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 14,
         fontFamily: 'NotoSans-Bold',
+    },
+    breakdownRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 8,
+    },
+    breakdownLabel: {
+        fontSize: 14,
+        fontFamily: 'NotoSans-Regular',
+        color: '#8E8E93',
+    },
+    breakdownValue: {
+        fontSize: 14,
+        fontFamily: 'NotoSans-Medium',
+        color: '#1C1C1E',
+    },
+    compactOfferCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 12,
+        backgroundColor: '#F0F7FF',
+        borderRadius: 12,
+        marginBottom: 10,
+        borderWidth: 1,
+        borderColor: '#E1E9F5',
+    },
+    compactOfferText: {
+        marginLeft: 10,
+        flex: 1,
+    },
+    offerTextBold: {
+        fontSize: 14,
+        fontFamily: 'NotoSans-Bold',
+        color: '#1C1C1E',
+    },
+    offerTextSmall: {
+        fontSize: 12,
+        fontFamily: 'NotoSans-Regular',
+        color: '#8E8E93',
     },
 });

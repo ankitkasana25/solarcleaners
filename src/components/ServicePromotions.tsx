@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, Alert, Image, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Alert, Image, TouchableOpacity } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { observer } from 'mobx-react-lite';
 import { useRootStore } from '../stores/RootStore';
@@ -70,8 +70,6 @@ export const ServicePromotions = observer(() => {
         Alert.alert('Success', `Offer "${item.title}" applied to your cart!`);
     };
 
-    const currentPromotion = PROMOTIONS[currentSlide] || PROMOTIONS[0];
-
     return (
         <View style={styles.container}>
             <Carousel
@@ -80,35 +78,43 @@ export const ServicePromotions = observer(() => {
                 height={220}
                 autoPlay={true}
                 data={PROMOTIONS}
-                scrollAnimationDuration={1000}
-                autoPlayInterval={3000}
+                scrollAnimationDuration={800}
+                autoPlayInterval={3500}
                 onSnapToItem={(index) => setCurrentSlide(index)}
                 renderItem={({ item }) => (
-                    <Pressable
-                        style={styles.carouselItem}
-                        onPress={() => handleClaim(item)}
-                    >
-                        <Image
-                            source={{ uri: item.image }}
-                            style={styles.imageStyle}
-                            resizeMode="cover"
-                        />
-                        <View style={styles.overlayContainer} pointerEvents="none">
-                            <View style={[styles.infoCard, { backgroundColor: 'rgba(255,255,255,0.9)' }]}>
-                                <Text style={[styles.subTitle, { color: item.accentColor }]}>
-                                    {item.description}
-                                </Text>
-                                <Text style={[styles.discount, { color: item.accentColor }]}>
-                                    {item.discount}
-                                </Text>
-                                <Text style={styles.title}>{item.title}</Text>
-                                <Text style={styles.tapToClaim}>Tap image to claim</Text>
+                    <View style={styles.carouselItem}>
+                        <View style={styles.cardWrapper}>
+                            <Image
+                                source={{ uri: item.image }}
+                                style={styles.imageStyle}
+                                resizeMode="cover"
+                            />
+                            <View style={styles.contentOverlay}>
+                                <View style={styles.textContainer}>
+                                    <Text style={[styles.promoLabel, { color: item.accentColor }]}>
+                                        {item.description}
+                                    </Text>
+                                    <Text style={[styles.discountText, { color: item.accentColor }]}>
+                                        {item.discount}
+                                    </Text>
+                                    <View style={styles.titleGap} />
+                                    <Text style={styles.promoTitle}>{item.title}</Text>
+
+                                    <TouchableOpacity
+                                        style={[styles.claimButton, { backgroundColor: '#1C1C1E' }]}
+                                        onPress={() => handleClaim(item)}
+                                        activeOpacity={0.8}
+                                    >
+                                        <Text style={styles.claimButtonText}>Book Now</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
-                    </Pressable>
+                    </View>
                 )}
             />
-            {/* Pagination Dots */}
+
+            {/* Pagination */}
             <View style={styles.pagination}>
                 {PROMOTIONS.map((_, index) => (
                     <View
@@ -133,71 +139,85 @@ const styles = StyleSheet.create({
         width: width,
         alignItems: 'center',
         justifyContent: 'center',
+        paddingHorizontal: 20,
+    },
+    cardWrapper: {
+        width: width - 40,
+        height: 190,
+        borderRadius: 8,
+        overflow: 'hidden',
+        backgroundColor: '#F7F9FC',
+        position: 'relative',
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
     },
     imageStyle: {
-        borderRadius: 20,
-        width: width - 40,
-        height: 200,
-    },
-    overlayContainer: {
+        width: '100%',
+        height: '100%',
         position: 'absolute',
-        top: 25,
-        left: 45,
-        zIndex: 10,
-        width: '60%',
-        height: 150,
+    },
+    contentOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(255,255,255,0.4)', // Subtle fade to make text pop
+        padding: 20,
         justifyContent: 'center',
     },
-    infoCard: {
-        padding: 16,
-        borderRadius: 15,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        elevation: 3,
+    textContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        maxWidth: '65%',
     },
-    title: {
-        fontSize: 14,
-        fontFamily: 'NotoSans-Bold',
-        color: '#1C1C1E',
-        marginTop: 2,
-    },
-    discount: {
-        fontSize: 24,
-        fontFamily: 'NotoSans-Black',
-        lineHeight: 30,
-    },
-    subTitle: {
-        fontSize: 10,
+    promoLabel: {
+        fontSize: 11,
         fontFamily: 'NotoSans-Bold',
         textTransform: 'uppercase',
         letterSpacing: 1,
+        marginBottom: 4,
     },
-    tapToClaim: {
-        fontSize: 9,
-        fontFamily: 'NotoSans-Medium',
-        color: '#8E8E93',
-        marginTop: 4,
-        fontStyle: 'italic',
+    discountText: {
+        fontSize: 28,
+        fontFamily: 'NotoSans-Black',
+        lineHeight: 34,
+    },
+    titleGap: {
+        height: 2,
+    },
+    promoTitle: {
+        fontSize: 16,
+        fontFamily: 'NotoSans-Bold',
+        color: '#1C1C1E',
+        marginBottom: 16,
+    },
+    claimButton: {
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 12,
+        alignSelf: 'flex-start',
+    },
+    claimButtonText: {
+        color: '#FFFFFF',
+        fontSize: 12,
+        fontFamily: 'NotoSans-Bold',
     },
     pagination: {
         flexDirection: 'row',
-        marginTop: 10,
+        marginTop: 15,
+        alignItems: 'center',
     },
     dot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
+        width: 6,
+        height: 6,
+        borderRadius: 3,
         backgroundColor: '#E0E0E0',
         marginHorizontal: 4,
     },
     activeDot: {
         backgroundColor: lightTheme.colors.primaryBlue,
-        width: 20,
+        width: 18,
     }
 });
 
 export default ServicePromotions;
-
-
