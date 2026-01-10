@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.inputBackground,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: 'transparent',
+        borderColor: colors.inputBorder,
         paddingHorizontal: 12,
         height: 50,
     },

@@ -13,8 +13,6 @@ import {
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { Toast } from '../../components/Toast';
-import { colors } from '../../theme/colors';
-import { typography } from '../../theme/typography';
 import { useNavigation } from '@react-navigation/native';
 import { useRootStore } from '../../stores/RootStore';
 import { observer } from 'mobx-react-lite';
@@ -90,7 +88,6 @@ export const SignupScreen = observer(() => {
 
   return (
     <>
-
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -103,7 +100,9 @@ export const SignupScreen = observer(() => {
         >
           <View style={styles.header}>
             <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join us for specific solar solutions</Text>
+            <Text style={styles.subtitle}>
+              Join us for specific solar solutions
+            </Text>
           </View>
 
           <View style={styles.form}>
@@ -113,6 +112,7 @@ export const SignupScreen = observer(() => {
               value={name}
               onChangeText={setName}
             />
+
             <Input
               label="Email"
               placeholder="Enter your email"
@@ -175,7 +175,6 @@ export const SignupScreen = observer(() => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-
 
       <Toast
         visible={toastVisible}

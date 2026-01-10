@@ -10,6 +10,7 @@ export const colors = {
     white: '#FFFFFF',
     black: '#000000',
     border: lightTheme.colors.gray4,
+    inputBorder: '#E0E0E0',
     google: '#DB4437',
     apple: '#000000',
     gold: lightTheme.colors.subscribeGold,
