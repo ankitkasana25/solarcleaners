@@ -7,7 +7,7 @@ import { SearchBar } from '../../components/SearchBar';
 import { lightTheme } from '../../theme/theme';
 import { SectionTitle } from '../../components/SectionTitle';
 import { PremiumServiceCard } from '../../components/PremiumServiceCard';
-import { ServicePromotions } from '../../components/ServicePromotions';
+
 import { TrendingServiceCard } from '../../components/TrendingServiceCard';
 import { SolCareShorts } from '../../components/SolCareShorts';
 import { InteractiveTools } from '../../components/InteractiveTools';
@@ -21,60 +21,66 @@ import { PremiumBookedCard } from '../../components/PremiumBookedCard';
 
 const premiumServices = [
   {
-    id: 'clean_1',
-    title: 'Panel Pro Cleaning',
-    description: 'Deep modular cleaning for maximum energy efficiency.',
+    id: 'clean_res',
+    title: 'Residential Rooftop',
+    description: 'Specialized cleaning for home solar panels to maximize yield.',
+    image: require('../../assets/Images/ResidentialCleaningService.jpeg'),
+  },
+  {
+    id: 'clean_com',
+    title: 'Commercial & Industrial',
+    description: 'Professional cleaning for large-scale solar plants and factories.',
     image: { uri: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80' },
   },
   {
-    id: 'maint_1',
-    title: 'Health Checkup',
-    description: 'Scheduled inspections and performance optimization.',
+    id: 'clean_rob',
+    title: 'Robotic Cleaning',
+    description: 'Advanced waterless robotic cleaning for large installations.',
+    image: { uri: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&q=80' },
+  },
+  {
+    id: 'clean_man',
+    title: 'Manual & Mechanized',
+    description: 'Thorough manual cleaning with specialized solar brushes.',
     image: { uri: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&q=80' },
-  },
-  {
-    id: 'repair_1',
-    title: 'Expert Repairing',
-    description: 'Fast diagnostics and component-level repairs safely.',
-    image: { uri: 'https://images.unsplash.com/photo-1625301840055-7c1b7198cfc0?w=800&q=80' },
-  },
-  {
-    id: 'water_1',
-    title: 'Native Water Purifier',
-    description: 'Advanced filtration for pure drinking water.',
-    image: { uri: 'https://images.unsplash.com/photo-1595467793441-2a13cc7ba96d?w=800&q=80' },
-  },
-  {
-    id: 'roof_1',
-    title: 'Roof Maintenance',
-    description: 'Protect your roof and ensure solar stability.',
-    image: { uri: 'https://images.unsplash.com/photo-1632759162351-39516e499d35?w=800&q=80' },
   },
 ];
 
 const upcomingServices = [
   {
-    id: 'up_1',
-    title: 'Drone Health Scan',
-    launchDate: 'LAUNCHING JAN 15',
-    image: { uri: 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=800&q=80' },
+    id: 'up_o1',
+    title: 'Plant Inspection',
+    launchDate: 'COMING SOON',
+    image: { uri: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80' },
   },
   {
-    id: 'up_2',
-    title: 'AI Power Predictor',
-    launchDate: 'COMING NEXT MONTH',
-    image: { uri: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80' },
+    id: 'up_o2',
+    title: 'Maintenance',
+    launchDate: 'COMING SOON',
+    image: { uri: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80' },
   },
   {
-    id: 'up_3',
-    title: 'EV Solar Dock',
-    launchDate: 'BETA TESTING',
-    image: { uri: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=800&q=80' },
+    id: 'up_o3',
+    title: 'Inverter Rectification',
+    launchDate: 'COMING SOON',
+    image: { uri: 'https://images.unsplash.com/photo-1558449028-b53a39d100fc?w=800&q=80' },
   },
   {
-    id: 'up_4',
-    title: 'Solar Community',
-    launchDate: 'EARLY 2026',
+    id: 'up_e1',
+    title: 'Equipment Rental',
+    launchDate: 'COMING SOON',
+    image: { uri: 'https://images.unsplash.com/photo-1572916166111-da6720ab0e3d?w=800&q=80' },
+  },
+  {
+    id: 'up_sr1',
+    title: 'Emergency Breakdown',
+    launchDate: 'COMING SOON',
+    image: { uri: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&q=80' },
+  },
+  {
+    id: 'up_sr2',
+    title: 'Inverter Trip Handling',
+    launchDate: 'COMING SOON',
     image: { uri: 'https://images.unsplash.com/photo-1558449028-b53a39d100fc?w=800&q=80' },
   },
 ];
@@ -82,24 +88,30 @@ const upcomingServices = [
 const mostBookedServices = [
   {
     rank: 1,
-    title: 'Mirror Finish Clean',
+    id: 'clean_com',
+    title: 'Commercial & Industrial',
     bookings: '1,450+',
     rating: '4.9',
-    image: { uri: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&q=80' },
+    description: 'Professional cleaning for large-scale solar plants and factories.',
+    image: { uri: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80' },
   },
   {
     rank: 2,
-    title: 'Pure Hydro Guard',
-    bookings: '920+',
+    id: 'clean_res',
+    title: 'Residential Rooftop',
+    bookings: '1,120+',
     rating: '4.8',
-    image: { uri: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&q=80' },
+    description: 'Specialized cleaning for home solar panels to maximize yield.',
+    image: require('../../assets/Images/ResidentialCleaningService.jpeg'),
   },
   {
     rank: 3,
-    title: 'Solar Cell Refresh',
-    bookings: '810+',
+    id: 'clean_man',
+    title: 'Manual & Mechanized',
+    bookings: '910+',
     rating: '4.7',
-    image: { uri: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80' },
+    description: 'Thorough manual cleaning with specialized solar brushes.',
+    image: { uri: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&q=80' },
   },
 ];
 
@@ -162,11 +174,11 @@ export const HomeScreen = observer(() => {
           city="Noida, India"
         />
 
-        {/* <ServicePromotions /> */}
+
 
         <View style={styles.sectionWrapper}>
           <SectionTitle
-            title="Premium Cleaning Services"
+            title="Solar Panel Cleaning Services"
           />
           <ScrollView
             horizontal
@@ -203,7 +215,7 @@ export const HomeScreen = observer(() => {
                 title={service.title}
                 launchDate={service.launchDate}
                 image={service.image}
-                onPress={() => console.log('Notify for:', service.title)}
+                onPress={() => (navigation as any).navigate('MainTabs', { screen: 'Services' })}
               />
             ))}
           </ScrollView>
@@ -226,7 +238,7 @@ export const HomeScreen = observer(() => {
                 bookings={service.bookings}
                 rating={service.rating}
                 image={service.image}
-                onPress={() => console.log('Booking detailed:', service.title)}
+                onPress={() => (navigation as any).navigate('ServiceDetail', { service })}
               />
             ))}
           </ScrollView>

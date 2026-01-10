@@ -5,17 +5,45 @@ import { lightTheme } from '../../theme/theme';
 import { useNavigation } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import { ImageIcon } from '../../components/ImageIcon';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { useRootStore } from '../../stores/RootStore';
 
 export const UserProfileScreen = observer(() => {
     const navigation = useNavigation();
+    const { authStore } = useRootStore();
 
     // State for form fields
-    const [gender, setGender] = useState<string>('Man');
-    const [dob, setDob] = useState('');
-    const [bio, setBio] = useState('');
-    const [country, setCountry] = useState('');
-    const [city, setCity] = useState('');
-    const [address, setAddress] = useState('');
+    const [gender, setGender] = useState<string>(authStore.user?.gender || 'Man');
+    const [dob, setDob] = useState(authStore.user?.dob || '');
+    const [bio, setBio] = useState(authStore.user?.bio || '');
+    const [country, setCountry] = useState(authStore.user?.country || '');
+    const [city, setCity] = useState(authStore.user?.city || '');
+    const [address, setAddress] = useState(authStore.user?.address || '');
+    const [avatar, setAvatar] = useState(authStore.user?.avatar || null);
+
+    const handlePickImage = async () => {
+        const result = await launchImageLibrary({
+            mediaType: 'photo',
+            quality: 0.8,
+        });
+
+        if (result.assets && result.assets.length > 0) {
+            setAvatar(result.assets[0].uri);
+        }
+    };
+
+    const handleSave = () => {
+        authStore.updateProfile({
+            gender,
+            dob,
+            bio,
+            country,
+            city,
+            address,
+            avatar,
+        });
+        (navigation as any).goBack();
+    };
 
     const GenderChip = ({ label }: { label: string }) => {
         const isSelected = gender === label;
@@ -41,7 +69,7 @@ export const UserProfileScreen = observer(() => {
         <ScreenContainer style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                <TouchableOpacity onPress={() => (navigation as any).goBack()} style={styles.backButton}>
                     <ImageIcon name="arrow-left" size={24} color={lightTheme.colors.headerTitle} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Profile Setup</Text>
@@ -53,9 +81,13 @@ export const UserProfileScreen = observer(() => {
 
                 {/* Avatar Section */}
                 <View style={styles.avatarSection}>
-                    <TouchableOpacity style={styles.avatarContainer}>
+                    <TouchableOpacity style={styles.avatarContainer} onPress={handlePickImage}>
                         <View style={styles.avatarPlaceholder}>
-                            <ImageIcon name="profile" size={32} color={lightTheme.colors.accentGray} />
+                            {avatar ? (
+                                <Image source={{ uri: avatar }} style={styles.avatarImage} />
+                            ) : (
+                                <ImageIcon name="profile" size={32} color={lightTheme.colors.accentGray} />
+                            )}
                         </View>
                         <View style={styles.editBadge}>
                             <Text style={styles.editBadgeIcon}>✏️</Text>
@@ -76,12 +108,12 @@ export const UserProfileScreen = observer(() => {
                             value={bio}
                             onChangeText={setBio}
                         />
-                        <Text style={styles.wordCount}>0/100</Text>
+                        <Text style={styles.wordCount}>{bio.length}/100</Text>
                     </View>
                 </View>
 
                 <View style={styles.formGroup}>
-                    <Text style={styles.label}>Gender <Text style={styles.required}>*</Text></Text>
+                    <Text style={styles.label}>Gender <Text style={styles.optional}> (Optional)</Text></Text>
                     <View style={styles.genderOptions}>
                         <GenderChip label="Man" />
                         <GenderChip label="Woman" />
@@ -96,7 +128,7 @@ export const UserProfileScreen = observer(() => {
                 </View>
 
                 <View style={styles.formGroup}>
-                    <Text style={styles.label}>Date of Birth <Text style={styles.required}>*</Text></Text>
+                    <Text style={styles.label}>Date of Birth <Text style={styles.optional}> (Optional)</Text></Text>
                     <View style={styles.inputWrapper}>
                         <TextInput
                             style={styles.input}
@@ -109,7 +141,7 @@ export const UserProfileScreen = observer(() => {
                 </View>
 
                 <View style={styles.formGroup}>
-                    <Text style={styles.label}>Country <Text style={styles.required}>*</Text></Text>
+                    <Text style={styles.label}>Country <Text style={styles.optional}> (Optional)</Text></Text>
                     <View style={styles.inputWrapper}>
                         <TextInput
                             style={styles.input}
@@ -148,7 +180,11 @@ export const UserProfileScreen = observer(() => {
 
                 <View style={{ height: 24 }} />
 
-                <TouchableOpacity style={styles.saveButton} activeOpacity={0.8}>
+                <TouchableOpacity
+                    style={styles.saveButton}
+                    activeOpacity={0.8}
+                    onPress={handleSave}
+                >
                     <Text style={styles.saveButtonText}>Save Profile</Text>
                 </TouchableOpacity>
 
@@ -210,8 +246,13 @@ const styles = StyleSheet.create({
         backgroundColor: lightTheme.colors.antiFlashWhite,
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 1, // subtle border
+        borderWidth: 1,
         borderColor: lightTheme.colors.lightBorder,
+        overflow: 'hidden',
+    },
+    avatarImage: {
+        width: '100%',
+        height: '100%',
     },
     editBadge: {
         position: 'absolute',
@@ -331,4 +372,3 @@ const styles = StyleSheet.create({
         color: '#fff',
     },
 });
-

@@ -70,7 +70,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     },
     {
         id: 'om',
-        name: 'Solar O&M',
+        name: 'Solar Operation & Maintenance',
         icon: '🔧',
         description: 'Operation & Maintenance',
         services: [

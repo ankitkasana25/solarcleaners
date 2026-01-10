@@ -13,7 +13,7 @@ class AuthStore {
         this.isLoading = true;
         try {
             // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(() => resolve(null), 1000));
             this.isAuthenticated = true;
             this.user = { email, name: 'John Doe' };
         } finally {
@@ -25,7 +25,7 @@ class AuthStore {
         this.isLoading = true;
         try {
             // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(() => resolve(null), 1000));
             this.isAuthenticated = true;
             this.user = { ...data };
         } finally {
@@ -36,6 +36,10 @@ class AuthStore {
     logout = () => {
         this.isAuthenticated = false;
         this.user = null;
+    };
+
+    updateProfile = (data: any) => {
+        this.user = { ...this.user, ...data };
     };
 }
 

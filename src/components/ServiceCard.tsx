@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { lightTheme } from '../theme/theme';
+import { useRootStore } from '../stores/RootStore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const { width } = Dimensions.get('window');
@@ -20,6 +21,8 @@ interface ServiceCardProps {
     id: string;
     category: string;
     gridView?: boolean;
+    onAddToCart?: () => void;
+    isComingSoon?: boolean;
 }
 
 export const ServiceCard = ({
@@ -35,10 +38,13 @@ export const ServiceCard = ({
     id,
     category,
     gridView = false,
+    onAddToCart,
+    isComingSoon = false,
 }: ServiceCardProps) => {
     const navigation = useNavigation<any>();
 
     const handlePress = () => {
+        if (isComingSoon) return;
         const serviceData = {
             id,
             title,
@@ -109,8 +115,12 @@ export const ServiceCard = ({
                 <View style={styles.gridContent}>
                     <Text style={styles.gridTitle} numberOfLines={1}>{title}</Text>
                     <View style={styles.gridFooter}>
-                        <Text style={styles.gridPrice}>₹{price}</Text>
-                        <Ionicons name="arrow-forward-circle" size={20} color={lightTheme.colors.primaryBlue} />
+                        <View />
+                        <Ionicons
+                            name={isComingSoon ? "time-outline" : "arrow-forward-circle"}
+                            size={20}
+                            color={isComingSoon ? "#8E8E93" : lightTheme.colors.primaryBlue}
+                        />
                     </View>
                 </View>
             </TouchableOpacity>
@@ -137,9 +147,6 @@ export const ServiceCard = ({
             <View style={styles.rowContent}>
                 <View style={styles.rowHeader}>
                     <Text style={styles.rowTitle} numberOfLines={1}>{title}</Text>
-                    <View style={styles.rowPriceContainer}>
-                        <Text style={styles.rowPrice}>₹{price}</Text>
-                    </View>
                 </View>
                 <Text style={styles.rowDesc} numberOfLines={2}>{description}</Text>
 
@@ -148,9 +155,22 @@ export const ServiceCard = ({
                         <Ionicons name="time-outline" size={12} color={lightTheme.colors.slateGray} />
                         <Text style={styles.durationText}>{duration}</Text>
                     </View>
-                    <TouchableOpacity style={styles.bookNowBtn} onPress={handlePress}>
-                        <Text style={styles.bookNowText}>Book Now</Text>
-                        <Ionicons name="chevron-forward" size={14} color="#FFF" />
+                    <TouchableOpacity
+                        style={[
+                            styles.bookNowBtn,
+                            isComingSoon && styles.comingSoonBtn
+                        ]}
+                        onPress={isComingSoon ? undefined : (onAddToCart || handlePress)}
+                        activeOpacity={isComingSoon ? 1 : 0.8}
+                    >
+                        <Text style={styles.bookNowText}>
+                            {isComingSoon ? 'Coming Soon' : 'Book Now'}
+                        </Text>
+                        <Ionicons
+                            name={isComingSoon ? "time-outline" : "chevron-forward"}
+                            size={14}
+                            color="#FFF"
+                        />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -267,6 +287,9 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontFamily: 'NotoSans-Bold',
         marginRight: 4,
+    },
+    comingSoonBtn: {
+        backgroundColor: '#BDBDBD',
     },
 
     // Grid Card Styles
