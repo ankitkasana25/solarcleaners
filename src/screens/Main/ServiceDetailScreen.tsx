@@ -210,10 +210,48 @@ export const ServiceDetailScreen = observer(() => {
             </View>
           </View>
 
+          {/* Rate Info Banner */}
+          <View style={styles.rateInfoBanner}>
+            <View style={styles.rateInfoRow}>
+              <Ionicons name="flash" size={16} color="#FFD700" />
+              <Text style={styles.rateInfoText}>Rate: ₹0.15 per Watt</Text>
+            </View>
+            <View style={styles.rateInfoRow}>
+              <Ionicons name="sunny" size={16} color="#FFD700" />
+              <Text style={styles.rateInfoText}>1 kW = 1000 Watt = ₹150 per kW</Text>
+            </View>
+          </View>
+
+          {/* Quick Select Packages */}
+          <View style={styles.packagesHeaderRow}>
+            <Text style={styles.sectionHeader}>☀️ Solar Cleaning Packages</Text>
+            <Text style={styles.rateSubText}>(Calculated @ 15 Paisa per Watt)</Text>
+          </View>
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.quickPackageList}
+          >
+            {[1, 2, 3, 5, 10, 15, 20].map((size) => (
+              <TouchableOpacity
+                key={size}
+                style={[
+                  styles.quickPackageItem,
+                  parseFloat(systemSize) === size && styles.quickPackageItemActive
+                ]}
+                onPress={() => setSystemSize(size.toString())}
+              >
+                <Text style={[styles.quickPackageSize, parseFloat(systemSize) === size && styles.quickPackageTextActive]}>{size} kW</Text>
+                <Text style={[styles.quickPackagePrice, parseFloat(systemSize) === size && styles.quickPackageTextActive]}>₹{size * 150}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+
           {/* Configuration Section */}
           <View style={styles.configContainer}>
             <View style={styles.configHeader}>
-              <Text style={styles.sectionLabel}>Solar System Size</Text>
+              <Text style={styles.sectionLabel}>Custom Solar System Size</Text>
               <View style={styles.infoIcon}>
                 <Text style={styles.infoText}>i</Text>
               </View>
@@ -784,5 +822,67 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'NotoSans-Bold',
     fontSize: 13,
+  },
+  rateInfoBanner: {
+    backgroundColor: '#F0F7FF',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#D1E9FF',
+    gap: 6,
+  },
+  rateInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  rateInfoText: {
+    fontSize: 13,
+    fontFamily: 'NotoSans-Bold',
+    color: '#0052CC',
+  },
+  packagesHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginBottom: 4,
+  },
+  rateSubText: {
+    fontSize: 10,
+    fontFamily: 'NotoSans-Medium',
+    color: '#8E8E93',
+  },
+  quickPackageList: {
+    paddingVertical: 12,
+    gap: 10,
+  },
+  quickPackageItem: {
+    width: 85,
+    height: 75,
+    borderRadius: 12,
+    backgroundColor: '#FAFAFA',
+    borderWidth: 1.5,
+    borderColor: '#EEEEEE',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+  },
+  quickPackageItemActive: {
+    backgroundColor: '#0D81FC',
+    borderColor: '#0D81FC',
+  },
+  quickPackageSize: {
+    fontSize: 15,
+    fontFamily: 'NotoSans-Bold',
+    color: '#1C1C1E',
+  },
+  quickPackagePrice: {
+    fontSize: 12,
+    fontFamily: 'NotoSans-Medium',
+    color: '#8E8E93',
+  },
+  quickPackageTextActive: {
+    color: '#FFFFFF',
   },
 });

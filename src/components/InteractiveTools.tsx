@@ -107,11 +107,12 @@ const tools = [
     },
     {
         id: '2',
-        title: 'ROI Calculator',
-        desc: 'Investment Return',
+        title: 'Solar Quote',
+        desc: '₹0.15 per Watt',
         image: { uri: 'https://images.unsplash.com/photo-1551288049-bbbda540d3b9?w=800&q=80' },
         colors: ['rgba(41, 128, 185, 0.7)', 'rgba(109, 213, 250, 0.4)'],
         icon: '💰',
+        isCalculator: true,
         content: [
             {
                 title: 'Maximizing Your Investment',

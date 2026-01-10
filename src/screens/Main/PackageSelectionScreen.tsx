@@ -95,14 +95,22 @@ export const PackageSelectionScreen = () => {
                 {/* Pricing Info Banner */}
                 <View style={styles.pricingBanner}>
                     <View style={styles.pricingRow}>
-                        <Text style={styles.pricingLabel}>Rate:</Text>
+                        <Text style={styles.pricingLabel}>Competitive Rate</Text>
                         <Text style={styles.pricingValue}>₹0.15 per Watt</Text>
+
                     </View>
                     <View style={styles.pricingDivider} />
                     <View style={styles.pricingRow}>
-                        <Text style={styles.pricingLabel}>1 kW =</Text>
-                        <Text style={styles.pricingValue}>₹150</Text>
+                        <Text style={styles.pricingLabel}>Standard Unit</Text>
+                        <Text style={styles.pricingValue}>₹150 per kW</Text>
+                        <Text style={styles.pricingValueHint}>(1 kW = 1000 Watt)</Text>
                     </View>
+                </View>
+
+                {/* Package Label */}
+                <View style={styles.packageBranding}>
+                    <Text style={styles.packageBrandingTitle}>☀️ SOLAR PANEL CLEANING PACKAGES</Text>
+                    <Text style={styles.packageBrandingSubtitle}>(Calculated @ 15 Paisa per Watt)</Text>
                 </View>
 
                 {/* Package Type Selector */}
@@ -552,5 +560,27 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontFamily: lightTheme.fontfamily.notoSans_bold,
         color: '#fff',
+    },
+    pricingValueHint: {
+        fontSize: 10,
+        fontFamily: lightTheme.fontfamily.notoSans_medium,
+        color: lightTheme.colors.gray3,
+        marginTop: 2,
+    },
+    packageBranding: {
+        marginBottom: 20,
+        alignItems: 'center',
+    },
+    packageBrandingTitle: {
+        fontSize: 14,
+        fontFamily: lightTheme.fontfamily.notoSans_bold,
+        color: '#1C1C1E',
+        letterSpacing: 0.5,
+    },
+    packageBrandingSubtitle: {
+        fontSize: 11,
+        fontFamily: lightTheme.fontfamily.notoSans_medium,
+        color: lightTheme.colors.gray3,
+        marginTop: 4,
     },
 });

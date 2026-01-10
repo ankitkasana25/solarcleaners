@@ -25,7 +25,21 @@ export const ToolInfoScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const insets = useSafeAreaInsets();
-    const { tool } = route.params as { tool: ToolArticle };
+    const { tool } = route.params as { tool: ToolArticle & { isCalculator?: boolean } };
+
+    const [capacity, setCapacity] = React.useState('');
+    const [unit, setUnit] = React.useState<'Watt' | 'kW'>('kW');
+    const RATE_PER_WATT = 0.15;
+
+    const calculatePrice = () => {
+        const value = parseFloat(capacity) || 0;
+        const totalWatts = unit === 'kW' ? value * 1000 : value;
+        return (totalWatts * RATE_PER_WATT).toLocaleString('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            maximumFractionDigits: 2
+        });
+    };
 
     return (
         <View style={styles.container}>
@@ -69,6 +83,88 @@ export const ToolInfoScreen = () => {
                 {/* Content Area */}
                 <View style={styles.contentContainer}>
                     <View style={styles.dragHandle} />
+
+                    {tool.isCalculator && (
+                        <View style={styles.calculatorSection}>
+                            <Text style={styles.calculatorTitle}>Get Instant Quote</Text>
+                            <Text style={styles.rateBadge}>Rate: ₹0.15 per Watt</Text>
+
+                            <View style={styles.inputWrapper}>
+                                <View style={styles.capacityInputContainer}>
+                                    <View style={styles.textInputControl}>
+                                        <Text style={styles.inputLabel}>Solar Capacity</Text>
+                                        <View style={styles.row}>
+                                            <TouchableOpacity
+                                                style={styles.unitToggle}
+                                                onPress={() => setUnit(unit === 'kW' ? 'Watt' : 'kW')}
+                                            >
+                                                <Text style={styles.unitText}>{unit}</Text>
+                                                <Ionicons name="swap-horizontal" size={14} color={tool.colors[0]} />
+                                            </TouchableOpacity>
+                                            <View style={styles.inputMain}>
+                                                <View style={styles.nativeInputPlaceholder}>
+                                                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'baseline' }}>
+                                                        <View style={{ flex: 1 }}>
+                                                            {/* We'll use a simple View-based Mock for Input if needed, 
+                                                                but let's use a real TextInput for better UX */}
+                                                            <View style={styles.inputFlex}>
+                                                                <Text style={styles.currencyPrefix}>⚡</Text>
+                                                                <View style={{ flex: 1 }}>
+                                                                    <View style={{ borderBottomWidth: 2, borderBottomColor: tool.colors[0], marginBottom: 5 }}>
+                                                                        <View style={{ height: 40, justifyContent: 'center' }}>
+                                                                            <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#1C1C1E' }}>
+                                                                                {capacity || '0'}
+                                                                            </Text>
+                                                                        </View>
+                                                                    </View>
+                                                                </View>
+                                                            </View>
+                                                        </View>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </View>
+
+                                {/* Simple Numpad for interaction */}
+                                <View style={styles.numpad}>
+                                    {['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'DEL'].map((key) => (
+                                        <TouchableOpacity
+                                            key={key}
+                                            style={styles.numKey}
+                                            onPress={() => {
+                                                if (key === 'DEL') {
+                                                    setCapacity(capacity.slice(0, -1));
+                                                } else if (key === '.') {
+                                                    if (!capacity.includes('.')) setCapacity(capacity + key);
+                                                } else {
+                                                    setCapacity(capacity + key);
+                                                }
+                                            }}
+                                        >
+                                            <Text style={[styles.numText, key === 'DEL' && { color: '#FF4B4B' }]}>{key}</Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+
+                                <View style={styles.resultContainer}>
+                                    <LinearGradient
+                                        colors={[tool.colors[0], tool.colors[1] || tool.colors[0]]}
+                                        start={{ x: 0, y: 0 }}
+                                        end={{ x: 1, y: 0 }}
+                                        style={styles.resultGradient}
+                                    >
+                                        <Text style={styles.resultLabel}>Estimated Service Cost</Text>
+                                        <Text style={styles.resultValue}>{calculatePrice()}</Text>
+                                    </LinearGradient>
+                                </View>
+                            </View>
+
+                            <View style={styles.divider} />
+                        </View>
+                    )}
+
                     {tool.content.map((section, index) => (
                         <View key={index} style={styles.section}>
                             <View style={styles.sectionTitleRow}>
@@ -189,5 +285,123 @@ const styles = StyleSheet.create({
         fontFamily: 'NotoSans-Regular',
         color: '#636D77',
         lineHeight: 26,
+    },
+    calculatorSection: {
+        marginBottom: 32,
+    },
+    calculatorTitle: {
+        fontSize: 22,
+        fontFamily: 'NotoSans-Bold',
+        color: '#1C1C1E',
+        marginBottom: 4,
+    },
+    rateBadge: {
+        fontSize: 14,
+        fontFamily: 'NotoSans-Medium',
+        color: '#0D81FC',
+        marginBottom: 20,
+    },
+    inputWrapper: {
+        backgroundColor: '#F8F9FA',
+        borderRadius: 24,
+        padding: 20,
+        borderWidth: 1,
+        borderColor: '#E9ECEF',
+    },
+    capacityInputContainer: {
+        marginBottom: 24,
+    },
+    textInputControl: {},
+    inputLabel: {
+        fontSize: 12,
+        fontFamily: 'NotoSans-Bold',
+        color: '#8E8E93',
+        textTransform: 'uppercase',
+        marginBottom: 8,
+        letterSpacing: 1,
+    },
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    unitToggle: {
+        backgroundColor: '#FFFFFF',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginRight: 12,
+        borderWidth: 1,
+        borderColor: '#E9ECEF',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 2,
+    },
+    unitText: {
+        fontSize: 16,
+        fontFamily: 'NotoSans-Bold',
+        marginRight: 4,
+        color: '#1C1C1E',
+    },
+    inputMain: {
+        flex: 1,
+    },
+    nativeInputPlaceholder: {},
+    inputFlex: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    currencyPrefix: {
+        fontSize: 24,
+        marginRight: 8,
+    },
+    numpad: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        marginBottom: 24,
+    },
+    numKey: {
+        width: '30%',
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        marginBottom: 10,
+        borderWidth: 1,
+        borderColor: '#E9ECEF',
+    },
+    numText: {
+        fontSize: 20,
+        fontFamily: 'NotoSans-Bold',
+        color: '#1C1C1E',
+    },
+    resultContainer: {
+        marginTop: 10,
+    },
+    resultGradient: {
+        padding: 20,
+        borderRadius: 20,
+        alignItems: 'center',
+    },
+    resultLabel: {
+        fontSize: 14,
+        fontFamily: 'NotoSans-Medium',
+        color: 'rgba(255,255,255,0.8)',
+        marginBottom: 4,
+    },
+    resultValue: {
+        fontSize: 32,
+        fontFamily: 'NotoSans-Bold',
+        color: '#FFFFFF',
+    },
+    divider: {
+        height: 1,
+        backgroundColor: '#E9ECEF',
+        marginTop: 32,
     },
 });
