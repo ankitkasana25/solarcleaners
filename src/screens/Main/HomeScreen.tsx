@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, ScrollView, View, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
+import { useRootStore } from '../../stores/RootStore';
 
 import { SearchBar } from '../../components/SearchBar';
 import { lightTheme } from '../../theme/theme';
@@ -30,19 +31,19 @@ const premiumServices = [
     id: 'clean_com',
     title: 'Commercial & Industrial',
     description: 'Professional cleaning for large-scale solar plants and factories.',
-    image: { uri: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80' },
+    image: require('../../assets/Images/CommercialImg.jpeg'),
   },
   {
     id: 'clean_rob',
     title: 'Robotic Cleaning',
     description: 'Advanced waterless robotic cleaning for large installations.',
-    image: { uri: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&q=80' },
+    image: require('../../assets/Images/RobiticImg.jpeg'),
   },
   {
     id: 'clean_man',
     title: 'Manual & Mechanized',
     description: 'Thorough manual cleaning with specialized solar brushes.',
-    image: { uri: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&q=80' },
+    image: require('../../assets/Images/ManualImg.jpeg'),
   },
 ];
 
@@ -93,7 +94,7 @@ const mostBookedServices = [
     bookings: '1,450+',
     rating: '4.9',
     description: 'Professional cleaning for large-scale solar plants and factories.',
-    image: { uri: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80' },
+    image: require('../../assets/Images/CommercialImg.jpeg'),
   },
   {
     rank: 2,
@@ -111,7 +112,7 @@ const mostBookedServices = [
     bookings: '910+',
     rating: '4.7',
     description: 'Thorough manual cleaning with specialized solar brushes.',
-    image: { uri: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&q=80' },
+    image: require('../../assets/Images/ManualImg.jpeg'),
   },
 ];
 
@@ -150,6 +151,7 @@ const trendingServices = [
 
 export const HomeScreen = observer(() => {
   const navigation = useNavigation();
+  const { authStore } = useRootStore();
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
@@ -169,7 +171,7 @@ export const HomeScreen = observer(() => {
       >
 
         <WeatherGreeting
-          userName="Ankit"
+          userName={authStore.user?.name || 'User'}
           temperature="28"
           city="Noida, India"
         />

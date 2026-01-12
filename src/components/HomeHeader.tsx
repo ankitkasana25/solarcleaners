@@ -4,11 +4,16 @@ import { useNavigation, DrawerActions } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ImageIcon } from './ImageIcon';
 import { lightTheme } from '../theme/theme';
+import { observer } from 'mobx-react-lite';
+import { useRootStore } from '../stores/RootStore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Image } from 'react-native';
 
-export const HomeHeader = () => {
+export const HomeHeader = observer(() => {
   const navigation = useNavigation();
+  const { authStore } = useRootStore();
   const insets = useSafeAreaInsets();
+  const user = authStore.user;
 
   const openDrawer = () => {
     navigation.dispatch(DrawerActions.openDrawer());
@@ -48,14 +53,18 @@ export const HomeHeader = () => {
             onPress={() => (navigation as any).navigate('UserProfile')}
           >
             <View style={styles.profileBox}>
-              <Ionicons name="person" size={18} color="#FFFFFF" />
+              {user?.avatar ? (
+                <Image source={{ uri: user.avatar }} style={styles.profileImage} />
+              ) : (
+                <Ionicons name="person" size={18} color="#FFFFFF" />
+              )}
             </View>
           </TouchableOpacity>
         </View>
       </View>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -149,5 +158,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 3,
+    overflow: 'hidden',
+  },
+  profileImage: {
+    width: '100%',
+    height: '100%',
   },
 });

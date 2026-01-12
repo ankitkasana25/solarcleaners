@@ -12,7 +12,7 @@ interface ToolArticle {
     id: string;
     title: string;
     description: string;
-    image: string;
+    image: any;
     icon: string;
     colors: string[];
     content: {
@@ -47,7 +47,7 @@ export const ToolInfoScreen = () => {
                 {/* Header Section */}
                 <View style={[styles.headerContainer, { backgroundColor: tool.colors[0] }]}>
                     <Image
-                        source={{ uri: tool.image }}
+                        source={typeof tool.image === 'string' ? { uri: tool.image } : tool.image}
                         style={styles.headerImage}
                         resizeMode="cover"
                     />

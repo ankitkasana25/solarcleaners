@@ -11,7 +11,7 @@ const GRID_CARD_WIDTH = (width - 48) / 2;
 interface ServiceCardProps {
     title: string;
     description?: string;
-    image: string;
+    image: any;
     discount?: string;
     price?: number;
     duration?: string;
@@ -97,6 +97,8 @@ export const ServiceCard = ({
         navigation.navigate('ServiceDetail', { service: serviceData });
     };
 
+    const imageSource = typeof image === 'string' ? { uri: image } : image;
+
     if (gridView) {
         return (
             <TouchableOpacity
@@ -105,7 +107,7 @@ export const ServiceCard = ({
                 activeOpacity={0.85}
             >
                 <View style={styles.gridImageWrapper}>
-                    <Image source={{ uri: image }} style={styles.gridImage} />
+                    <Image source={imageSource} style={styles.gridImage} />
                     {discount && (
                         <View style={styles.gridDiscount}>
                             <Text style={styles.discountText}>{discount}</Text>
@@ -135,7 +137,7 @@ export const ServiceCard = ({
         >
             <View style={styles.circleWrapper}>
                 <View style={styles.circleIcon}>
-                    <Image source={{ uri: image }} style={styles.circleImage} />
+                    <Image source={imageSource} style={styles.circleImage} />
                 </View>
                 {featured && (
                     <View style={styles.featuredTag}>

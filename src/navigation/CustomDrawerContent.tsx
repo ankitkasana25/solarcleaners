@@ -1,4 +1,5 @@
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 import {
   View,
   StyleSheet,
@@ -139,46 +140,17 @@ const MenuItem = ({
   );
 };
 
-export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
+export const CustomDrawerContent = observer((props: DrawerContentComponentProps) => {
   const insets = useSafeAreaInsets();
   const { authStore } = useRootStore();
   const progress = useDrawerProgress();
   const activeRouteName = getActiveRouteName(props.state);
 
-  // Mock user data
-  const user = {
-    name: 'Ankit Kasana',
-    email: 'ankit@example.com',
+  const user = authStore.user || {
+    name: 'Guest User',
+    email: '',
     gender: 'male',
     avatar: null,
-  };
-
-  const [servicesExpanded, setServicesExpanded] = React.useState(false);
-  const [bookingsExpanded, setBookingsExpanded] = React.useState(false);
-  const [plansExpanded, setPlansExpanded] = React.useState(false); // New State
-  const [myPlansExpanded, setMyPlansExpanded] = React.useState(false); // New State
-
-  const toggleServices = () => {
-    setServicesExpanded(!servicesExpanded);
-  };
-
-  const toggleBookings = () => {
-    setBookingsExpanded(!bookingsExpanded);
-  };
-
-  const togglePlans = () => {
-    setPlansExpanded(!plansExpanded);
-  };
-
-  const toggleMyPlans = () => {
-    setMyPlansExpanded(!myPlansExpanded);
-  };
-
-  const navigateToService = (serviceId: string) => {
-    props.navigation.navigate('MainTabs', {
-      screen: 'Services',
-      params: { filter: serviceId },
-    });
   };
 
   const handleLogout = async () => {
@@ -218,8 +190,6 @@ export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
             source={
               user.avatar
                 ? { uri: user.avatar }
-                : user.gender === 'male'
-                ? require('../assets/icons/profile.png')
                 : require('../assets/icons/profile.png')
             }
             style={styles.avatar}
@@ -253,131 +223,18 @@ export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
             icon="services"
             index={0}
             isActive={activeRouteName === 'Services'}
-            onPress={toggleServices}
-            isExpandable
-            isExpanded={servicesExpanded}
+            onPress={() => props.navigation.navigate('MainStack', { screen: 'MainTabs', params: { screen: 'Services' } })}
             labelStyle={styles.primaryMenuLabel}
-          >
-            <TouchableOpacity
-              style={styles.subMenuItem}
-              onPress={() => navigateToService('residential')}
-            >
-              <Text style={styles.subMenuLabel}>Residential Cleaning</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.subMenuItem}
-              onPress={() => navigateToService('commercial')}
-            >
-              <Text style={styles.subMenuLabel}>Commercial Cleaning</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.subMenuItem}
-              onPress={() => navigateToService('bird_proofing')}
-            >
-              <Text style={styles.subMenuLabel}>Bird Proofing</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.subMenuItem}
-              onPress={() => navigateToService('maintenance')}
-            >
-              <Text style={styles.subMenuLabel}>Maintenance</Text>
-            </TouchableOpacity>
-          </MenuItem>
+          />
 
           <MenuItem
             label="My Booking"
             icon="bookings"
             index={1}
             isActive={activeRouteName === 'Bookings'}
-            onPress={toggleBookings}
-            isExpandable
-            isExpanded={bookingsExpanded}
+            onPress={() => props.navigation.navigate('MainStack', { screen: 'MainTabs', params: { screen: 'Bookings' } })}
             labelStyle={styles.primaryMenuLabel}
-          >
-            <TouchableOpacity
-              style={styles.subMenuItem}
-              onPress={() =>
-                props.navigation.navigate('MainStack', {
-                  screen: 'MainTabs',
-                  params: { screen: 'Bookings' },
-                })
-              }
-            >
-              <Text style={styles.subMenuLabel}>
-                Dec 10 - Residential Clean
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.subMenuItem}
-              onPress={() =>
-                props.navigation.navigate('MainStack', {
-                  screen: 'MainTabs',
-                  params: { screen: 'Bookings' },
-                })
-              }
-            >
-              <Text style={styles.subMenuLabel}>Nov 28 - Maintenance</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.subMenuItem}
-              onPress={() =>
-                props.navigation.navigate('MainStack', {
-                  screen: 'MainTabs',
-                  params: { screen: 'Bookings' },
-                })
-              }
-            >
-              <Text style={styles.subMenuLabel}>Oct 15 - Bird Proofing</Text>
-            </TouchableOpacity>
-          </MenuItem>
-
-          {/* New Subscription Plans Dropdown */}
-          <MenuItem
-            label="Subscription Plans"
-            icon="subscriptions"
-            index={2}
-            isActive={activeRouteName === 'SubscriptionPlans'}
-            onPress={togglePlans}
-            isExpandable
-            isExpanded={plansExpanded}
-            labelStyle={styles.primaryMenuLabel}
-          >
-            <TouchableOpacity
-              style={styles.subMenuItem}
-              onPress={() =>
-                props.navigation.navigate('MainStack', {
-                  screen: 'MainTabs',
-                  params: { screen: 'Home' },
-                })
-              }
-            >
-              {/* Redirecting to Home as Plans are there currently. Or create specific screen? */}
-              <Text style={styles.subMenuLabel}>View All Plans</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.subMenuItem}>
-              <Text style={styles.subMenuLabel}>Comparisons</Text>
-            </TouchableOpacity>
-          </MenuItem>
-
-          {/* New My Plans Dropdown */}
-          <MenuItem
-            label="My Plans"
-            icon="myPlans"
-            index={3}
-            isActive={activeRouteName === 'MyPlans'}
-            onPress={toggleMyPlans}
-            isExpandable
-            isExpanded={myPlansExpanded}
-            labelStyle={styles.primaryMenuLabel}
-          >
-            <TouchableOpacity style={styles.subMenuItem}>
-              {/* Dummy purchased plan */}
-              <Text style={styles.subMenuLabel}>Active: Starter Plan</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.subMenuItem}>
-              <Text style={styles.subMenuLabel}>Renewals</Text>
-            </TouchableOpacity>
-          </MenuItem>
+          />
         </View>
 
         <View style={styles.section}>
@@ -400,7 +257,7 @@ export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
             label="Help & Support"
             icon="support"
             index={5}
-            onPress={() => {}}
+            onPress={() => props.navigation.navigate('MainStack', { screen: 'ContactUs' })}
             hideChevron
           />
         </View>
@@ -423,7 +280,7 @@ export const CustomDrawerContent = (props: DrawerContentComponentProps) => {
       </View>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

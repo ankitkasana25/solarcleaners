@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   Dimensions,
   TextInput,
-  Platform,
+  Linking,
+  Alert,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
@@ -34,8 +35,37 @@ interface ServiceData {
   description?: string;
   category?: string;
   technicalHighlights?: string[];
+  rating?: number;
+  reviewCount?: number;
   benefits?: Array<{ icon: string; title: string; description: string }>;
 }
+
+const DUMMY_REVIEWS = [
+  {
+    id: '1',
+    user: 'Amit Sharma',
+    rating: 5,
+    date: '2 days ago',
+    comment: 'Exceptional service! The technicians were very professional and my solar output increased by 25%. Highly recommend!',
+    avatar: 'https://i.pravatar.cc/100?u=amit',
+  },
+  {
+    id: '2',
+    user: 'Priya Patel',
+    rating: 4,
+    date: '1 week ago',
+    comment: 'Good cleaning, arrived on time. Panels look brand new now.',
+    avatar: 'https://i.pravatar.cc/100?u=priya',
+  },
+  {
+    id: '3',
+    user: 'Rajesh Kumar',
+    rating: 5,
+    date: '2 weeks ago',
+    comment: 'The bird proofing was exactly what I needed. No more pigeon mess!',
+    avatar: 'https://i.pravatar.cc/100?u=rajesh',
+  },
+];
 
 export const ServiceDetailScreen = observer(() => {
   const navigation = useNavigation<any>();
@@ -50,12 +80,10 @@ export const ServiceDetailScreen = observer(() => {
   // Toast state
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>(
-    'info',
-  );
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
 
   // Slot Booking State
-  const [selectedDate, setSelectedDate] = useState<number>(0); // 0-6 (next 7 days)
+  const [selectedDate, setSelectedDate] = useState<number>(0);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
 
   const timeSlots = [
@@ -64,7 +92,6 @@ export const ServiceDetailScreen = observer(() => {
     { id: 'evening', label: 'Evening', time: '03:00 PM - 06:00 PM', icon: '🌇' },
   ];
 
-  // Helper to get dates for next 7 days
   const getDates = () => {
     const dates = [];
     for (let i = 0; i < 7; i++) {
@@ -80,22 +107,14 @@ export const ServiceDetailScreen = observer(() => {
   };
   const dates = getDates();
 
-  const showToast = (
-    message: string,
-    type: 'success' | 'error' | 'info' = 'info',
-  ) => {
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     setToastMessage(message);
     setToastType(type);
     setToastVisible(true);
   };
 
-  if (!service || !service.id) {
-    // Handle case where service data is missing
-  }
-
-  // Calculate Price Logic (@ ₹150 per kW)
   const parsedSize = parseFloat(systemSize) || 0;
-  const basePrice = 150; // Fixed rate per kW
+  const basePrice = 150;
   const totalPrice = parsedSize * basePrice;
 
   const handleAddToCart = () => {
@@ -103,10 +122,7 @@ export const ServiceDetailScreen = observer(() => {
       showToast('Please select a time slot', 'error');
       return;
     }
-
-    // Check if item already exists in cart
     const existingItem = cartStore.items.find(item => item.id === service.id);
-
     if (existingItem) {
       showToast('Already in the cart', 'info');
     } else {
@@ -130,7 +146,6 @@ export const ServiceDetailScreen = observer(() => {
       showToast('Please select a time slot', 'error');
       return;
     }
-
     const existingItem = cartStore.items.find(item => item.id === service.id);
     if (!existingItem) {
       cartStore.addToCart({
@@ -148,19 +163,26 @@ export const ServiceDetailScreen = observer(() => {
     navigation.navigate('MainTabs', { screen: 'Cart' });
   };
 
+  const handleCallTechnician = () => {
+    Linking.openURL('tel:9799802000').catch(() => {
+      Alert.alert('Error', 'Unable to open dialer');
+    });
+  };
+
+  const handleWhatsAppTechnician = () => {
+    const url = 'whatsapp://send?phone=919799802000&text=Hello, I need assistance with solar cleaning.';
+    Linking.openURL(url).catch(() => {
+      Alert.alert('Error', 'WhatsApp is not installed');
+    });
+  };
+
   return (
     <ScreenContainer style={styles.container}>
-      {/* Custom Header */}
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.iconButton}
-        >
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconButton}>
           <ImageIcon name="arrow-left" size={20} color={colors.headerTitle} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle} numberOfLines={1}>
-          {service.title}
-        </Text>
+        <Text style={styles.headerTitle} numberOfLines={1}>{service.title}</Text>
         <View style={styles.headerRight}>
           <TouchableOpacity
             style={styles.iconButton}
@@ -186,60 +208,47 @@ export const ServiceDetailScreen = observer(() => {
       />
 
       <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: 100 + insets.bottom }]} // Extra padding for footer
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: 120 + insets.bottom }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Image Section */}
         <View style={styles.imageContainer}>
           <Image
-            source={service.image?.uri ? service.image : { uri: service.image }}
+            source={typeof service.image === 'string' ? { uri: service.image } : service.image}
             style={styles.image as any}
             resizeMode="cover"
           />
           <View style={styles.overlay} />
         </View>
 
-        {/* Content Section */}
         <View style={styles.content}>
           <View style={styles.titleRow}>
             <Text style={styles.title}>{service.title}</Text>
             <View style={styles.categoryBadge}>
-              <Text style={styles.categoryText}>
-                {service.category || 'Service'}
-              </Text>
+              <Text style={styles.categoryText}>{service.category || 'Service'}</Text>
             </View>
           </View>
 
-          {/* Rate Info Banner */}
           <View style={styles.rateInfoBanner}>
             <View style={styles.rateInfoRow}>
-              <Ionicons name="flash" size={16} color="#FFD700" />
+              <Ionicons name="flash" size={16} color="#0052CC" />
               <Text style={styles.rateInfoText}>Rate: ₹0.15 per Watt</Text>
             </View>
             <View style={styles.rateInfoRow}>
-              <Ionicons name="sunny" size={16} color="#FFD700" />
+              <Ionicons name="sunny" size={16} color="#0052CC" />
               <Text style={styles.rateInfoText}>1 kW = 1000 Watt = ₹150 per kW</Text>
             </View>
           </View>
 
-          {/* Quick Select Packages */}
           <View style={styles.packagesHeaderRow}>
             <Text style={styles.sectionHeader}>☀️ Solar Cleaning Packages</Text>
             <Text style={styles.rateSubText}>(Calculated @ 15 Paisa per Watt)</Text>
           </View>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.quickPackageList}
-          >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.quickPackageList}>
             {[1, 2, 3, 5, 10, 15, 20].map((size) => (
               <TouchableOpacity
                 key={size}
-                style={[
-                  styles.quickPackageItem,
-                  parseFloat(systemSize) === size && styles.quickPackageItemActive
-                ]}
+                style={[styles.quickPackageItem, parseFloat(systemSize) === size && styles.quickPackageItemActive]}
                 onPress={() => setSystemSize(size.toString())}
               >
                 <Text style={[styles.quickPackageSize, parseFloat(systemSize) === size && styles.quickPackageTextActive]}>{size} kW</Text>
@@ -248,15 +257,11 @@ export const ServiceDetailScreen = observer(() => {
             ))}
           </ScrollView>
 
-          {/* Configuration Section */}
           <View style={styles.configContainer}>
             <View style={styles.configHeader}>
               <Text style={styles.sectionLabel}>Custom Solar System Size</Text>
-              <View style={styles.infoIcon}>
-                <Text style={styles.infoText}>i</Text>
-              </View>
+              <View style={styles.infoIcon}><Text style={styles.infoText}>i</Text></View>
             </View>
-
             <View style={styles.sizeSection}>
               <View style={styles.sizeInputWrapper}>
                 <TextInput
@@ -277,27 +282,16 @@ export const ServiceDetailScreen = observer(() => {
 
           <Text style={styles.sectionHeader}>About this service</Text>
           <Text style={styles.description}>
-            {service.description ||
-              'A thorough one-time deep cleaning session tailored for heavily soiled panels.'}
+            {service.description || 'A thorough one-time deep cleaning session tailored for heavily soiled panels.'}
           </Text>
 
-          {/* Slot Booking Section */}
           <View style={styles.slotBookingContainer}>
             <Text style={styles.sectionHeader}>Select Schedule</Text>
-
-            {/* Date Selection */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.dateList}
-            >
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.dateList}>
               {dates.map((item, index) => (
                 <TouchableOpacity
                   key={index}
-                  style={[
-                    styles.dateItem,
-                    selectedDate === index && styles.dateItemActive
-                  ]}
+                  style={[styles.dateItem, selectedDate === index && styles.dateItemActive]}
                   onPress={() => setSelectedDate(index)}
                 >
                   <Text style={[styles.dayName, selectedDate === index && styles.dateTextActive]}>{item.dayName}</Text>
@@ -306,15 +300,11 @@ export const ServiceDetailScreen = observer(() => {
               ))}
             </ScrollView>
 
-            {/* Time Slot Selection */}
             <View style={styles.timeSlotGrid}>
               {timeSlots.map(slot => (
                 <TouchableOpacity
                   key={slot.id}
-                  style={[
-                    styles.timeSlotItem,
-                    selectedSlot === slot.id && styles.timeSlotItemActive
-                  ]}
+                  style={[styles.timeSlotItem, selectedSlot === slot.id && styles.timeSlotItemActive]}
                   onPress={() => setSelectedSlot(slot.id)}
                 >
                   <View style={styles.slotHeader}>
@@ -327,7 +317,6 @@ export const ServiceDetailScreen = observer(() => {
             </View>
           </View>
 
-          {/* Package Inclusions */}
           <View style={styles.highlightsContainer}>
             <Text style={styles.sectionHeader}>What's Included</Text>
             {PACKAGE_INCLUDES.map((item, index) => (
@@ -340,53 +329,80 @@ export const ServiceDetailScreen = observer(() => {
             ))}
           </View>
 
+          {/* Technician Support Section */}
+          <View style={styles.supportSection}>
+            <Text style={styles.sectionHeader}>Technician Support</Text>
+            <Text style={styles.supportDesc}>Need help with your solar system? Talk to our experts.</Text>
+            <View style={styles.supportButtonsRow}>
+              <TouchableOpacity style={styles.supportButton} onPress={handleCallTechnician}>
+                <Ionicons name="call" size={20} color="#FFF" />
+                <Text style={styles.supportButtonText}>Call Now</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.supportButton, { backgroundColor: '#25D366' }]} onPress={handleWhatsAppTechnician}>
+                <Ionicons name="logo-whatsapp" size={20} color="#FFF" />
+                <Text style={styles.supportButtonText}>WhatsApp</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
           <Text style={styles.sectionHeader}>Benefits</Text>
-          {(
-            service.benefits || [
-              {
-                icon: '⚡',
-                title: 'Improved Efficiency',
-                description: "Maximize your system's output",
-              },
-              {
-                icon: '💰',
-                title: 'Cost Savings',
-                description: 'Reduce long-term maintenance costs',
-              },
-            ]
-          ).map((benefit, index) => (
+          {(service.benefits || [
+            { icon: '⚡', title: 'Improved Efficiency', description: "Maximize your system's output" },
+            { icon: '💰', title: 'Cost Savings', description: 'Reduce long-term maintenance costs' },
+          ]).map((benefit, index) => (
             <View key={index} style={styles.benefitItem}>
-              <View style={styles.benefitIcon}>
-                <Text style={{ fontSize: 22 }}>{benefit.icon}</Text>
-              </View>
+              <View style={styles.benefitIcon}><Text style={{ fontSize: 22 }}>{benefit.icon}</Text></View>
               <View style={styles.benefitTextContainer}>
                 <Text style={styles.benefitTitle}>{benefit.title}</Text>
                 <Text style={styles.benefitDesc}>{benefit.description}</Text>
               </View>
             </View>
           ))}
+
+          {/* Rating & Reviews Section */}
+          <View style={styles.reviewsSection}>
+            <View style={styles.reviewsHeaderRow}>
+              <Text style={styles.sectionHeader}>Customer Reviews</Text>
+              <View style={styles.ratingSummary}>
+                <Ionicons name="star" size={16} color="#FFD700" />
+                <Text style={styles.ratingScore}>{service.rating || '4.8'}</Text>
+                <Text style={styles.reviewCount}>({service.reviewCount || '120'} reviews)</Text>
+              </View>
+            </View>
+
+            {DUMMY_REVIEWS.map((review) => (
+              <View key={review.id} style={styles.reviewCard}>
+                <View style={styles.reviewUserRow}>
+                  <Image source={{ uri: review.avatar }} style={styles.reviewAvatar} />
+                  <View style={styles.reviewUserInfo}>
+                    <Text style={styles.reviewUserName}>{review.user}</Text>
+                    <Text style={styles.reviewDate}>{review.date}</Text>
+                  </View>
+                  <View style={styles.reviewRatingBadge}>
+                    <Ionicons name="star" size={12} color="#FFD700" />
+                    <Text style={styles.reviewRatingText}>{review.rating}</Text>
+                  </View>
+                </View>
+                <Text style={styles.reviewComment}>{review.comment}</Text>
+              </View>
+            ))}
+            <TouchableOpacity style={styles.viewAllReviewsButton}>
+              <Text style={styles.viewAllReviewsText}>View All Reviews</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
 
-      {/* Premium Footer */}
       <View style={[styles.footer, { paddingBottom: insets.bottom > 0 ? insets.bottom : 20 }]}>
         <View style={styles.priceContainer}>
           <Text style={styles.footerPriceLabel}>Total Pay</Text>
           <Text style={styles.footerPrice}>₹{totalPrice.toLocaleString()}</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.addToCartButton}
-            onPress={handleAddToCart}
-            activeOpacity={0.8}
-          >
+          <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart} activeOpacity={0.8}>
             <Text style={styles.addToCartText}>Add to Cart</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.buyNowButton}
-            onPress={handleBuyNow}
-            activeOpacity={0.9}
-          >
+          <TouchableOpacity style={styles.buyNowButton} onPress={handleBuyNow} activeOpacity={0.9}>
             <Text style={styles.buyNowText}>Buy Now</Text>
           </TouchableOpacity>
         </View>
@@ -396,10 +412,7 @@ export const ServiceDetailScreen = observer(() => {
 });
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
+  container: { flex: 1, backgroundColor: '#fff' },
   header: {
     height: 48,
     flexDirection: 'row',
@@ -411,478 +424,118 @@ const styles = StyleSheet.create({
     borderBottomColor: '#F5F5F5',
     zIndex: 10,
   },
-  iconButton: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
-    backgroundColor: '#FAFAFA',
-  },
-  headerTitle: {
-    flex: 1,
-    fontFamily: 'NotoSans-Bold',
-    fontSize: 16,
-    color: colors.headerTitle,
-    textAlign: 'center',
-    marginHorizontal: 12,
-  },
-  headerRight: {
-    width: 40,
-    alignItems: 'flex-end',
-  },
+  iconButton: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 20, backgroundColor: '#FAFAFA' },
+  headerTitle: { flex: 1, fontFamily: 'NotoSans-Bold', fontSize: 16, color: colors.headerTitle, textAlign: 'center', marginHorizontal: 12 },
+  headerRight: { width: 40, alignItems: 'flex-end' },
   badge: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    backgroundColor: lightTheme.colors.redOrange,
-    borderRadius: 10,
-    minWidth: 18,
-    height: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#fff',
+    position: 'absolute', top: -4, right: -4, backgroundColor: lightTheme.colors.redOrange, borderRadius: 10, minWidth: 18, height: 18,
+    justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#fff',
   },
-  badgeText: {
-    color: '#fff',
-    fontSize: 10,
-    fontFamily: 'NotoSans-Bold',
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  imageContainer: {
-    width: width,
-    height: 260,
-    backgroundColor: '#F5F5F5',
-    position: 'relative',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.02)',
-  },
+  badgeText: { color: '#fff', fontSize: 10, fontFamily: 'NotoSans-Bold' },
+  scrollContent: { flexGrow: 1 },
+  imageContainer: { width: width, height: 260, backgroundColor: '#F5F5F5', position: 'relative' },
+  image: { width: '100%', height: '100%' },
+  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.02)' },
   content: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    marginTop: -30,
-    paddingHorizontal: 20,
-    paddingTop: 30,
-    paddingBottom: 20,
+    flex: 1, backgroundColor: '#fff', borderTopLeftRadius: 30, borderTopRightRadius: 30, marginTop: -30,
+    paddingHorizontal: 20, paddingTop: 30, paddingBottom: 20,
   },
-  titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 20,
-  },
-  title: {
-    flex: 1,
-    fontSize: 22,
-    fontFamily: 'NotoSans-Bold',
-    color: '#1C1C1E',
-    lineHeight: 28,
-    marginRight: 10,
-  },
-  categoryBadge: {
-    backgroundColor: '#EBF5FF',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  categoryText: {
-    color: lightTheme.colors.primaryBlue,
-    fontFamily: 'NotoSans-Bold',
-    fontSize: 11,
-    textTransform: 'uppercase',
-  },
-
-  // New Config Container
-  configContainer: {
-    backgroundColor: '#FAFAFA',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#EEEEEE',
-  },
-  configHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  sectionLabel: {
-    fontSize: 14,
-    fontFamily: 'NotoSans-Bold',
-    color: '#1C1C1E',
-  },
-  infoIcon: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    borderWidth: 1,
-    borderColor: '#BDBDBD',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  infoText: {
-    fontSize: 10,
-    color: '#BDBDBD',
-    fontWeight: 'bold',
-  },
+  titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 },
+  title: { flex: 1, fontSize: 22, fontFamily: 'NotoSans-Bold', color: '#1C1C1E', lineHeight: 28, marginRight: 10 },
+  categoryBadge: { backgroundColor: '#EBF5FF', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
+  categoryText: { color: lightTheme.colors.primaryBlue, fontFamily: 'NotoSans-Bold', fontSize: 11, textTransform: 'uppercase' },
+  rateInfoBanner: { backgroundColor: '#F0F7FF', borderRadius: 12, padding: 12, marginBottom: 20, borderWidth: 1, borderColor: '#D1E9FF', gap: 6 },
+  rateInfoRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  rateInfoText: { fontSize: 13, fontFamily: 'NotoSans-Bold', color: '#0052CC' },
+  packagesHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 },
+  rateSubText: { fontSize: 10, fontFamily: 'NotoSans-Medium', color: '#8E8E93' },
+  quickPackageList: { paddingVertical: 12, gap: 10 },
+  quickPackageItem: { width: 85, height: 75, borderRadius: 12, backgroundColor: '#FAFAFA', borderWidth: 1.5, borderColor: '#EEEEEE', alignItems: 'center', justifyContent: 'center', gap: 2 },
+  quickPackageItemActive: { backgroundColor: '#0D81FC', borderColor: '#0D81FC' },
+  quickPackageSize: { fontSize: 15, fontFamily: 'NotoSans-Bold', color: '#1C1C1E' },
+  quickPackagePrice: { fontSize: 12, fontFamily: 'NotoSans-Medium', color: '#8E8E93' },
+  quickPackageTextActive: { color: '#FFFFFF' },
+  configContainer: { backgroundColor: '#FAFAFA', borderRadius: 16, padding: 16, marginBottom: 24, borderWidth: 1, borderColor: '#EEEEEE' },
+  configHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  sectionLabel: { fontSize: 14, fontFamily: 'NotoSans-Bold', color: '#1C1C1E' },
+  infoIcon: { width: 18, height: 18, borderRadius: 9, borderWidth: 1, borderColor: '#BDBDBD', alignItems: 'center', justifyContent: 'center' },
+  infoText: { fontSize: 10, color: '#BDBDBD', fontWeight: 'bold' },
   sizeSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#F0F0F0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 2,
-    elevation: 1,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#fff', borderRadius: 12, padding: 12,
+    borderWidth: 1, borderColor: '#F0F0F0', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 2, elevation: 1,
   },
-  sizeInputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  sizeTextInput: {
-    fontSize: 20,
-    fontFamily: 'NotoSans-Bold',
-    color: '#1C1C1E',
-    padding: 0,
-    minWidth: 40,
-  },
-  sizeUnit: {
-    fontSize: 14,
-    fontFamily: 'NotoSans-Medium',
-    color: '#8E8E93',
-    marginLeft: 4,
-    marginTop: 2,
-  },
-  dividerVertical: {
-    width: 1,
-    height: 24,
-    backgroundColor: '#E0E0E0',
-    marginHorizontal: 16,
-  },
-  estimatedPriceContainer: {
-    flex: 1,
-    alignItems: 'flex-end',
-  },
-  estimatedLabel: {
-    fontSize: 10,
-    fontFamily: 'NotoSans-Medium',
-    color: '#8E8E93',
-    marginBottom: 2,
-  },
-  priceValue: {
-    fontFamily: 'NotoSans-Bold',
-    fontSize: 18,
-    color: lightTheme.colors.primaryBlue,
-  },
-
-  // Slot Booking Styles
-  slotBookingContainer: {
-    marginBottom: 24,
-  },
-  dateList: {
-    paddingVertical: 10,
-    gap: 12,
-  },
-  dateItem: {
-    width: 60,
-    height: 70,
-    borderRadius: 12,
-    backgroundColor: '#F5F5F5',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#EEEEEE',
-  },
-  dateItemActive: {
-    backgroundColor: lightTheme.colors.primaryBlue,
-    borderColor: lightTheme.colors.primaryBlue,
-  },
-  dayName: {
-    fontSize: 12,
-    fontFamily: 'NotoSans-Medium',
-    color: '#8E8E93',
-  },
-  dayNum: {
-    fontSize: 18,
-    fontFamily: 'NotoSans-Bold',
-    color: '#1C1C1E',
-    marginTop: 2,
-  },
-  dateTextActive: {
-    color: '#FFFFFF',
-  },
-  timeSlotGrid: {
-    marginTop: 16,
-    gap: 10,
-  },
-  timeSlotItem: {
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: '#F9F9F9',
-    borderWidth: 1,
-    borderColor: '#EEEEEE',
-  },
-  timeSlotItemActive: {
-    backgroundColor: '#F0F7FF',
-    borderColor: lightTheme.colors.primaryBlue,
-  },
-  slotHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  slotIcon: {
-    fontSize: 16,
-    marginRight: 8,
-  },
-  slotLabel: {
-    fontSize: 14,
-    fontFamily: 'NotoSans-Bold',
-    color: '#1C1C1E',
-  },
-  slotTime: {
-    fontSize: 12,
-    fontFamily: 'NotoSans-Regular',
-    color: '#8E8E93',
-  },
-  slotTextActive: {
-    color: lightTheme.colors.primaryBlue,
-  },
-  slotTimeTextActive: {
-    color: '#5C9CE6',
-  },
-
-  sectionHeader: {
-    fontSize: 16,
-    fontFamily: 'NotoSans-Bold',
-    color: '#1C1C1E',
-    marginBottom: 12,
-    marginTop: 8,
-  },
-  description: {
-    fontSize: 14,
-    fontFamily: 'NotoSans-Regular',
-    color: '#666666',
-    lineHeight: 22,
-    marginBottom: 24,
-  },
-  highlightsContainer: {
-    marginBottom: 24,
-  },
-  highlightRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 10,
-  },
-  checkContainer: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: '#F0F7FF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  bulletPoint: {
-    flex: 1,
-    fontSize: 14,
-    fontFamily: 'NotoSans-Medium',
-    color: '#444444',
-    lineHeight: 22,
-  },
+  sizeInputWrapper: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  sizeTextInput: { fontSize: 20, fontFamily: 'NotoSans-Bold', color: '#1C1C1E', padding: 0, minWidth: 40 },
+  sizeUnit: { fontSize: 14, fontFamily: 'NotoSans-Medium', color: '#8E8E93', marginLeft: 4, marginTop: 2 },
+  dividerVertical: { width: 1, height: 24, backgroundColor: '#E0E0E0', marginHorizontal: 16 },
+  estimatedPriceContainer: { flex: 1, alignItems: 'flex-end' },
+  estimatedLabel: { fontSize: 10, fontFamily: 'NotoSans-Medium', color: '#8E8E93', marginBottom: 2 },
+  priceValue: { fontFamily: 'NotoSans-Bold', fontSize: 18, color: lightTheme.colors.primaryBlue },
+  slotBookingContainer: { marginBottom: 24 },
+  dateList: { paddingVertical: 10, gap: 12 },
+  dateItem: { width: 60, height: 70, borderRadius: 12, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#EEEEEE' },
+  dateItemActive: { backgroundColor: lightTheme.colors.primaryBlue, borderColor: lightTheme.colors.primaryBlue },
+  dayName: { fontSize: 12, fontFamily: 'NotoSans-Medium', color: '#8E8E93' },
+  dayNum: { fontSize: 18, fontFamily: 'NotoSans-Bold', color: '#1C1C1E', marginTop: 2 },
+  dateTextActive: { color: '#FFFFFF' },
+  timeSlotGrid: { marginTop: 16, gap: 10 },
+  timeSlotItem: { padding: 16, borderRadius: 12, backgroundColor: '#F9F9F9', borderWidth: 1, borderColor: '#EEEEEE' },
+  timeSlotItemActive: { backgroundColor: '#F0F7FF', borderColor: lightTheme.colors.primaryBlue },
+  slotHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
+  slotIcon: { fontSize: 16, marginRight: 8 },
+  slotLabel: { fontSize: 14, fontFamily: 'NotoSans-Bold', color: '#1C1C1E' },
+  slotTime: { fontSize: 12, fontFamily: 'NotoSans-Regular', color: '#8E8E93' },
+  slotTextActive: { color: lightTheme.colors.primaryBlue },
+  slotTimeTextActive: { color: '#5C9CE6' },
+  sectionHeader: { fontSize: 16, fontFamily: 'NotoSans-Bold', color: '#1C1C1E', marginBottom: 12, marginTop: 8 },
+  description: { fontSize: 14, fontFamily: 'NotoSans-Regular', color: '#666666', lineHeight: 22, marginBottom: 24 },
+  highlightsContainer: { marginBottom: 24 },
+  highlightRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10 },
+  checkContainer: { width: 22, height: 22, borderRadius: 11, backgroundColor: '#F0F7FF', alignItems: 'center', justifyContent: 'center', marginRight: 12 },
+  bulletPoint: { flex: 1, fontSize: 14, fontFamily: 'NotoSans-Medium', color: '#444444', lineHeight: 22 },
   benefitItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#F0F0F0',
-    padding: 16,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.02,
-    shadowRadius: 4,
-    elevation: 0.5,
+    flexDirection: 'row', alignItems: 'center', marginBottom: 12, backgroundColor: '#fff', borderWidth: 1, borderColor: '#F0F0F0',
+    padding: 16, borderRadius: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 4, elevation: 0.5,
   },
-  benefitIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#F5F9FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  benefitTextContainer: {
-    flex: 1,
-  },
-  benefitTitle: {
-    fontSize: 15,
-    fontFamily: 'NotoSans-Bold',
-    color: '#1C1C1E',
-    marginBottom: 2,
-  },
-  benefitDesc: {
-    fontSize: 12,
-    fontFamily: 'NotoSans-Regular',
-    color: '#8E8E93',
-  },
-
-  // Premium Footer
+  benefitIcon: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#F5F9FF', justifyContent: 'center', alignItems: 'center', marginRight: 16 },
+  benefitTextContainer: { flex: 1 },
+  benefitTitle: { fontSize: 15, fontFamily: 'NotoSans-Bold', color: '#1C1C1E', marginBottom: 2 },
+  benefitDesc: { fontSize: 12, fontFamily: 'NotoSans-Regular', color: '#8E8E93' },
   footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#F5F5F5',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 20,
+    position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#fff', flexDirection: 'row', alignItems: 'center',
+    paddingHorizontal: 20, paddingTop: 16, borderTopWidth: 1, borderTopColor: '#F5F5F5', shadowColor: '#000', shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.05, shadowRadius: 10, elevation: 20,
   },
-  priceContainer: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  footerPriceLabel: {
-    fontSize: 12,
-    fontFamily: 'NotoSans-Medium',
-    color: '#8E8E93',
-    marginBottom: 2,
-  },
-  footerPrice: {
-    fontSize: 22,
-    fontFamily: 'NotoSans-Bold',
-    color: lightTheme.colors.primaryBlue,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    alignItems: 'center',
-  },
-  addToCartButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    borderWidth: 1.5,
-    borderColor: '#E0E0E0',
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 100,
-    height: 44,
-  },
-  addToCartText: {
-    color: '#424242',
-    fontFamily: 'NotoSans-Bold',
-    fontSize: 13,
-  },
+  priceContainer: { flex: 1, justifyContent: 'center' },
+  footerPriceLabel: { fontSize: 12, fontFamily: 'NotoSans-Medium', color: '#8E8E93', marginBottom: 2 },
+  footerPrice: { fontSize: 22, fontFamily: 'NotoSans-Bold', color: lightTheme.colors.primaryBlue },
+  buttonContainer: { flexDirection: 'row', gap: 12, alignItems: 'center' },
+  addToCartButton: { paddingVertical: 10, paddingHorizontal: 16, borderRadius: 10, borderWidth: 1.5, borderColor: '#E0E0E0', backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', minWidth: 100, height: 44 },
   buyNowButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    backgroundColor: lightTheme.colors.primaryBlue,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 110,
-    height: 44,
-    shadowColor: lightTheme.colors.primaryBlue,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 4,
+    paddingVertical: 10, paddingHorizontal: 20, borderRadius: 10, backgroundColor: lightTheme.colors.primaryBlue, alignItems: 'center', justifyContent: 'center',
+    minWidth: 110, height: 44, shadowColor: lightTheme.colors.primaryBlue, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.25, shadowRadius: 8, elevation: 4,
   },
-  buyNowText: {
-    color: '#fff',
-    fontFamily: 'NotoSans-Bold',
-    fontSize: 13,
-  },
-  rateInfoBanner: {
-    backgroundColor: '#F0F7FF',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#D1E9FF',
-    gap: 6,
-  },
-  rateInfoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  rateInfoText: {
-    fontSize: 13,
-    fontFamily: 'NotoSans-Bold',
-    color: '#0052CC',
-  },
-  packagesHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'baseline',
-    marginBottom: 4,
-  },
-  rateSubText: {
-    fontSize: 10,
-    fontFamily: 'NotoSans-Medium',
-    color: '#8E8E93',
-  },
-  quickPackageList: {
-    paddingVertical: 12,
-    gap: 10,
-  },
-  quickPackageItem: {
-    width: 85,
-    height: 75,
-    borderRadius: 12,
-    backgroundColor: '#FAFAFA',
-    borderWidth: 1.5,
-    borderColor: '#EEEEEE',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 2,
-  },
-  quickPackageItemActive: {
-    backgroundColor: '#0D81FC',
-    borderColor: '#0D81FC',
-  },
-  quickPackageSize: {
-    fontSize: 15,
-    fontFamily: 'NotoSans-Bold',
-    color: '#1C1C1E',
-  },
-  quickPackagePrice: {
-    fontSize: 12,
-    fontFamily: 'NotoSans-Medium',
-    color: '#8E8E93',
-  },
-  quickPackageTextActive: {
-    color: '#FFFFFF',
-  },
+  buyNowText: { color: '#fff', fontFamily: 'NotoSans-Bold', fontSize: 13 },
+  addToCartText: { color: '#424242', fontFamily: 'NotoSans-Bold', fontSize: 13 },
+  reviewsSection: { marginTop: 32, paddingTop: 24, borderTopWidth: 1, borderTopColor: '#F0F0F0' },
+  reviewsHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  ratingSummary: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF9E6', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
+  ratingScore: { fontSize: 14, fontFamily: 'NotoSans-Bold', color: '#1C1C1E', marginLeft: 4 },
+  reviewCount: { fontSize: 12, fontFamily: 'NotoSans-Regular', color: '#8E8E93', marginLeft: 4 },
+  reviewCard: { backgroundColor: '#FAFAFA', borderRadius: 16, padding: 16, marginBottom: 16 },
+  reviewUserRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  reviewAvatar: { width: 36, height: 36, borderRadius: 18, marginRight: 10 },
+  reviewUserInfo: { flex: 1 },
+  reviewUserName: { fontSize: 14, fontFamily: 'NotoSans-Bold', color: '#1C1C1E' },
+  reviewDate: { fontSize: 11, fontFamily: 'NotoSans-Regular', color: '#8E8E93' },
+  reviewRatingBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6, borderWidth: 1, borderColor: '#F0F0F0' },
+  reviewRatingText: { fontSize: 12, fontFamily: 'NotoSans-Bold', color: '#1C1C1E', marginLeft: 2 },
+  reviewComment: { fontSize: 13, fontFamily: 'NotoSans-Regular', color: '#444444', lineHeight: 18 },
+  viewAllReviewsButton: { alignItems: 'center', paddingVertical: 12, marginTop: 8 },
+  viewAllReviewsText: { fontSize: 14, fontFamily: 'NotoSans-Bold', color: lightTheme.colors.primaryBlue },
+  supportSection: { marginTop: 24, backgroundColor: '#F9FAFB', borderRadius: 20, padding: 20, borderWidth: 1, borderColor: '#F1F5F9' },
+  supportDesc: { fontSize: 13, color: '#64748B', marginBottom: 16, fontFamily: 'NotoSans-Medium' },
+  supportButtonsRow: { flexDirection: 'row', gap: 12 },
+  supportButton: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: lightTheme.colors.primaryBlue, height: 48, borderRadius: 12, gap: 8 },
+  supportButtonText: { color: '#FFF', fontSize: 14, fontFamily: 'NotoSans-Bold' },
 });

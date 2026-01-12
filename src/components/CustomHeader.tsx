@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { observer } from 'mobx-react-lite';
+import { useRootStore } from '../stores/RootStore';
 import { colors } from '../theme/colors';
 import { ImageIcon } from './ImageIcon';
 
@@ -16,9 +18,11 @@ interface CustomHeaderProps {
   title?: string;
 }
 
-export const CustomHeader = ({ title }: CustomHeaderProps) => {
+export const CustomHeader = observer(({ title }: CustomHeaderProps) => {
   const navigation = useNavigation<any>();
+  const { authStore } = useRootStore();
   const insets = useSafeAreaInsets();
+  const user = authStore.user;
 
   const openDrawer = () => {
     navigation.dispatch(DrawerActions.openDrawer());
@@ -59,7 +63,11 @@ export const CustomHeader = ({ title }: CustomHeaderProps) => {
             onPress={() => navigation.navigate('UserProfile' as never)}
           >
             <Image
-              source={require('../assets/icons/profile.png')}
+              source={
+                user?.avatar
+                  ? { uri: user.avatar }
+                  : require('../assets/icons/profile.png')
+              }
               style={styles.profileImage}
             />
           </TouchableOpacity>
@@ -67,7 +75,7 @@ export const CustomHeader = ({ title }: CustomHeaderProps) => {
       </View>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

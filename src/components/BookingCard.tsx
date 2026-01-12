@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { lightTheme } from '../theme/theme';
 
 interface BookingCardProps {
@@ -59,6 +60,28 @@ export const BookingCard = ({ id, items, totalPrice, date, status, description }
             <View style={styles.footer}>
                 <Text style={styles.priceLabel}>Total Paid</Text>
                 <Text style={styles.price}>₹{totalPrice.toLocaleString()}</Text>
+            </View>
+
+            {/* Support Section */}
+            <View style={styles.supportSection}>
+                <Text style={styles.supportTitle}>Need Help? Contact Technician</Text>
+                <View style={styles.supportActionRow}>
+                    <TouchableOpacity
+                        style={[styles.supportAction, { backgroundColor: lightTheme.colors.primaryBlue }]}
+                        onPress={() => Linking.openURL('tel:9799802000').catch(() => Alert.alert('Error', 'Unable to call'))}
+                    >
+                        <Ionicons name="call" size={16} color="#FFF" />
+                        <Text style={styles.supportActionText}>Call</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={[styles.supportAction, { backgroundColor: '#25D366' }]}
+                        onPress={() => Linking.openURL('whatsapp://send?phone=919799802000&text=Help with Booking #' + id.slice(-6).toUpperCase()).catch(() => Alert.alert('Error', 'WhatsApp not found'))}
+                    >
+                        <Ionicons name="logo-whatsapp" size={16} color="#FFF" />
+                        <Text style={styles.supportActionText}>WhatsApp</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
     );
@@ -158,5 +181,36 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontFamily: 'NotoSans-Bold',
         color: lightTheme.colors.primaryBlue,
+    },
+    supportSection: {
+        marginTop: 16,
+        paddingTop: 16,
+        borderTopWidth: 1,
+        borderTopColor: '#F5F5F7',
+    },
+    supportTitle: {
+        fontSize: 12,
+        fontFamily: 'NotoSans-Bold',
+        color: '#4A5568',
+        marginBottom: 12,
+        textAlign: 'center',
+    },
+    supportActionRow: {
+        flexDirection: 'row',
+        gap: 12,
+    },
+    supportAction: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 40,
+        borderRadius: 10,
+        gap: 8,
+    },
+    supportActionText: {
+        color: '#FFF',
+        fontSize: 13,
+        fontFamily: 'NotoSans-Bold',
     },
 });

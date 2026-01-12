@@ -87,7 +87,7 @@ const tools = [
         id: '1',
         title: 'Solar Health',
         desc: 'System Diagnostics',
-        image: { uri: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&q=80' },
+        image: require('../assets/Images/RobiticImg.jpeg'),
         colors: ['rgba(0, 180, 219, 0.7)', 'rgba(0, 131, 176, 0.4)'],
         icon: '🛡️',
         content: [
@@ -109,7 +109,7 @@ const tools = [
         id: '2',
         title: 'Solar Quote',
         desc: '₹0.15 per Watt',
-        image: { uri: 'https://images.unsplash.com/photo-1551288049-bbbda540d3b9?w=800&q=80' },
+        image: require('../assets/Images/ManualImg.jpeg'),
         colors: ['rgba(41, 128, 185, 0.7)', 'rgba(109, 213, 250, 0.4)'],
         icon: '💰',
         isCalculator: true,
@@ -132,7 +132,7 @@ const tools = [
         id: '3',
         title: 'Sun Forecast',
         desc: 'Generation Potential',
-        image: { uri: 'https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?w=800&q=80' },
+        image: require('../assets/Images/ResidentialCleaningService.jpeg'),
         colors: ['rgba(255, 126, 95, 0.7)', 'rgba(254, 180, 123, 0.4)'],
         icon: '☀️',
         content: [
@@ -154,7 +154,7 @@ const tools = [
         id: '4',
         title: 'AI Support',
         desc: 'Instant Help',
-        image: { uri: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80' },
+        image: require('../assets/Images/CommercialImg.jpeg'),
         colors: ['rgba(142, 45, 226, 0.7)', 'rgba(74, 0, 224, 0.4)'],
         icon: '🤖',
         content: [
@@ -181,7 +181,7 @@ export const InteractiveTools = () => {
         navigation.navigate('ToolInfo', {
             tool: {
                 ...tool,
-                image: tool.image.uri,
+                image: tool.image,
                 description: tool.desc
             }
         });

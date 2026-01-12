@@ -13,6 +13,7 @@ export const UserProfileScreen = observer(() => {
     const { authStore } = useRootStore();
 
     // State for form fields
+    const [name, setName] = useState(authStore.user?.name || '');
     const [gender, setGender] = useState<string>(authStore.user?.gender || 'Man');
     const [dob, setDob] = useState(authStore.user?.dob || '');
     const [bio, setBio] = useState(authStore.user?.bio || '');
@@ -34,6 +35,7 @@ export const UserProfileScreen = observer(() => {
 
     const handleSave = () => {
         authStore.updateProfile({
+            name,
             gender,
             dob,
             bio,
@@ -97,6 +99,19 @@ export const UserProfileScreen = observer(() => {
                 </View>
 
                 {/* Form Fields */}
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>Full Name <Text style={styles.optional}> (Optional)</Text></Text>
+                    <View style={styles.inputWrapper}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter your full name"
+                            placeholderTextColor={lightTheme.colors.gray4}
+                            value={name}
+                            onChangeText={setName}
+                        />
+                    </View>
+                </View>
+
                 <View style={styles.formGroup}>
                     <Text style={styles.label}>Bio <Text style={styles.optional}> (Optional)</Text></Text>
                     <View style={styles.inputWrapper}>

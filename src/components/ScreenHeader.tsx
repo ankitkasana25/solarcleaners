@@ -3,6 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ImageIcon } from './ImageIcon';
+import { observer } from 'mobx-react-lite';
+import { useRootStore } from '../stores/RootStore';
+import { Image } from 'react-native';
 
 interface ScreenHeaderProps {
     title: string;
@@ -11,14 +14,16 @@ interface ScreenHeaderProps {
     showBack?: boolean;
 }
 
-export const ScreenHeader = ({
+export const ScreenHeader = observer(({
     title,
     showNotification = true,
     showProfile = true,
     showBack = false,
 }: ScreenHeaderProps) => {
     const navigation = useNavigation();
+    const { authStore } = useRootStore();
     const insets = useSafeAreaInsets();
+    const user = authStore.user;
 
     const handleLeftPress = () => {
         if (showBack) {
@@ -48,7 +53,7 @@ export const ScreenHeader = ({
                     {showNotification && (
                         <TouchableOpacity
                             style={styles.iconButton}
-                            onPress={() => navigation.navigate('MainStack' as never, { screen: 'Notifications' } as never)}
+                            onPress={() => (navigation as any).navigate('MainStack', { screen: 'Notifications' })}
                         >
                             <ImageIcon name="bell" size={24} color="#2E3A59" />
                             <View style={styles.notificationBadge} />
@@ -60,7 +65,11 @@ export const ScreenHeader = ({
                             onPress={() => navigation.navigate('UserProfile' as never)}
                         >
                             <View style={styles.profilePlaceholder}>
-                                <ImageIcon name="profile" size={20} color="#FFFFFF" />
+                                {user?.avatar ? (
+                                    <Image source={{ uri: user.avatar }} style={styles.profileImage} />
+                                ) : (
+                                    <ImageIcon name="profile" size={20} color="#FFFFFF" />
+                                )}
                             </View>
                         </TouchableOpacity>
                     )}
@@ -68,7 +77,7 @@ export const ScreenHeader = ({
             </View>
         </View>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {
@@ -139,5 +148,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#007AFF',
         justifyContent: 'center',
         alignItems: 'center',
+        overflow: 'hidden',
+    },
+    profileImage: {
+        width: '100%',
+        height: '100%',
     },
 });

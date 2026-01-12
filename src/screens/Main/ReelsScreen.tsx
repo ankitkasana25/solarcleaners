@@ -10,7 +10,7 @@ const { width, height } = Dimensions.get('window');
 
 interface ReelItem {
     id: string;
-    image: string;
+    image: any;
     title: string;
     description?: string;
     videoUrl?: string;
@@ -50,7 +50,7 @@ export const ReelsScreen = () => {
                 style={styles.fullScreenTouch}
             >
                 <Image
-                    source={{ uri: item.image }}
+                    source={typeof item.image === 'string' ? { uri: item.image } : item.image}
                     style={styles.backgroundImage}
                     resizeMode="cover"
                 />

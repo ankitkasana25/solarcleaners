@@ -52,10 +52,10 @@ const CATEGORIES: Category[] = [
 
 const SERVICES_DATA: any = {
   cleaning: [
-    { id: 'c1', title: 'Residential Rooftop', description: 'Deep cleaning for home solar panels.', price: 150, duration: '1 hr', image: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=400&q=80', featured: true },
-    { id: 'c2', title: 'Commercial & Industrial', description: 'Large scale cleaning for plants.', price: 150, duration: 'Daily', image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&q=80' },
-    { id: 'c3', title: 'Robotic cleaning', description: 'Precision waterless robotic modules.', price: 200, duration: '45 min', image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&q=80' },
-    { id: 'c4', title: 'Manual & mechanised', description: 'Thorough cleaning with soft brushes.', price: 125, duration: '1.5 hr', image: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=400&q=80' },
+    { id: 'c1', title: 'Residential Rooftop', description: 'Deep cleaning for home solar panels.', price: 150, duration: '1 hr', image: require('../../assets/Images/ResidentialCleaningService.jpeg'), featured: true },
+    { id: 'c2', title: 'Commercial & Industrial', description: 'Large scale cleaning for plants.', price: 150, duration: 'Daily', image: require('../../assets/Images/CommercialImg.jpeg') },
+    { id: 'c3', title: 'Robotic cleaning', description: 'Precision waterless robotic modules.', price: 200, duration: '45 min', image: require('../../assets/Images/RobiticImg.jpeg') },
+    { id: 'c4', title: 'Manual & mechanised', description: 'Thorough cleaning with soft brushes.', price: 125, duration: '1.5 hr', image: require('../../assets/Images/ManualImg.jpeg') },
     { id: 'c5', title: 'AMC Contracts', description: 'Monthly / Quarterly / Annual cleaning.', price: 999, duration: 'Annual', image: 'https://images.unsplash.com/photo-1497440001374-f26997328c1b?w=400&q=80', popular: true },
   ],
   om: [
@@ -90,7 +90,7 @@ export const ServicesScreen = observer(() => {
       price: service.price,
       basePrice: service.price,
       systemSize: service.duration, // Using duration as size placeholder for simple services
-      image: { uri: service.image },
+      image: typeof service.image === 'string' ? { uri: service.image } : service.image,
     });
   };
 

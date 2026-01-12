@@ -14,7 +14,7 @@ const PROMOTIONS = [
         discount: '25% OFF',
         description: 'All Solar Services',
         backgroundColor: '#E8F5E9',
-        image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80',
+        image: require('../assets/Images/CommercialImg.jpeg'),
         accentColor: '#2E7D32',
     },
     {
@@ -23,7 +23,7 @@ const PROMOTIONS = [
         discount: 'Flat ₹200',
         description: 'On First Booking',
         backgroundColor: '#E3F2FD',
-        image: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&q=80',
+        image: require('../assets/Images/ManualImg.jpeg'),
         accentColor: '#1565C0',
     },
     {
@@ -32,7 +32,7 @@ const PROMOTIONS = [
         discount: 'Free Checkup',
         description: 'With Deep Cleaning',
         backgroundColor: '#FFF3E0',
-        image: 'https://images.unsplash.com/photo-1625301840055-7c1b7198cfc0?w=800&q=80',
+        image: require('../assets/Images/RobiticImg.jpeg'),
         accentColor: '#EF6C00',
     },
     {
@@ -41,7 +41,7 @@ const PROMOTIONS = [
         discount: '15% Extra',
         description: 'On Annual Plans',
         backgroundColor: '#F3E5F5',
-        image: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&q=80',
+        image: require('../assets/Images/ResidentialCleaningService.jpeg'),
         accentColor: '#7B1FA2',
     }
 ];
@@ -85,7 +85,7 @@ export const ServicePromotions = observer(() => {
                     <View style={styles.carouselItem}>
                         <View style={styles.cardWrapper}>
                             <Image
-                                source={{ uri: item.image }}
+                                source={typeof item.image === 'string' ? { uri: item.image } : item.image}
                                 style={styles.imageStyle}
                                 resizeMode="cover"
                             />
