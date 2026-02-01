@@ -8,6 +8,7 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 
 import { Input } from '../../components/Input';
@@ -22,12 +23,27 @@ export const LoginScreen = observer(() => {
   const navigation = useNavigation<any>();
   const { authStore } = useRootStore();
   const [email, setEmail] = useState('');
+  const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    await authStore.login(email);
-    // Navigation will be handled by the navigator based on auth state,
-    // but for now we might need to manually navigate if strictly stack based without switch
+    if (!email || !mobile || !password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    const result = await authStore.login({
+      email,
+      mobile,
+      password,
+    });
+
+    if (result.success) {
+      // Navigation is often handled by a top-level auth wrapper observing isAuthenticated
+      // But we can also manually navigate if needed.
+    } else {
+      Alert.alert('Login Failed', result.message || 'Please check your credentials');
+    }
   };
 
   return (
@@ -55,6 +71,13 @@ export const LoginScreen = observer(() => {
               onChangeText={setEmail}
               autoCapitalize="none"
               keyboardType="email-address"
+            />
+            <Input
+              label="Mobile Number"
+              placeholder="Enter your mobile number"
+              value={mobile}
+              onChangeText={setMobile}
+              keyboardType="phone-pad"
             />
             <Input
               label="Password"

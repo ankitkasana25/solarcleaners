@@ -19,12 +19,12 @@ import { observer } from 'mobx-react-lite';
 
 export const SignupScreen = observer(() => {
   const navigation = useNavigation<any>();
-  const { } = useRootStore();
+  const { authStore } = useRootStore();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<'success' | 'error' | 'info'>(
@@ -45,7 +45,7 @@ export const SignupScreen = observer(() => {
   };
 
   const handleSignup = async () => {
-    if (!name || !email || !password || !confirmPassword) {
+    if (!name || !email || !mobile || !password || !confirmPassword) {
       showToast('Please fill in all fields', 'error');
       return;
     }
@@ -60,29 +60,23 @@ export const SignupScreen = observer(() => {
       return;
     }
 
-    setIsLoading(true);
+    const result = await authStore.signup({
+      username: name,
+      email,
+      mobile,
+      password,
+    });
 
-    try {
-      // Simulate signup process
-      await new Promise<void>(resolve => setTimeout(resolve, 2000));
-
+    if (result.success) {
       showToast(
-        'Account created successfully! OTP sent to your email.',
+        'Account created successfully!',
         'success',
       );
 
-      // Navigate to OTP verification screen
-      setIsLoading(false);
-      setTimeout(() => {
-        navigation.navigate('OTPVerification', {
-          email,
-          isFromSignup: true,
-        });
-      }, 1000);
-    } catch (error) {
-      showToast('Failed to create account. Please try again.', 'error');
-    } finally {
-      setIsLoading(false);
+      // In some flows, we navigate to OTP, in others to Login or direct Home
+      // Based on Postman, registration returns a token, so we are potentially logged in
+    } else {
+      showToast(result.message || 'Failed to create account. Please try again.', 'error');
     }
   };
 
@@ -122,6 +116,13 @@ export const SignupScreen = observer(() => {
               keyboardType="email-address"
             />
             <Input
+              label="Mobile Number"
+              placeholder="Enter your mobile number"
+              value={mobile}
+              onChangeText={setMobile}
+              keyboardType="phone-pad"
+            />
+            <Input
               label="Password"
               placeholder="Create password"
               value={password}
@@ -139,7 +140,7 @@ export const SignupScreen = observer(() => {
             <Button
               title="Sign Up"
               onPress={handleSignup}
-              loading={isLoading}
+              loading={authStore.isLoading}
               style={styles.signupButton}
             />
 
