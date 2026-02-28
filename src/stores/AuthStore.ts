@@ -1,6 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import apiClient from '../services/apiClient';
-import { API_ENDPOINTS, Config } from '../config/apiConfig';
+import AuthService from '../services/AuthService';
 
 class AuthStore {
     isAuthenticated = false;
@@ -13,26 +12,26 @@ class AuthStore {
         makeAutoObservable(this);
     }
 
-    login = async (credentials: { email: string; mobile: string; password: string }) => {
+    login = async (credentials: { email?: string; mobile?: string; password: string }) => {
         this.isLoading = true;
         this.error = null;
         try {
-            const response = await apiClient.post(API_ENDPOINTS.LOGIN, credentials);
-            const { success, token, user, message } = response.data;
+            const result: any = await AuthService.login(credentials);
 
-            if (success) {
+            // The API seems to use status: "1" for success or a success: true flag
+            if (result.status === "1" || result.status === 1 || result.success) {
                 runInAction(() => {
                     this.isAuthenticated = true;
-                    this.user = user;
-                    this.token = token;
+                    this.user = result.data || result.user;
+                    this.token = result.token || (result.data && result.data.token);
                 });
                 return { success: true };
             } else {
-                this.error = message || 'Login failed';
+                this.error = result.message || 'Login failed';
                 return { success: false, message: this.error };
             }
         } catch (error: any) {
-            this.error = error.response?.data?.message || 'Network error';
+            this.error = error.message || 'Network error occurred';
             return { success: false, message: this.error };
         } finally {
             this.isLoading = false;
@@ -43,27 +42,26 @@ class AuthStore {
         this.isLoading = true;
         this.error = null;
         try {
-            const payload = {
-                ...userData,
-                app_key: Config.APP_KEY,
-                env_type: Config.ENV_TYPE,
-            };
-            const response = await apiClient.post(API_ENDPOINTS.REGISTER, payload);
-            const { success, token, user, message } = response.data;
+            const result: any = await AuthService.signup({
+                username: userData.username,
+                email: userData.email,
+                mobile: userData.mobile,
+                password: userData.password
+            });
 
-            if (success) {
+            if (result.status === "1" || result.status === 1 || result.success) {
                 runInAction(() => {
                     this.isAuthenticated = true;
-                    this.user = user;
-                    this.token = token;
+                    this.user = result.data || result.user;
+                    this.token = result.token || (result.data && result.data.token);
                 });
                 return { success: true };
             } else {
-                this.error = message || 'Registration failed';
+                this.error = result.message || 'Registration failed';
                 return { success: false, message: this.error };
             }
         } catch (error: any) {
-            this.error = error.response?.data?.message || 'Network error';
+            this.error = error.message || 'Network error occurred';
             return { success: false, message: this.error };
         } finally {
             this.isLoading = false;
@@ -73,6 +71,7 @@ class AuthStore {
     logout = () => {
         this.isAuthenticated = false;
         this.user = null;
+        this.token = null;
     };
 
     updateProfile = (data: any) => {
@@ -81,3 +80,5 @@ class AuthStore {
 }
 
 export default AuthStore;
+
+

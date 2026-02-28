@@ -6,17 +6,23 @@ const apiClient = axios.create({
     timeout: Config.TIMEOUT,
     headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
     },
 });
 
-// Request interceptor for adding tokens
+// Request interceptor for adding tokens and common fields
 apiClient.interceptors.request.use(
     (config) => {
-        // You can get token from a storage or store here
-        // const token = authStore.token;
-        // if (token) {
-        //     config.headers.Authorization = `Bearer ${token}`;
-        // }
+        // Automatically add app_key and env_type to POST/PUT requests if they are missing
+        if (config.method === 'post' || config.method === 'put') {
+            if (config.data) {
+                config.data = {
+                    app_key: Config.APP_KEY,
+                    env_type: Config.ENV_TYPE,
+                    ...config.data,
+                };
+            }
+        }
         return config;
     },
     (error) => {
@@ -24,20 +30,33 @@ apiClient.interceptors.request.use(
     }
 );
 
-// Response interceptor for handling errors
+// Response interceptor for handling results
 apiClient.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        // Return only the data payload
+        return response.data;
+    },
     (error) => {
+        let errorMessage = 'An unexpected error occurred';
+
         if (error.response) {
-            // Handle specific status codes
-            console.error('API Error:', error.response.status, error.response.data);
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            errorMessage = error.response.data?.message || `Server Error: ${error.response.status}`;
+            console.error('API Error Response:', error.response.data);
         } else if (error.request) {
-            console.error('Network Error:', error.request);
+            // The request was made but no response was received
+            errorMessage = 'No response from server. Please check your internet connection.';
+            console.error('API No Response:', error.request);
         } else {
-            console.error('Error:', error.message);
+            // Something happened in setting up the request that triggered an Error
+            errorMessage = error.message;
+            console.error('API Request Error:', error.message);
         }
-        return Promise.reject(error);
+
+        return Promise.reject(new Error(errorMessage));
     }
 );
 
 export default apiClient;
+
